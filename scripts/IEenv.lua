@@ -1,0 +1,244 @@
+-- Defined this way to make reusing for different mods easier
+local MOD_CODE = "IE"
+local MOD_NAME = "Paranoia"
+
+-- Good to define your entire environment in a special table.
+-- Eliminates any potential mod incompatability with mods that use the same global names.
+-- Unless they define a global of the same name as `MOD_CODE` i guess...
+_G[MOD_CODE] = {
+    MOD_CODE = MOD_CODE,
+    MOD_NAME = MOD_NAME
+}
+
+---
+--- Created specifically to print lines with a clear source, that being, the mod.
+--- Functionally, it's a simple print with a prefix which can be defined either as a `PRINT`, a `WARN` or an `ERROR`.
+---
+--- Any additional parameters after `mainline` will be printed with an indentation.
+---@param print_type int
+---@param mainline any
+---@vararg any
+---@return void
+local function modprint(print_type, mainline, ...)
+    if mainline == nil then
+        return
+    end
+
+    mainline = tostring(mainline)
+
+    if print_type == _G[MOD_CODE].PRINT then
+        print(_G[MOD_CODE].PRINT_PREFIX..mainline)
+    elseif print_type == _G[MOD_CODE].WARN then
+        print(_G[MOD_CODE].WARN_PREFIX..mainline)
+    elseif print_type == _G[MOD_CODE].ERROR then
+        print(_G[MOD_CODE].ERROR_PREFIX..mainline)
+    end
+
+    for _, line in ipairs({...}) do
+        print("    "..tostring(line))
+    end
+
+    print("")
+end
+
+---
+--- A custom assert that prints the mods special error message with the `ERROR` prefix.
+--- The assertion fails after all provided lines are printed, assuming `cond` is `false`.
+---
+--- Any additional parameters after `mainline` will be printed with an indentation.
+---@param cond bool
+---@param mainline any
+---@vararg any
+---@return void
+local function modassert(cond, mainline, ...)
+    if not cond then
+        modprint(_G[MOD_CODE].ERROR_PREFIX, mainline, ...)
+
+        _G.error("Assertion failed!")
+    end
+end
+
+---
+--- Saves `data` as a persistent json string using `TheSim:SetPersistentString()`. The string is saved inside `filename`.
+--- Currently only tested on client-sided mods.
+---
+--- `data` can be either a Lua table or a json string.
+---
+--- `cb` is an optional function that will run after a successful string save.
+---@param filename string
+---@param data table|str
+---@param cb function
+---@return void
+local function ModSetPersistentData(filename, data, cb)
+    if type(data) == "table" then
+        data = _G.json.encode(data)
+    elseif type(data) ~= "string" then
+        modassert(false, "Failed to save persistent data!", "Data provided is neither a table nor a string!")
+    end
+    
+    if cb == nil or type(cb) ~= "function" then
+        _G.TheSim:SetPersistentString(filename, data, false)
+        return
+    end
+
+    _G.TheSim:SetPersistentString(filename, data, false, cb)
+end
+
+---
+--- Retrieves persistent data as a json string from `filename`.
+--- Currently only tested on client-sided mods.
+---
+--- `cb` runs with 2 parameters: `success`, a boolean, and `data`, the json string. If `success` is `false` `data` is an empty string.
+---@param filename string
+---@param cb function
+---@return void
+local function ModGetPersistentData(filename, cb)
+    modassert(type(cb) == "function", "Failed to load persistent data!", "cb needs to be a function!")
+    _G.TheSim:GetPersistentString(filename, cb)
+end
+
+---
+--- Retrieves current mod setting using `setting_id`. Will print a message if `setting_id` doesn't exist.
+---@param setting_id string
+---@return table
+local function GetModSetting(setting_id)
+    if _G[MOD_CODE].CURRENT_SETTINGS[setting_id] ~= nil then
+        return _G[MOD_CODE].CURRENT_SETTINGS[setting_id]
+    end
+
+    modprint(_G[MOD_CODE].WARN, "Trying to get mod setting "..tostring(setting_id).." but it does not seem to exist.")
+end
+
+-- [[ Disable for live builds ]]
+_G[MOD_CODE].DEV = true
+
+-- [[ Universal Variables ]]
+_G[MOD_CODE].PRINT = 0
+_G[MOD_CODE].WARN = 1
+_G[MOD_CODE].ERROR = 2
+_G[MOD_CODE].PRINT_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - "
+_G[MOD_CODE].WARN_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - WARNING! "
+_G[MOD_CODE].ERROR_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - ERROR! "
+
+_G[MOD_CODE].modprint = modprint
+_G[MOD_CODE].modassert = modassert
+_G[MOD_CODE].modsetpersistentdata = ModSetPersistentData
+_G[MOD_CODE].modgetpersistentdata = ModGetPersistentData
+_G[MOD_CODE].GetModSetting = GetModSetting
+
+
+-- [[                                             ]] --
+-- [[ Here is where mod specific env variables go ]] --
+-- [[                                             ]] --
+
+-- [[ Constants ]]
+_G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
+    TREECHOP = 0,
+    FOOTSTEPS = 1,
+    FOOTSTEPS_RUSH = 2, -- Same as FOOTSTEPS but quickly rushes to the player
+    BIRDSINK = 3,
+    SCREECH = 4, -- Screecher's screech from the Screecher, a Klei mod which includes the screeching Screecher
+    WHISPER_QUIET = 5,
+    WHISPER_LOUD = 6
+}
+
+_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
+for type, id in pairs(_G[MOD_CODE].PARANOIA_SPOOK_TYPES) do
+    table.insert(_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS, type)
+end
+
+_G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
+    TREECHOP = {
+        MIN_DIST_FROM_PLAYER = 8,
+        MAX_DIST_FROM_PLAYER = 20
+    },
+    FOOTSTEPS = {
+        FAST_STEPS = {
+            period = 0.15,
+            duration = 0.9,
+            speed = 15
+        },
+        NORMAL_STEPS = {
+            period = 0.35,
+            duration = 1.7,
+            speed = 5
+        },
+        SLOW_STEPS = {
+            period = 0.6,
+            duration = 3,
+            speed = 5
+        },
+        MIN_DIST_FROM_PLAYER = 16
+    },
+    -- FOOTSTEPS_RUSH = {  }
+    BIRDSINK = {
+        MIN_DIST_FROM_PLAYER = 12,
+        MAX_DIST_FROM_PLAYER = 20
+    },
+    SCREECH = {
+        MIN_DIST_FROM_PLAYER = 20,
+        VOLUME = 0.25
+    },
+    -- WHISPER_QUIET = {  }
+    -- WHISPER_LOUD = {  }
+}
+
+_G[MOD_CODE].PARANOIA_STAGES = {
+    STAGE0 = 0, -- No paranoia
+    STAGE1 = 1,
+    STAGE2 = 2,
+    STAGE3 = 3,
+    STAGE4 = 4,
+    STAGE5 = 5,
+    STAGE6 = 6
+}
+
+_G[MOD_CODE].PARANOIA_THRESHOLDS = {
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE1] = 0.60,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE2] = 0.50,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE3] = 0.40,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE4] = 0.30,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE5] = 0.20,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE6] = 0.15
+}
+
+_G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
+_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.17
+_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.03
+_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 7
+_G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
+
+_G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
+_G[MOD_CODE].SHADER_PARAM_LIMITS = {
+    SHARPNESS = 0.35,
+    MONOCHROMACY = 0.55,
+    DISTORION_RADIUS = 1,
+    DISTORTION_STRENGTH = 10
+}
+
+-- [[ Mod Settings ]] -- Not to be confused with configuration_options.
+                      -- These show up in Game Options and can be updated during gameplay.
+local enableDisableOptions = {
+    { text = _G.STRINGS.UI.OPTIONS.DISABLED, data = false },
+    { text = _G.STRINGS.UI.OPTIONS.ENABLED,  data = true  }
+}
+
+_G[MOD_CODE].SETTING_TYPES = {
+    SPINNER = "spinner",
+    NUM_SPINNER = "num_spinner",
+    LIST = "list",
+    KEY_SELECT = "key_select"
+}
+
+_G[MOD_CODE].MOD_SETTINGS = {
+    FILENAME = "IE_settings",
+    TAB_NAME = "Paranoia",
+    TOOLTIP = "Modify the mods settings",
+    SETTINGS = {
+        
+    }
+}
+
+_G[MOD_CODE].CURRENT_SETTINGS = {  }
+
+-- [[ Misc. Variables ]]

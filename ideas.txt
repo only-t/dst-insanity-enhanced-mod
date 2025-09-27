@@ -1,0 +1,13 @@
+random tree chopping
+shadows under the ocean
+spooky sounds (chopping sounds, walking sounds, maybe running?, mining sounds, whispers, etc)
+no music/better music blending for scary occurences
+fake stat changes (health, hunger, wetness)
+throw in some cool shaders maybe idk
+maybe some spooky creatures in the distance
+ocean bird getting swallowed by the ocean
+
+completely overhaul the insanity vfx
+- no desaturation (or at least heavily lowered)
+- no swirling screen edges
+- play around with sharpness and maybe some shaders
