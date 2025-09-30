@@ -43,8 +43,12 @@ local function TreeChoppingSpook(self, data)
     tree.AnimState:PlayAnimation(chop_anim)
     tree.AnimState:PushAnimation(old_anim, true)
 
-    if data.play_axe_sound then
-        tree.SoundEmitter:PlaySound("dontstarve/wilson/use_axe_tree", "chop", 0.1)
+    if data.play_chop_sound then
+        tree.SoundEmitter:PlaySound("paranoia/sfx/chop")
+    end
+
+    if data.play_leaf_sound then
+        tree.SoundEmitter:PlaySound("paranoia/sfx/leaf_rustle")
     end
 
     return tree
@@ -114,10 +118,6 @@ local function FootstepsSpook(self, data)
 end
 
 local function FootstepsRushSpook(self) -- No data needed, it's a very specific FOOTSTEPS spook
-    if not TheWorld.state.isnight then -- Should only happen at night
-        return
-    end
-
     local data = {
         duration = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.FAST_STEPS.duration,
         period = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.FAST_STEPS.period,
@@ -150,10 +150,6 @@ local function FootstepsRushSpook(self) -- No data needed, it's a very specific 
 end
 
 local function OceanSinkBirdSpook(self)
-    if self.inst == nil or inst:GetCurrentPlatform() == nil then -- Should only happen at when on a boat
-        return
-    end
-
     local birdpos = nil
     local ppos = self.inst:GetPosition()
 
@@ -182,10 +178,6 @@ local function OceanSinkBirdSpook(self)
 end
 
 local function ScreechSpook(self)
-    if not TheWorld.state.isnight then -- Should only happen at night
-        return
-    end
-
     local position
 
     local theta = math.random() * TWOPI

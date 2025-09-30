@@ -134,6 +134,7 @@ DSP._ctor = function(self, ...)
         end
         _activatedplayer = player
         inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged, player)
+        OnParanoiaStageChanged(player, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = player.components.paranoiamanager.current_stage })
     end)
 
     _G.IE.OverrideListenForEventFn(self.inst, "playerdeactivated", nil, function(old_fn, inst, player, ...)

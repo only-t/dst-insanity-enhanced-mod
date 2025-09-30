@@ -3,23 +3,30 @@ local old_AmbientSound_ctor = AmbientSound._ctor
 AmbientSound._ctor = function(self, ...)
     old_AmbientSound_ctor(self, ...)
 
-    local PARANOIA_SOUND = "paranoia/music/ambiance"
+    local PARANOIA_SOUND = "paranoia/ambience/void"
     local _paranoiaparam = 0
 
-	self.inst.SoundEmitter:PlaySound(PARANOIA_SOUND, "PARANOIA", 0)
+	self.inst.SoundEmitter:PlaySound(PARANOIA_SOUND, "paranoia_amb")
+    self.inst.SoundEmitter:SetParameter("paranoia_amb", "PARANOIA", 0)
 
     local old_AmbientSound_OnUpdate = self.OnUpdate
     self.OnUpdate = function(self, ...)
         old_AmbientSound_OnUpdate(self, ...)
 
-	    self.inst.SoundEmitter:SetParameter("SANITY", "sanity", 0) -- Never play insanity ambiance
+	    self.inst.SoundEmitter:SetParameter("SANITY", "sanity", 0) -- Never play insanity ambience
 
         local player = _G.ThePlayer
         local sanity = player ~= nil and player.replica.sanity or nil
-        local paranoiaparam = (sanity ~= nil and sanity:IsInsanityMode()) and (1 - sanity:GetPercent()) or 0
+        local sanity_percent = (sanity ~= nil and sanity:IsInsanityMode()) and sanity:GetPercent() or 0
+        local paranoiaparam = 1 - math.min(1, sanity_percent / _G.IE.PARANOIA_THRESHOLDS[_G.IE.PARANOIA_STAGES.STAGE1])
+
         if _paranoiaparam ~= paranoiaparam then
-	        self.inst.SoundEmitter:SetParameter("PARANOIA", "paranoia", paranoiaparam)
+	        self.inst.SoundEmitter:SetParameter("paranoia_amb", "PARANOIA", paranoiaparam)
             _paranoiaparam = paranoiaparam
         end
+    end
+
+    self.PushParanoiaVolume = function(self)
+
     end
 end

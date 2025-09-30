@@ -48,7 +48,7 @@ IE.WHISPERS_LOUD = { -- Sudden, aggressive, more of a jumpscare, supposed to for
     "IT'S UNDERGROUND!",
     "CLOSE YOUR EYES!",
     "IT'S GETTING CLOSER!",
-    "LIGHT THE FIRE, FAST!",
+    "LIGHT THE FIRE, QUICK!",
     "FASTER!",
     "FIRE! NOW!",
     "NOOO!",

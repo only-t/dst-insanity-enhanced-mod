@@ -34,6 +34,30 @@ local function Transition(self, into, time) -- HOLY SHIT, it turned out sooo smo
     self.transition_time = time
     self.transition_curtime = 0
     self.mode = into
+
+    if self.mode == SANITY_MODE_INSANITY then
+        local sanity = self.inst.replica.sanity and self.inst.replica.sanity:GetPercent() or 0
+        local new_stage
+        if sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE6] then
+            new_stage = IE.PARANOIA_STAGES.STAGE6
+        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE5] then
+            new_stage = IE.PARANOIA_STAGES.STAGE5
+        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE4] then
+            new_stage = IE.PARANOIA_STAGES.STAGE4
+        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3] then
+            new_stage = IE.PARANOIA_STAGES.STAGE3
+        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE2] then
+            new_stage = IE.PARANOIA_STAGES.STAGE2
+        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1] then
+            new_stage = IE.PARANOIA_STAGES.STAGE1
+        else
+            new_stage = IE.PARANOIA_STAGES.STAGE0
+        end
+
+        self:ChangeParanoiaStage(new_stage)
+    else
+        self:ChangeParanoiaStage(IE.PARANOIA_STAGES.STAGE0)
+    end
 end
 
 local function OnSanityDelta(self, data)
@@ -63,9 +87,7 @@ local function OnSanityDelta(self, data)
         new_stage = IE.PARANOIA_STAGES.STAGE0
     end
 
-    if new_stage ~= self.current_stage then
-        self:ChangeParanoiaStage(new_stage)
-    end
+    self:ChangeParanoiaStage(new_stage)
 
     local strength = 1 - math.min(1, data.newpercent / IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1])
     local sharpness = IE.SHADER_PARAM_LIMITS.SHARPNESS * strength
@@ -210,9 +232,12 @@ function ParanoiaManager:SetShaderDistortionParams(distortion_radius, distortion
 end
 
 function ParanoiaManager:ChangeParanoiaStage(new_stage)
-    self.current_stage = new_stage
+    if self.current_stage ~= new_stage then
+        print("pushing change_paranoia_stage")
+        self.inst:PushEvent("change_paranoia_stage", { newstage = new_stage, oldstage = self.current_stage })
 
-    self.inst:PushEvent("change_paranoia_stage", { newstage = new_stage, oldstage = self.current_stage })
+        self.current_stage = new_stage
+    end
 end
 
 function ParanoiaManager:OnUpdate(dt)

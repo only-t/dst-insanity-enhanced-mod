@@ -147,6 +147,151 @@ for type, id in pairs(_G[MOD_CODE].PARANOIA_SPOOK_TYPES) do
     table.insert(_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS, type)
 end
 
+_G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
+    TREECHOP = {
+        night = 1,
+        day = 1,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 0.5,
+        canseeindark = 3,
+
+        isincombat = 0.33,
+
+        biomes = {
+            Forest = 3,
+            ForestMole = 3,
+            DeepForest = 4,
+            Graveyard = 2,
+            MoonbaseOne = 2,
+            CrappyForest = 3,
+            CrappyDeepForest = 4,
+            other = 1
+        }
+    },
+    FOOTSTEPS = {
+        night = 4,
+        day = 1,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 4,
+        canseeindark = 1,
+
+        isincombat = 0.25,
+
+        biomes = {
+            other = 1
+        }
+    },
+    FOOTSTEPS_RUSH = {
+        night = 5,
+        day = 0.33,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 2,
+        canseeindark = 0.5,
+
+        isincombat = 0.5,
+
+        biomes = {
+            other = 1
+        }
+    },
+    BIRDSINK = {
+        night = 0.33,
+        day = 1.5,
+
+        boat = 1,
+        notboat = 0.5,
+
+        isindark = 0,
+        canseeindark = 1,
+
+        isincombat = 0.1,
+
+        biomes = {
+            other = 1
+        }
+    },
+    SCREECH = {
+        night = 3,
+        day = 0,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 5,
+        canseeindark = 2,
+
+        isincombat = 0.25,
+
+        biomes = {
+            Forest = 3,
+            ForestMole = 3,
+            DeepForest = 4,
+            Graveyard = 2,
+            MoonbaseOne = 2,
+            CrappyForest = 3,
+            CrappyDeepForest = 4,
+            other = 0.5
+        }
+    },
+    WHISPER_QUIET = {
+        night = 2,
+        day = 1,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 4,
+        canseeindark = 2,
+
+        isincombat = 0.1,
+        isbusyworking = 3,
+
+        biomes = {
+            Forest = 3,
+            ForestMole = 3,
+            DeepForest = 4,
+            Graveyard = 2,
+            MoonbaseOne = 2,
+            CrappyForest = 3,
+            CrappyDeepForest = 4,
+            other = 1
+        }
+    },
+    WHISPER_LOUD = {
+        night = 2,
+        day = 0.25,
+
+        boat = 0,
+        notboat = 1,
+
+        isindark = 4,
+        canseeindark = 1,
+
+        isincombat = 0.25,
+        isbusyworking = 2,
+
+        biomes = {
+            Forest = 3,
+            ForestMole = 3,
+            DeepForest = 4,
+            Graveyard = 2,
+            MoonbaseOne = 2,
+            CrappyForest = 3,
+            CrappyDeepForest = 4,
+            other = 1
+        }
+    }
+}
+
 _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     TREECHOP = {
         MIN_DIST_FROM_PLAYER = 8,
@@ -179,8 +324,12 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         MIN_DIST_FROM_PLAYER = 20,
         VOLUME = 0.25
     },
-    -- WHISPER_QUIET = {  }
-    -- WHISPER_LOUD = {  }
+    WHISPER_QUIET = {
+        MIN_DIST_FROM_PLAYER = 14
+    },
+    WHISPER_LOUD = {
+        MIN_DIST_FROM_PLAYER = 14
+    }
 }
 
 _G[MOD_CODE].PARANOIA_STAGES = {
@@ -203,8 +352,8 @@ _G[MOD_CODE].PARANOIA_THRESHOLDS = {
 }
 
 _G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
-_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.17
-_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.03
+_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.65
+_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.1
 _G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 7
 _G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
 
@@ -212,8 +361,8 @@ _G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
 _G[MOD_CODE].SHADER_PARAM_LIMITS = {
     SHARPNESS = 0.35,
     MONOCHROMACY = 0.55,
-    DISTORION_RADIUS = 1,
-    DISTORTION_STRENGTH = 10
+    DISTORION_RADIUS = 0.95,
+    DISTORTION_STRENGTH = 14
 }
 
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
