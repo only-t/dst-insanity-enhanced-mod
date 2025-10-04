@@ -14,11 +14,7 @@ Assets = {
 }
 
 PrefabFiles = {
-    "footstepsspook",
-    "puffin_sharkfood",
-    "sfx_dummy",
-    "whisper_quiet",
-    "whisper_loud"
+    "spooks"
 }
 
 -- [[ Mod environment ]]

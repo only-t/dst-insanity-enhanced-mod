@@ -118,6 +118,7 @@ local ParanoiaManager = Class(function(self, inst)
     self.do_heartbeat = true
     self.heartbeat_sfx = "paranoia/sfx/heartbeat"
     self.heartbeat_cooldown = 0
+    self.heartbeat_cooldown_override = nil
     self.heartbeat_time = 0
     self.heartbeat_volume = 0
     self.volume_target = nil -- Used for custom heartbeat volume easing
@@ -134,24 +135,8 @@ local ParanoiaManager = Class(function(self, inst)
 
     self.shader_enabled = true
 
-    -- if IE.DEV then -- Testing
-    --     self.in_darkness = false
-    --     self.darkness_immune = false
-    --     self.panic_task = nil
-    --     self.panic_volume = 0 -- Raises as the player stays longer in darkness
-
-    --     inst:ListenForEvent("enterdark", function() OnEnterDark(self) end)
-    --     inst:ListenForEvent("enterlight", function() OnEnterLight(self) end)
-    --     inst:ListenForEvent("nightvision", function(_, data) OnNightVision(self, data) end)
-    -- end
-
-    inst:ListenForEvent("sanitydelta", function(inst, data) OnSanityDelta(self, data) end)
-    inst:ListenForEvent("death", function(inst)
-        -- inst:DoTaskInTime(2, function()
-        --     inst.SoundEmitter:PlaySound("paranoia/sfx/death_heartbeat", 0.1)
-        -- end)
-        inst:StopUpdatingComponent(self)
-    end)
+    inst:ListenForEvent("sanitydelta", function(_, data) OnSanityDelta(self, data) end)
+    inst:ListenForEvent("death", function(_) inst:StopUpdatingComponent(self) end)
 
     inst:StartUpdatingComponent(self)
 end)
@@ -194,6 +179,10 @@ function ParanoiaManager:PushHeartbeatVolume(volume, change_speed)
     self.volume_target_reached = nil
 end
 
+function ParanoiaManager:OverrideHeartbeatCooldown(cooldown)
+    self.heartbeat_cooldown_override = cooldown
+end
+
 function ParanoiaManager:DoHeartbeat(volume, nodistortion, ignoredeath)
     if not ignoredeath and self.inst.replica.health and (self.inst.replica.health:IsDead() or self.inst.replica.health:GetPercent() <= 0) then
         return -- Don't play the sound if the player is dead, duh...
@@ -233,7 +222,6 @@ end
 
 function ParanoiaManager:ChangeParanoiaStage(new_stage)
     if self.current_stage ~= new_stage then
-        print("pushing change_paranoia_stage")
         self.inst:PushEvent("change_paranoia_stage", { newstage = new_stage, oldstage = self.current_stage })
 
         self.current_stage = new_stage
@@ -280,26 +268,6 @@ function ParanoiaManager:OnUpdate(dt)
 
         self:SetShaderColorParams(sharpness, monochromacy)
     end
-
-    -- if IE.DEV then -- Testing
-    --     if self.in_darkness and not self.darkness_immune then -- PANIC!
-    --         self.panic_volume = math.min(IE.HEARTBEAT_MAX_VOLUME, self.panic_volume + dt / 16)
-    --         if self.panic_task == nil then
-    --             self.panic_task = self.inst:DoPeriodicTask(1, function()
-    --                 local strength = 1 - math.min(1, self.sanity:GetPercent() / IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3])
-    --                 self:DoHeartbeat(math.max(self.panic_volume, IE.HEARTBEAT_MAX_VOLUME * strength * 0.97 + 0.03), true)
-    --             end)
-    --         end
-    --     elseif self.panic_task then
-    --         self.panic_volume = self.panic_volume - dt / 16
-
-    --         if self.panic_volume <= 0 then
-    --             self.panic_task:Cancel()
-    --             self.panic_task = nil
-    --             self.panic_volume = 0
-    --         end
-    --     end
-    -- end
 
     if self.mode == SANITY_MODE_LUNACY then
         return
@@ -362,7 +330,11 @@ function ParanoiaManager:OnUpdate(dt)
             self.heartbeat_cooldown = 0
         end
 
-        if self.heartbeat_cooldown > 0 then
+        if self.heartbeat_cooldown_override ~= nil then
+            self.heartbeat_cooldown = self.heartbeat_cooldown_override
+        end
+
+        if self.heartbeat_cooldown > 0 and self.heartbeat_volume > 0 then
             self.heartbeat_time = self.heartbeat_time + dt
 
             if self.heartbeat_time >= self.heartbeat_cooldown then

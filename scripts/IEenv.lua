@@ -152,8 +152,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         night = 1,
         day = 1,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 0.5,
         canseeindark = 3,
@@ -175,8 +175,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         night = 4,
         day = 1,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 4,
         canseeindark = 1,
@@ -191,8 +191,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         night = 5,
         day = 0.33,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 2,
         canseeindark = 0.5,
@@ -208,9 +208,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         day = 1.5,
 
         boat = 1,
-        notboat = 0.5,
+        land = 0.5,
 
-        isindark = 0,
+        isindark = -1,
         canseeindark = 1,
 
         isincombat = 0.1,
@@ -221,10 +221,10 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     },
     SCREECH = {
         night = 3,
-        day = 0,
+        day = -1,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 5,
         canseeindark = 2,
@@ -246,8 +246,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         night = 2,
         day = 1,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 4,
         canseeindark = 2,
@@ -270,8 +270,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         night = 2,
         day = 0.25,
 
-        boat = 0,
-        notboat = 1,
+        boat = -1,
+        land = 1,
 
         isindark = 4,
         canseeindark = 1,
@@ -295,40 +295,53 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
 _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     TREECHOP = {
         MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 20
+        MAX_DIST_FROM_PLAYER = 20,
+        TREE_MUST_TAGS = { "evergreens" },
+        CHOP_SFX_CHANCE = 0.5,
+        LEAF_SFX_CHANCE = 1
     },
     FOOTSTEPS = {
-        FAST_STEPS = {
-            period = 0.15,
-            duration = 0.9,
-            speed = 15
+        VARIATIONS = {
+            {
+                step_interval = 0.15,
+                duration = 0.9,
+                speed = 15
+            },
+            {
+                step_interval = 0.35,
+                duration = 1.7,
+                speed = 5
+            },
+            {
+                step_interval = 0.6,
+                duration = 3,
+                speed = 5
+            }
         },
-        NORMAL_STEPS = {
-            period = 0.35,
-            duration = 1.7,
-            speed = 5
-        },
-        SLOW_STEPS = {
-            period = 0.6,
-            duration = 3,
-            speed = 5
-        },
-        MIN_DIST_FROM_PLAYER = 16
+        MIN_DIST_FROM_PLAYER = 14,
+        MAX_DIST_FROM_PLAYER = 18
     },
-    -- FOOTSTEPS_RUSH = {  }
+    FOOTSTEPS_RUSH = {
+        step_interval = 0.15,
+        duration = 0.9,
+        speed = 15,
+        DIST_FROM_PLAYER = 20
+    },
     BIRDSINK = {
         MIN_DIST_FROM_PLAYER = 12,
         MAX_DIST_FROM_PLAYER = 20
     },
     SCREECH = {
-        MIN_DIST_FROM_PLAYER = 20,
+        DIST_FROM_PLAYER = 20,
         VOLUME = 0.25
     },
     WHISPER_QUIET = {
-        MIN_DIST_FROM_PLAYER = 14
+        DIST_FROM_PLAYER = 14,
+        DISAPPEAR_DIST_SQ = 8 * 8
     },
     WHISPER_LOUD = {
-        MIN_DIST_FROM_PLAYER = 14
+        DIST_FROM_PLAYER = 14,
+        DISAPPEAR_DIST_SQ = 8 * 8
     }
 }
 
@@ -364,6 +377,8 @@ _G[MOD_CODE].SHADER_PARAM_LIMITS = {
     DISTORION_RADIUS = 0.95,
     DISTORTION_STRENGTH = 14
 }
+
+_G[MOD_CODE].IN_COMBAT_DURATION = 6
 
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
                       -- These show up in Game Options and can be updated during gameplay.

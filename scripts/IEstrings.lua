@@ -37,10 +37,19 @@ IE.WHISPERS_QUIET = { -- Subtle, slightly ominous, more like the players own tho
 }
 
 IE.WHISPERS_LOUD = { -- Sudden, aggressive, more of a jumpscare, supposed to force an immidiate reaction, all uppercase
-    "RUN!",
+    -- Those who know :)
     "IT'S STILL OUT THERE!",
-    "I CAN'T SEE YOU!", -- Those who know, know :)
+    "I CAN'T SEE YOU!",
     "I. CAN'T. SEE. YOU.",
+    "IT'S HUNTING US!",
+    "WHERE ARE YOU!?",
+    "DON'T LEAVE ME!",
+    "LET ME IN!",
+    "MONSTER!",
+    "HELP ME!",
+    "KEEP RUNNING!",
+
+    "RUN!",
     "GET THE TORCH!",
     "I CAN HEAR HOWLING!",
     "RUUUN!",
@@ -68,5 +77,6 @@ IE.WHISPER_RESPONSES = {
     "...!",
     "!",
     "Stop that!",
-    "Stop it!"
+    "Stop it!",
+    -- "You're not... real..."
 }

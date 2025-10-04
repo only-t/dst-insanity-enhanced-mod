@@ -1,14 +1,12 @@
-local function TreeChoppingSpook(self, data)
-    if data == nil then
-        data = {  }
-    end
+local function TreeChoppingSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.TREECHOP
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, IE.PARANOIA_SPOOK_PARAMS.TREECHOP.MAX_DIST_FROM_PLAYER, { "evergreens" })
+    local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.TREECHOP.TREE_MUST_TAGS)
 
     local far_ents = {  }
     for i, ent in ipairs(ents) do
-        if self.inst:GetDistanceSqToInst(ent) >= IE.PARANOIA_SPOOK_PARAMS.TREECHOP.MIN_DIST_FROM_PLAYER * IE.PARANOIA_SPOOK_PARAMS.TREECHOP.MIN_DIST_FROM_PLAYER then
+        if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
             table.insert(far_ents, ent)
         end
     end
@@ -43,89 +41,66 @@ local function TreeChoppingSpook(self, data)
     tree.AnimState:PlayAnimation(chop_anim)
     tree.AnimState:PushAnimation(old_anim, true)
 
-    if data.play_chop_sound then
+    if math.random() < params.CHOP_SFX_CHANCE then
         tree.SoundEmitter:PlaySound("paranoia/sfx/chop")
     end
 
-    if data.play_leaf_sound then
+    if math.random() < params.LEAF_SFX_CHANCE then
         tree.SoundEmitter:PlaySound("paranoia/sfx/leaf_rustle")
     end
 
     return tree
 end
 
-local function FootstepsSpook(self, data)
-    if data == nil then
-        data = {  }
-    end
+local function FootstepsSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS
 
     local position
-    if data.pos ~= nil then
-        position = data.pos
-    else
-        local theta = math.random() * TWOPI
-        local radius = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.MIN_DIST_FROM_PLAYER
-        local ppos = self.inst:GetPosition()
+    local theta = math.random() * TWOPI
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+    local ppos = self.inst:GetPosition()
 
-        local steps = 12
-        for i = 1, steps do
-            local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
-            local ox, oy, oz = (ppos + offset):Get()
-            if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
-                position = Vector3(ox, oy, oz)
-                break
-            end
-
-            theta = theta - TWOPI / steps
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local ox, oy, oz = (ppos + offset):Get()
+        if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+            position = Vector3(ox, oy, oz)
+            break
         end
+
+        theta = theta - TWOPI / steps
     end
 
     if position == nil then -- No ground in sight
         return
     end
 
-    local footsteps = SpawnPrefab("footstepsspook")
-    if data.volume ~= nil then
-        footsteps.volume = data.volume
-    end
+    local footsteps = SpawnPrefab("footsteps_spook")
 
-    if data.duration ~= nil then
-        footsteps.duration = data.duration
-    end
-
-    if data.period ~= nil then
-        footsteps.period = data.period
-    end
+    local variation = params.VARIATIONS[math.random(1, #params.VARIATIONS)]
+    footsteps.volume = variation.volume or 1
+    footsteps.step_interval = variation.step_interval or 0.35
+    footsteps.duration = variation.duration or 1.7
+    footsteps.speed = variation.speed or 5
 
     footsteps.Transform:SetPosition(position.x, position.y, position.z)
 
-    if data.angle ~= nil then
-        footsteps.Transform:SetRotation(data.angle)
-    else
-        -- Keep perpendicular to the player
-        local px, py, pz = self.inst.Transform:GetWorldPosition()
-        local angle = footsteps:GetAngleToPoint(px, py, pz) + 90 * (math.random() > 0.5 and -1 or 1)
-        footsteps.Transform:SetRotation(angle)
-    end
-
-    if data.speed ~= nil then
-        footsteps.speed = data.speed
-    end
+    -- Keep perpendicular to the player
+    local angle = footsteps:GetAngleToPoint(ppos.x, ppos.y, ppos.z) + 90 * (math.random() > 0.5 and -1 or 1)
+    footsteps.Transform:SetRotation(angle)
 
     footsteps:Start()
 
     return footsteps
 end
 
-local function FootstepsRushSpook(self) -- No data needed, it's a very specific FOOTSTEPS spook
-    local data = {
-        duration = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.FAST_STEPS.duration,
-        period = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.FAST_STEPS.period,
-        speed = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.FAST_STEPS.speed
-    }
+local function FootstepsRushSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS_RUSH
 
+    local position
     local theta = math.random() * TWOPI
-    local radius = IE.PARANOIA_SPOOK_PARAMS.FOOTSTEPS.MIN_DIST_FROM_PLAYER + 6 -- Give it some more distance
+    local radius = params.DIST_FROM_PLAYER
     local ppos = self.inst:GetPosition()
 
     local steps = 12
@@ -133,61 +108,77 @@ local function FootstepsRushSpook(self) -- No data needed, it's a very specific 
         local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
         local fpos = ppos + offset
         if TheWorld.Map:IsPassableAtPoint(fpos.x, fpos.y, fpos.z, false, true) then
-            data.pos = fpos
+            position = fpos
             break
         end
 
         theta = theta - TWOPI / steps
     end
 
-    if data.pos == nil then -- No ground in sight
+    if position == nil then -- No ground in sight
         return
     end
 
-    data.angle = math.atan2(data.pos.z - ppos.z, ppos.x - data.pos.x) * RADIANS
+    local footsteps = SpawnPrefab("footsteps_spook")
 
-    return FootstepsSpook(self, data)
+    footsteps.volume = params.volume or 1
+    footsteps.step_interval = params.step_interval or 0.35
+    footsteps.duration = params.duration or 1.7
+    footsteps.speed = params.speed or 5
+
+    footsteps.Transform:SetPosition(position.x, position.y, position.z)
+
+    -- Keep parallel to the player
+    local angle = math.atan2(position.z - ppos.z, ppos.x - position.x) * RADIANS
+    footsteps.Transform:SetRotation(angle)
+
+    footsteps:Start()
+
+    return footsteps
 end
 
 local function OceanSinkBirdSpook(self)
-    local birdpos = nil
+    local params = IE.PARANOIA_SPOOK_PARAMS.BIRDSINK
+
+    local position = nil
+    local theta = math.random() * TWOPI
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
     local ppos = self.inst:GetPosition()
 
-    local theta = math.random() * TWOPI
-    local radius = math.random(IE.PARANOIA_SPOOK_PARAMS.BIRDSINK.MIN_DIST_FROM_PLAYER, IE.PARANOIA_SPOOK_PARAMS.BIRDSINK.MAX_DIST_FROM_PLAYER)
     local steps = 12
     for i = 1, steps do
         local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
         local offset_pos = ppos + offset
         if TheWorld.Map:IsOceanAtPoint(offset_pos.x, offset_pos.y, offset_pos.z, false) then
-            birdpos = offset_pos
+            position = offset_pos
             break
         end
 
         theta = theta - TWOPI / steps
     end
 
-    if birdpos == nil then -- No ocean in sight
+    if position == nil then -- No ocean in sight
         return
     end
 
-    local bird = SpawnPrefab("puffin_sharkfood")
-    bird.Transform:SetPosition(birdpos.x, birdpos.y + 15, birdpos.z)
+    local bird = SpawnPrefab("birdsink_spook")
+    bird.Transform:SetPosition(position.x, position.y + 15, position.z)
 
     return bird
 end
 
 local function ScreechSpook(self)
-    local position
+    local params = IE.PARANOIA_SPOOK_PARAMS.SCREECH
 
+    local position
     local theta = math.random() * TWOPI
-    local radius = IE.PARANOIA_SPOOK_PARAMS.SCREECH.MIN_DIST_FROM_PLAYER
-    local pos = self.inst:GetPosition()
+    local radius = params.DIST_FROM_PLAYER
+    local ppos = self.inst:GetPosition()
 
     local steps = 12
     for i = 1, steps do
         local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
-        local ox, oy, oz = (pos + offset):Get()
+        local ox, oy, oz = (ppos + offset):Get()
         if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
             position = Vector3(ox, oy, oz)
             break
@@ -204,12 +195,12 @@ local function ScreechSpook(self)
     sfx_dummy.Transform:SetPosition(position.x, position.y, position.z)
 
     sfx_dummy.sound = "scary_mod/stuff/screetch_scream"
-    sfx_dummy.volume = IE.PARANOIA_SPOOK_PARAMS.SCREECH.VOLUME
+    sfx_dummy.volume = params.VOLUME
 
     sfx_dummy:Play()
 
     if self.inst.components.paranoiamanager then
-        self.inst.components.paranoiamanager:PushHeartbeatVolume(0, 0.5) 
+        self.inst.components.paranoiamanager:PushHeartbeatVolume(0, 0.5)
 
         self.inst:DoTaskInTime(2.5, function()
             self.inst.components.paranoiamanager:PushHeartbeatVolume(nil, 4) 
@@ -217,30 +208,24 @@ local function ScreechSpook(self)
     end
 end
 
-local function WhisperQuiet(self, data)
-    if data == nil then
-        data = {  }
-    end
+local function WhisperQuiet(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.WHISPER_QUIET
 
     local position
-    if data.pos ~= nil then
-        position = data.pos
-    else
-        local theta = math.random() * TWOPI
-        local radius = IE.PARANOIA_SPOOK_PARAMS.WHISPER_QUIET.MIN_DIST_FROM_PLAYER
-        local ppos = self.inst:GetPosition()
+    local theta = math.random() * TWOPI
+    local radius = params.DIST_FROM_PLAYER
+    local ppos = self.inst:GetPosition()
 
-        local steps = 12
-        for i = 1, steps do
-            local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
-            local ox, oy, oz = (ppos + offset):Get()
-            if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
-                position = Vector3(ox, oy, oz)
-                break
-            end
-
-            theta = theta - TWOPI / steps
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local ox, oy, oz = (ppos + offset):Get()
+        if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+            position = Vector3(ox, oy, oz)
+            break
         end
+
+        theta = theta - TWOPI / steps
     end
 
     if position == nil then -- No ground in sight
@@ -256,29 +241,23 @@ local function WhisperQuiet(self, data)
 end
 
 local function WhisperLoud(self, data)
-    if data == nil then
-        data = {  }
-    end
+    local params = IE.PARANOIA_SPOOK_PARAMS.WHISPER_LOUD
 
     local position
-    if data.pos ~= nil then
-        position = data.pos
-    else
-        local theta = math.random() * TWOPI
-        local radius = IE.PARANOIA_SPOOK_PARAMS.WHISPER_LOUD.MIN_DIST_FROM_PLAYER
-        local ppos = self.inst:GetPosition()
+    local theta = math.random() * TWOPI
+    local radius = params.DIST_FROM_PLAYER
+    local ppos = self.inst:GetPosition()
 
-        local steps = 12
-        for i = 1, steps do
-            local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
-            local ox, oy, oz = (ppos + offset):Get()
-            if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
-                position = Vector3(ox, oy, oz)
-                break
-            end
-
-            theta = theta - TWOPI / steps
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local ox, oy, oz = (ppos + offset):Get()
+        if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+            position = Vector3(ox, oy, oz)
+            break
         end
+
+        theta = theta - TWOPI / steps
     end
 
     if position == nil then -- No ground in sight
@@ -291,10 +270,6 @@ local function WhisperLoud(self, data)
     loud:Appear()
 
     return loud
-end
-
-local function func()
-    -- body
 end
 
 return {

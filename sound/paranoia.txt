@@ -34,9 +34,27 @@ Max. playbacks  : 1
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
+Name            : /sfx/whispers_quiet_voice
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_WHISPERS_QUIET_VOICE
+Id              : EVENTID_PARANOIA_SFX_WHISPERS_QUIET_VOICE = 3
+GUID            : EVENTGUID_PARANOIA_SFX_WHISPERS_QUIET_VOICE = {f8f26175-ecca-40b1-a895-754fe0eba26a}
+Notes           : 
+Max. playbacks  : 6
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_sfx
+
+Name            : /sfx/whispers_loud_voice
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_WHISPERS_LOUD_VOICE
+Id              : EVENTID_PARANOIA_SFX_WHISPERS_LOUD_VOICE = 4
+GUID            : EVENTGUID_PARANOIA_SFX_WHISPERS_LOUD_VOICE = {dca2f8a9-78ce-488b-aace-0230b993eccb}
+Notes           : 
+Max. playbacks  : 6
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_sfx
+
 Name            : /ambience/void
 Index           : /EVENTGROUP_PARANOIA_AMBIENCE/EVENT_PARANOIA_AMBIENCE_VOID
-Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 3
+Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 5
 GUID            : EVENTGUID_PARANOIA_AMBIENCE_VOID = {42340c5c-e117-4399-bd43-d2aae2506a58}
 Notes           : 
 Max. playbacks  : 1
