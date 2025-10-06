@@ -264,6 +264,10 @@ function ParanoiaSpooks:ForcePickSpook()
 end
 
 function ParanoiaSpooks:OnUpdate(dt)
+    if IE.DEV then
+        return
+    end
+    
     if self.next_spook ~= nil then
         -- [TODO] Add better spook timing picking
         self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])
