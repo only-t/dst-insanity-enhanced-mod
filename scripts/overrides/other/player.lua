@@ -7,8 +7,10 @@ end
 
 AddPlayerPostInit(function(inst)
     if not _G.TheNet:IsDedicated() then
-        inst:AddComponent("paranoiamanager") -- Purely for tying new visuals to player sanity
-        inst:AddComponent("paranoiaspooks")  -- Random spooks, tied to players sanity, doesn't require paranoiamanager
-        inst:ListenForEvent("whispers_response", WhisperRespond)
+        inst:DoTaskInTime(0, function() -- Waiting 1 tick to let replicas get created
+            inst:AddComponent("paranoiamanager") -- Purely for tying new visuals to player sanity
+            inst:AddComponent("paranoiaspooks")  -- Random spooks, tied to players sanity, doesn't require paranoiamanager
+        end)
+        inst:ListenForEvent("whispers_response", WhisperRespond) -- This will only appear for the client, others will not see the response, oh well...
     end
 end)

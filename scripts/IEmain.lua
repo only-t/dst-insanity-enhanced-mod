@@ -9,7 +9,8 @@ local overrides = {
         "playerhud"
     },
     stategraphs = {
-        "SGwilson"
+        -- "SGwilson",
+        -- "SGwilson_client"
     },
     prefabs = {
 

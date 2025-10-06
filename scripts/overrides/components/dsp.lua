@@ -130,11 +130,16 @@ DSP._ctor = function(self, ...)
         if _activatedplayer == player then
             return
         elseif _activatedplayer and _activatedplayer.entity:IsValid() then
-            inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+            if player.components.paranoiamanager then
+                inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+            end
         end
         _activatedplayer = player
-        inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged, player)
-        OnParanoiaStageChanged(player, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = player.components.paranoiamanager.current_stage })
+
+        if player.components.paranoiamanager then
+            inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged, player)
+            OnParanoiaStageChanged(inst, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = player.components.paranoiamanager.current_stage })
+        end
     end)
 
     _G.IE.OverrideListenForEventFn(self.inst, "playerdeactivated", nil, function(old_fn, inst, player, ...)
@@ -142,7 +147,10 @@ DSP._ctor = function(self, ...)
             old_fn(inst, player, ...)
         end
 
-        inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+        if player.components.paranoiamanager then
+            inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+        end
+        
         if player == _activatedplayer then
             _activatedplayer = nil
         end

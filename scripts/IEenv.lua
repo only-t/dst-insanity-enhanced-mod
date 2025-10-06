@@ -134,12 +134,13 @@ _G[MOD_CODE].GetModSetting = GetModSetting
 -- [[ Constants ]]
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     TREECHOP = 0,
-    FOOTSTEPS = 1,
-    FOOTSTEPS_RUSH = 2, -- Same as FOOTSTEPS but quickly rushes to the player
-    BIRDSINK = 3,
-    SCREECH = 4, -- Screecher's screech from the Screecher, a Klei mod which includes the screeching Screecher
-    WHISPER_QUIET = 5,
-    WHISPER_LOUD = 6
+    MINING_SOUND = 1,
+    FOOTSTEPS = 2,
+    FOOTSTEPS_RUSH = 3, -- Same as FOOTSTEPS but quickly rushes to the player
+    BIRDSINK = 4,
+    SCREECH = 5, -- Screecher's screech from the Screecher, a Klei mod which includes the screeching Screecher
+    WHISPER_QUIET = 6,
+    WHISPER_LOUD = 7
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -149,6 +150,9 @@ end
 
 _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     TREECHOP = {
+        forest = 1,
+        cave = 1,
+
         night = 1,
         day = 1,
 
@@ -162,17 +166,68 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isbusyworking = 4,
 
         biomes = {
+            BGCrappyForest = 3,
+            BGForest = 3,
             Forest = 3,
             ForestMole = 3,
+            CrappyForest = 3,
+            BGDeepForest = 4,
+            CrappyDeepForest = 4,
             DeepForest = 4,
+            BurntForest = 2,
+            CritterDen = 2,
+            SpiderForest = 2,
             Graveyard = 2,
             MoonbaseOne = 2,
-            CrappyForest = 3,
-            CrappyDeepForest = 4,
+            BGNoise = 2,
+            CritterDen = 2,
+            other = 1
+        }
+    },
+    MINING_SOUND = {
+        forest = 1,
+        cave = 3,
+        
+        night = 1,
+        day = 1,
+
+        boat = -1,
+        land = 1,
+
+        isindark = 1,
+        canseeindark = 1,
+
+        isincombat = 0.67,
+        isbusyworking = 4,
+
+        biomes = {
+            RockyPlains = 3,
+            RockyHatchingGrounds = 3,
+            BatsAndRocky = 3,
+            BGRockyCave = 3,
+            BGRockyCaveRoom = 3,
+            WalrusHut_Rocky = 3,
+            BGChessRocky = 3,
+            BGRocky = 4,
+            Rocky = 4,
+            RockyBuzzards = 4,
+            GenericRockyNoThreat = 3,
+            MolesvilleRocky = 3,
+            BGBadlands = 3,
+            Badlands = 3,
+            HoundyBadlands = 3,
+            BuzzardyBadlands = 3,
+            BGNoise = 2,
+            CritterDen = 2,
+            MoonbaseOne = 2,
+            MoonIsland_Mine = 2,
             other = 1
         }
     },
     FOOTSTEPS = {
+        forest = 1,
+        cave = 1,
+
         night = 4,
         day = 1,
 
@@ -190,6 +245,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     FOOTSTEPS_RUSH = {
+        forest = 1,
+        cave = 1,
+
         night = 5,
         day = 0.33,
 
@@ -207,6 +265,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     BIRDSINK = {
+        forest = 1,
+        cave = -1,
+
         night = 0.33,
         day = 1.5,
 
@@ -224,6 +285,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     SCREECH = {
+        forest = 1,
+        cave = -1,
+
         night = 3,
         day = -1,
 
@@ -248,6 +312,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     WHISPER_QUIET = {
+        forest = 1,
+        cave = 0.67,
+
         night = 2,
         day = 1,
 
@@ -272,6 +339,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     WHISPER_LOUD = {
+        forest = 1,
+        cave = 1,
         night = 2,
         day = 0.25,
 

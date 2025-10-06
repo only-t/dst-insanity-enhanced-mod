@@ -40,15 +40,15 @@ local function Transition(self, into, time) -- HOLY SHIT, it turned out sooo smo
         local new_stage
         if sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE6] then
             new_stage = IE.PARANOIA_STAGES.STAGE6
-        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE5] then
+        elseif sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE5] then
             new_stage = IE.PARANOIA_STAGES.STAGE5
-        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE4] then
+        elseif sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE4] then
             new_stage = IE.PARANOIA_STAGES.STAGE4
-        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3] then
+        elseif sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3] then
             new_stage = IE.PARANOIA_STAGES.STAGE3
-        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE2] then
+        elseif sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE2] then
             new_stage = IE.PARANOIA_STAGES.STAGE2
-        elseif sanity <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1] then
+        elseif sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1] then
             new_stage = IE.PARANOIA_STAGES.STAGE1
         else
             new_stage = IE.PARANOIA_STAGES.STAGE0
@@ -73,15 +73,15 @@ local function OnSanityDelta(self, data)
     local new_stage
     if data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE6] then
         new_stage = IE.PARANOIA_STAGES.STAGE6
-    elseif data.newpercent <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE5] then
+    elseif data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE5] then
         new_stage = IE.PARANOIA_STAGES.STAGE5
-    elseif data.newpercent <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE4] then
+    elseif data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE4] then
         new_stage = IE.PARANOIA_STAGES.STAGE4
-    elseif data.newpercent <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3] then
+    elseif data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE3] then
         new_stage = IE.PARANOIA_STAGES.STAGE3
-    elseif data.newpercent <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE2] then
+    elseif data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE2] then
         new_stage = IE.PARANOIA_STAGES.STAGE2
-    elseif data.newpercent <= _G.IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1] then
+    elseif data.newpercent <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1] then
         new_stage = IE.PARANOIA_STAGES.STAGE1
     else
         new_stage = IE.PARANOIA_STAGES.STAGE0
@@ -100,7 +100,10 @@ local ParanoiaManager = Class(function(self, inst)
 
     if inst.replica.sanity == nil then
         -- modprint()
-        inst:RemoveComponent("paranoiamanager")
+        inst:DoTaskInTime(0, function() -- Wait 1 tick to let the component get fully created
+            inst:RemoveComponent("paranoiamanager") -- Then remove it
+        end)
+
         return
     end
 
