@@ -8,6 +8,8 @@ Assets = {
     Asset("SOUNDPACKAGE", "sound/paranoia.fev"),
     Asset("SOUND", "sound/paranoia.fsb"),
 
+    -- Asset("ANIM", "anim/ocean_shadow.zip"),
+
     -- Sounds from the Screecher
     Asset("SOUNDPACKAGE", "sound/scary_mod.fev"),
     Asset("SOUND", "sound/scary_mod.fsb")

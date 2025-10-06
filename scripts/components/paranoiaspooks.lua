@@ -7,6 +7,7 @@ local function PickASpook(self)
     local isplayerindark = self.inst:IsInLight()
     local canplayerseeindark = CanEntitySeeInDark(self.inst)
     local isincombat = (GetTime() - self.lastfighttime < IE.IN_COMBAT_DURATION)
+    local isbusyworking = (GetTime() - self.lastbusytime < IE.BUSY_DURATION)
 
     local _node_id = TheWorld.topology.ids[TheWorld.Map:GetNodeIdAtPoint(self.inst:GetPosition():Get())]
     local current_room_name = string.split(_node_id, ":")[3]
@@ -80,6 +81,15 @@ local function PickASpook(self)
             end
         end
 
+        if weights["isbusyworking"] ~= nil and isbusyworking then
+            if weights["isbusyworking"] == -1 then
+                spook_excludes[spook] = true
+            else
+                totalweight = totalweight + weights["isbusyworking"]
+                spook_weights[spook] = spook_weights[spook] + weights["isbusyworking"]
+            end
+        end
+
         if weights["biomes"] ~= nil then
             if weights["biomes"][current_room_name] == -1 then
                 spook_excludes[spook] = true
@@ -105,13 +115,15 @@ local function PickASpook(self)
 
     local rnd = math.random() * totalweight
     for spook, weight in pairs(spook_weights) do
-        rnd = rnd - weight
-        if rnd <= 0 then
-            if IE.DEV then
-                print("chosen spook: "..spook)
+        if not spook_excludes[spook] then
+            rnd = rnd - weight
+            if rnd <= 0 then
+                if IE.DEV then
+                    print("chosen spook: "..spook)
+                end
+                
+                return spook
             end
-            
-            return spook
         end
     end
 end
@@ -143,6 +155,10 @@ local function CheckAction(inst)
             end
         end
     end
+
+    if inst:HasTag("working") then
+        inst.components.paranoiaspooks.lastbusytime = GetTime()
+    end
 end
 
 local function OnParanoiaStageChanged(inst, data)
@@ -167,31 +183,44 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.is_paranoid = false -- false == stage 0, slowly decrease paranoia
 
     self.paranoia = 0
-    self.paranoia_threshold = 3
+
+    if IE.DEV then
+        self.paranoia_threshold = 6
+    else
+        self.paranoia_threshold = 1200
+    end
+
     self.paranoia_sources = {  }
+    self.paranoia_dropoff = 1
 
     self.next_spook = nil
 
     self.lastfighttime = -10
+    self.lastbusytime = -10
 
     inst:ListenForEvent("performaction", CheckAction)
     inst:ListenForEvent("sanitydelta", OnSanityDelta)
     inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+    inst:ListenForEvent("buildsuccess", function() self.lastbusytime = GetTime() end)
 
     inst:ListenForEvent("death", OnDeath)
 
     self.inst:StartUpdatingComponent(self)
 end)
 
--- function ParanoiaSpooks:OnSave()
---     return {
-        
---     }
--- end
+function ParanoiaSpooks:OnSave()
+    return {
+        paranoia = self.paranoia,
+        paranoia_threshold = self.paranoia_threshold,
+        next_spook = self.next_spook
+    }
+end
 
--- function ParanoiaSpooks:OnLoad(data)
-    
--- end
+function ParanoiaSpooks:OnLoad(data)
+    self.paranoia = data.paranoia
+    self.paranoia_threshold = data.paranoia_threshold
+    self.next_spook = data.next_spook
+end
 
 function ParanoiaSpooks:OnRemoveEntity()
     self:OnRemoveFromEntity()
@@ -235,21 +264,28 @@ function ParanoiaSpooks:ForcePickSpook()
 end
 
 function ParanoiaSpooks:OnUpdate(dt)
-    if self.next_spook ~= nil then -- Do a spook next opportune time, don't add paranoia, don't remove it either, unless we, suddenly, are not paranoid
-        
+    if self.next_spook ~= nil then
+        -- [TODO] Add better spook timing picking
+        self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])
+        self.next_spook = nil
+        self.paranoia = 0
+
         return
     end
 
     if self.is_paranoid then
-        for source, amount in ipairs(self.paranoia_sources) do
+        for source, amount in pairs(self.paranoia_sources) do
             self.paranoia = self.paranoia + amount * dt
         end
 
         if self.paranoia_threshold <= self.paranoia then
             self.next_spook = PickASpook(self)
         end
-    else
-
+    elseif self.paranoia > 0 then
+        self.paranoia = self.paranoia - self.paranoia_dropoff * dt
+        if self.paranoia < 0 then
+            self.paranoia = 0
+        end
     end
 end
 

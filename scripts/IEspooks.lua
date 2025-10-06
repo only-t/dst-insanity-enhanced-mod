@@ -2,7 +2,7 @@ local function TreeChoppingSpook(self)
     local params = IE.PARANOIA_SPOOK_PARAMS.TREECHOP
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.TREECHOP.TREE_MUST_TAGS)
+    local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.TREE_MUST_TAGS)
 
     local far_ents = {  }
     for i, ent in ipairs(ents) do
@@ -76,7 +76,7 @@ local function FootstepsSpook(self)
         return
     end
 
-    local footsteps = SpawnPrefab("footsteps_spook")
+    local footsteps = SpawnPrefab("footsteps")
 
     local variation = params.VARIATIONS[math.random(1, #params.VARIATIONS)]
     footsteps.volume = variation.volume or 1
@@ -119,7 +119,7 @@ local function FootstepsRushSpook(self)
         return
     end
 
-    local footsteps = SpawnPrefab("footsteps_spook")
+    local footsteps = SpawnPrefab("footsteps")
 
     footsteps.volume = params.volume or 1
     footsteps.step_interval = params.step_interval or 0.35
@@ -161,7 +161,7 @@ local function OceanSinkBirdSpook(self)
         return
     end
 
-    local bird = SpawnPrefab("birdsink_spook")
+    local bird = SpawnPrefab("birdsink")
     bird.Transform:SetPosition(position.x, position.y + 15, position.z)
 
     return bird

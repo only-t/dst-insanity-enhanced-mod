@@ -158,7 +158,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 0.5,
         canseeindark = 3,
 
-        isincombat = 0.33,
+        isincombat = 0.67,
+        isbusyworking = 4,
 
         biomes = {
             Forest = 3,
@@ -181,7 +182,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 4,
         canseeindark = 1,
 
-        isincombat = 0.25,
+        isincombat = 0.5,
+        isbusyworking = 2,
 
         biomes = {
             other = 1
@@ -197,7 +199,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 2,
         canseeindark = 0.5,
 
-        isincombat = 0.5,
+        isincombat = 1,
+        isbusyworking = 3,
 
         biomes = {
             other = 1
@@ -213,7 +216,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = -1,
         canseeindark = 1,
 
-        isincombat = 0.1,
+        isincombat = 0.2,
+        isbusyworking = 1,
 
         biomes = {
             other = 1
@@ -229,7 +233,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 5,
         canseeindark = 2,
 
-        isincombat = 0.25,
+        isincombat = 0.5,
+        isbusyworking = 1,
 
         biomes = {
             Forest = 3,
@@ -252,7 +257,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 4,
         canseeindark = 2,
 
-        isincombat = 0.1,
+        isincombat = 0.2,
         isbusyworking = 3,
 
         biomes = {
@@ -276,7 +281,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 4,
         canseeindark = 1,
 
-        isincombat = 0.25,
+        isincombat = 0.5,
         isbusyworking = 2,
 
         biomes = {
@@ -379,6 +384,7 @@ _G[MOD_CODE].SHADER_PARAM_LIMITS = {
 }
 
 _G[MOD_CODE].IN_COMBAT_DURATION = 6
+_G[MOD_CODE].BUSY_DURATION = 10
 
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
                       -- These show up in Game Options and can be updated during gameplay.

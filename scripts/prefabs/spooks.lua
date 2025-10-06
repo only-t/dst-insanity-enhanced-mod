@@ -9,6 +9,10 @@ local birdsink_assets = {
     Asset("SOUND", "sound/birds.fsb")
 }
 
+-- local ocean_shadow_assets = {
+--     Asset("ANIM", "anim/ocean_shadow.zip")
+-- }
+
 local function footsteps_fn()
     local inst = CreateEntity()
 
@@ -325,8 +329,40 @@ local function whisper_loud_fn()
     return inst
 end
 
-return Prefab("footsteps_spook", footsteps_fn, placeholder_assets),
-       Prefab("birdsink_spook", birdsink_fn, birdsink_assets),
+-- local function ocean_shadow_fn()
+--     local inst = CreateEntity()
+
+--     --[[ Non-networked entity ]]
+--     inst.entity:SetCanSleep(false)
+--     inst.persists = false
+
+--     inst.entity:AddTransform()
+--     inst.entity:AddPhysics()
+--     inst.entity:AddAnimState()
+--     inst.entity:AddSoundEmitter()
+
+--     --Initialize physics
+-- 	inst.Physics:SetMass(1)
+-- 	inst.Physics:SetFriction(0.1)
+-- 	inst.Physics:SetDamping(0)
+-- 	inst.Physics:SetRestitution(0.5)
+-- 	inst.Physics:SetCollisionMask(COLLISION.WORLD)
+-- 	inst.Physics:SetSphere(0.5)
+
+--     inst.AnimState:SetBank("ocean_shadow")
+--     inst.AnimState:SetBuild("ocean_shadow")
+--     inst.AnimState:PlayAnimation("appear")
+
+--     inst.Appear = function(inst)
+
+--     end
+
+--     return inst
+-- end
+
+return Prefab("footsteps", footsteps_fn, placeholder_assets),
+       Prefab("birdsink", birdsink_fn, birdsink_assets),
        Prefab("sfx_dummy", sfx_dummy_fn, placeholder_assets),
        Prefab("whisper_quiet", whisper_quiet_fn, placeholder_assets),
        Prefab("whisper_loud", whisper_loud_fn, placeholder_assets)
+    --    Prefab("ocean_shadow", ocean_shadow_fn, ocean_shadow_assets)
