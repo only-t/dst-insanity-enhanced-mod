@@ -9,6 +9,7 @@ local function PickASpook(self)
     local isincombat = (GetTime() - self.lastfighttime < IE.IN_COMBAT_DURATION)
     local isbusyworking = (GetTime() - self.lastbusytime < IE.BUSY_DURATION)
 
+    -- print(TheWorld.topology.ids[TheWorld.Map:GetNodeIdAtPoint(ThePlayer:GetPosition():Get())])
     local _node_id = TheWorld.topology.ids[TheWorld.Map:GetNodeIdAtPoint(self.inst:GetPosition():Get())]
     local current_room_name = string.split(_node_id, ":")[3]
 
@@ -17,6 +18,24 @@ local function PickASpook(self)
     local totalweight = 0
     for spook, weights in pairs(IE.PARANOIA_SPOOK_WEIGHTS) do
         spook_weights[spook] = 0
+
+        if weights["cave"] ~= nil and isnight then
+            if weights["cave"] == -1 then
+                spook_excludes[spook] = true
+            else
+                totalweight = totalweight + weights["cave"]
+                spook_weights[spook] = spook_weights[spook] + weights["cave"]
+            end
+        end
+
+        if weights["forest"] ~= nil and isnight then
+            if weights["forest"] == -1 then
+                spook_excludes[spook] = true
+            else
+                totalweight = totalweight + weights["forest"]
+                spook_weights[spook] = spook_weights[spook] + weights["forest"]
+            end
+        end
 
         if weights["night"] ~= nil and isnight then
             if weights["night"] == -1 then
@@ -244,6 +263,8 @@ end
 function ParanoiaSpooks:Spook(type)
     if type == IE.PARANOIA_SPOOK_TYPES.TREECHOP then
         Spooks.TreeChoppingSpook(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.MINING_SOUND then
+        Spooks.MiningSoundSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS then
         Spooks.FootstepsSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS_RUSH then
@@ -256,6 +277,8 @@ function ParanoiaSpooks:Spook(type)
         Spooks.WhisperQuiet(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.WHISPER_LOUD then
         Spooks.WhisperLoud(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.BERRYBUSH_RUSTLE then
+        Spooks.BerryBushRustleSpook(self)
     end
 end
 
@@ -267,7 +290,7 @@ function ParanoiaSpooks:OnUpdate(dt)
     if IE.DEV then
         return
     end
-    
+
     if self.next_spook ~= nil then
         -- [TODO] Add better spook timing picking
         self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])

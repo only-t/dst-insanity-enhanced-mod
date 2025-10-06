@@ -17,8 +17,8 @@ local function TreeChoppingSpook(self)
 
     if tree == nil then return end
 
-    local chop_anim = "chop_short"
-    local old_anim = "sway1_loop_short"
+    local chop_anim
+    local old_anim
     if tree.AnimState:IsCurrentAnimation("sway2_loop_short") then
         chop_anim = "chop_short"
         old_anim = "sway2_loop_short"
@@ -50,6 +50,41 @@ local function TreeChoppingSpook(self)
     end
 
     return tree
+end
+
+local function MiningSoundSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.MINING_SOUND
+
+    local position
+    local theta = math.random() * TWOPI
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+    local ppos = self.inst:GetPosition()
+
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local ox, oy, oz = (ppos + offset):Get()
+        if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+            position = Vector3(ox, oy, oz)
+            break
+        end
+
+        theta = theta - TWOPI / steps
+    end
+
+    if position == nil then -- No ground in sight
+        return
+    end
+
+    local sfx_dummy = SpawnPrefab("sfx_dummy")
+    sfx_dummy.Transform:SetPosition(position.x, position.y, position.z)
+
+    sfx_dummy.sound = "dontstarve/wilson/use_pick_rock"
+    sfx_dummy.volume = params.VOLUME
+
+    sfx_dummy:Play()
+
+    return sfx_dummy
 end
 
 local function FootstepsSpook(self)
@@ -199,13 +234,17 @@ local function ScreechSpook(self)
 
     sfx_dummy:Play()
 
-    if self.inst.components.paranoiamanager then
-        self.inst.components.paranoiamanager:PushHeartbeatVolume(0, 0.5)
+    if IE.DEV then -- Needs more testing
+        if self.inst.components.paranoiamanager then
+            self.inst.components.paranoiamanager:PushHeartbeatVolume(0, 0.5)
 
-        self.inst:DoTaskInTime(2.5, function()
-            self.inst.components.paranoiamanager:PushHeartbeatVolume(nil, 4) 
-        end)
+            self.inst:DoTaskInTime(2.5, function()
+                self.inst.components.paranoiamanager:PushHeartbeatVolume(nil, 4) 
+            end)
+        end
     end
+
+    return sfx_dummy
 end
 
 local function WhisperQuiet(self)
@@ -272,6 +311,56 @@ local function WhisperLoud(self, data)
     return loud
 end
 
+local function BerryBushRustleSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.BERRYBUSH_RUSTLE
+    
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.BUSH_MUST_TAGS)
+
+    local far_ents = {  }
+    for i, ent in ipairs(ents) do
+        if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
+            table.insert(far_ents, ent)
+        end
+    end
+    
+    if #far_ents <= 0 then return end
+
+    local bush = far_ents[math.random(#far_ents)]
+
+    if bush == nil then return end
+
+    local rustle_anim
+    local old_anim
+    if bush.AnimState:IsCurrentAnimation("idle") then
+        rustle_anim = "grow"
+        old_anim = "idle"
+    elseif bush.AnimState:IsCurrentAnimation("dead") then
+        rustle_anim = "shake_dead"
+        old_anim = "dead"
+    else
+        return -- None of the above are playing meaning we shouldn't interfere
+    end
+
+    bush.AnimState:PlayAnimation(rustle_anim)
+    bush.AnimState:PushAnimation(old_anim, true)
+
+    if bush.prefab == "berrybush" then
+        local vfx = SpawnPrefab("green_leaves")
+        vfx.Transform:SetPosition(bush.Transform:GetWorldPosition())
+    else
+        local sfx_dummy = SpawnPrefab("sfx_dummy") -- Since berry bushes don't have SoundEmitter, for SOME reason?
+        sfx_dummy.Transform:SetPosition(bush.Transform:GetWorldPosition())
+
+        sfx_dummy.sound = "dontstarve/wilson/harvest_berries"
+        sfx_dummy.volume = 0.3
+
+        sfx_dummy:Play()
+    end
+
+    return bush
+end
+
 return {
     TreeChoppingSpook = TreeChoppingSpook,
     FootstepsSpook = FootstepsSpook,
@@ -279,5 +368,7 @@ return {
     OceanSinkBirdSpook = OceanSinkBirdSpook,
     ScreechSpook = ScreechSpook,
     WhisperQuiet = WhisperQuiet,
-    WhisperLoud = WhisperLoud
+    WhisperLoud = WhisperLoud,
+    MiningSoundSpook = MiningSoundSpook,
+    BerryBushRustleSpook = BerryBushRustleSpook
 }

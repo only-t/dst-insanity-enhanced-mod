@@ -140,7 +140,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     BIRDSINK = 4,
     SCREECH = 5, -- Screecher's screech from the Screecher, a Klei mod which includes the screeching Screecher
     WHISPER_QUIET = 6,
-    WHISPER_LOUD = 7
+    WHISPER_LOUD = 7,
+    BERRYBUSH_RUSTLE = 8,
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -153,7 +154,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         forest = 1,
         cave = 1,
 
-        night = 1,
+        night = 2,
         day = 1,
 
         boat = -1,
@@ -341,6 +342,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     WHISPER_LOUD = {
         forest = 1,
         cave = 1,
+
         night = 2,
         day = 0.25,
 
@@ -363,6 +365,26 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
             CrappyDeepForest = 4,
             other = 1
         }
+    },
+    BERRYBUSH_RUSTLE = {
+        forest = 1,
+        cave = 1,
+
+        night = 2,
+        day = 1,
+
+        boat = -1,
+        land = 1,
+
+        isindark = 0.5,
+        canseeindark = 3,
+
+        isincombat = 0.67,
+        isbusyworking = 4,
+
+        biomes = {
+            other = 3
+        }
     }
 }
 
@@ -373,6 +395,11 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         TREE_MUST_TAGS = { "evergreens" },
         CHOP_SFX_CHANCE = 0.5,
         LEAF_SFX_CHANCE = 1
+    },
+    MINING_SOUND = {
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 18,
+        VOLUME = 0.3
     },
     FOOTSTEPS = {
         VARIATIONS = {
@@ -416,6 +443,11 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     WHISPER_LOUD = {
         DIST_FROM_PLAYER = 14,
         DISAPPEAR_DIST_SQ = 8 * 8
+    },
+    BERRYBUSH_RUSTLE = {
+        MIN_DIST_FROM_PLAYER = 8,
+        MAX_DIST_FROM_PLAYER = 20,
+        BUSH_MUST_TAGS = { "bush" }
     }
 }
 
