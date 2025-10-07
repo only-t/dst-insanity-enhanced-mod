@@ -274,6 +274,8 @@ local function WhisperQuiet(self)
     local quiet = SpawnPrefab("whisper_quiet")
     quiet.Transform:SetPosition(position.x, position.y, position.z)
 
+    quiet.dissapear_distance_from_player = params.DISAPPEAR_DIST_SQ
+
     quiet:Appear()
 
     return quiet
@@ -305,6 +307,8 @@ local function WhisperLoud(self, data)
 
     local loud = SpawnPrefab("whisper_loud")
     loud.Transform:SetPosition(position.x, position.y, position.z)
+
+    loud.dissapear_distance_from_player = params.DISAPPEAR_DIST_SQ
 
     loud:Appear()
 
@@ -361,6 +365,40 @@ local function BerryBushRustleSpook(self)
     return bush
 end
 
+local function OceanBubblesSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.OCEAN_BUBBLES
+
+    local position = nil
+    local theta = math.random() * TWOPI
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+    local ppos = self.inst:GetPosition()
+
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local offset_pos = ppos + offset
+        if TheWorld.Map:IsOceanAtPoint(offset_pos.x, offset_pos.y, offset_pos.z, false) then
+            position = offset_pos
+            break
+        end
+
+        theta = theta - TWOPI / steps
+    end
+
+    if position == nil then -- No ocean in sight
+        return
+    end
+
+    local bubbles = SpawnPrefab("spooky_bubbles")
+    bubbles.Transform:SetPosition(position.x, position.y, position.z)
+    bubbles.duration = params.DURATION
+    bubbles.dissapear_distance_from_player = params.DISAPPEAR_DIST_SQ
+
+    bubbles:Appear()
+
+    return bubbles
+end
+
 return {
     TreeChoppingSpook = TreeChoppingSpook,
     FootstepsSpook = FootstepsSpook,
@@ -370,5 +408,6 @@ return {
     WhisperQuiet = WhisperQuiet,
     WhisperLoud = WhisperLoud,
     MiningSoundSpook = MiningSoundSpook,
-    BerryBushRustleSpook = BerryBushRustleSpook
+    BerryBushRustleSpook = BerryBushRustleSpook,
+    OceanBubblesSpook = OceanBubblesSpook
 }

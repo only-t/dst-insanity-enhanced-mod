@@ -119,6 +119,10 @@ local function PickASpook(self)
         end
     end
 
+    if self.last_spook ~= nil and spook_excludes[self.last_spook] == nil then
+        spook_excludes[self.last_spook] = true
+    end
+
     if IE.DEV then
         print("total weight = "..tostring(totalweight))
         print("{")
@@ -213,6 +217,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.paranoia_dropoff = 1
 
     self.next_spook = nil
+    self.last_spook = nil -- Try hard to not do the same spook twice in a row
 
     self.lastfighttime = -10
     self.lastbusytime = -10
@@ -279,6 +284,8 @@ function ParanoiaSpooks:Spook(type)
         Spooks.WhisperLoud(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.BERRYBUSH_RUSTLE then
         Spooks.BerryBushRustleSpook(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_BUBBLES then
+        Spooks.OceanBubblesSpook(self)
     end
 end
 
@@ -307,6 +314,7 @@ function ParanoiaSpooks:OnUpdate(dt)
 
         if self.paranoia_threshold <= self.paranoia then
             self.next_spook = PickASpook(self)
+            self.last_spook = self.next_spook
         end
     elseif self.paranoia > 0 then
         self.paranoia = self.paranoia - self.paranoia_dropoff * dt

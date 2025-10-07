@@ -142,6 +142,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     WHISPER_QUIET = 6,
     WHISPER_LOUD = 7,
     BERRYBUSH_RUSTLE = 8,
+    OCEAN_BUBBLES = 9,
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -385,6 +386,26 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         biomes = {
             other = 3
         }
+    },
+    OCEAN_BUBBLES = {
+        forest = 1,
+        cave = -1,
+
+        night = 2,
+        day = 2,
+
+        boat = 3,
+        land = -1,
+
+        isindark = 1,
+        canseeindark = 3,
+
+        isincombat = 1,
+        isbusyworking = 4,
+
+        biomes = {
+            other = 1
+        }
     }
 }
 
@@ -448,6 +469,12 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         MIN_DIST_FROM_PLAYER = 8,
         MAX_DIST_FROM_PLAYER = 20,
         BUSH_MUST_TAGS = { "bush" }
+    },
+    OCEAN_BUBBLES = {
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 20,
+        DURATION = 14,
+        DISAPPEAR_DIST_SQ = 4 * 4
     }
 }
 

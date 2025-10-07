@@ -228,6 +228,8 @@ local function whisper_quiet_fn()
 
     local started = false
 
+    inst.dissapear_distance_from_player = 4
+
     inst.Appear = function(inst)
         local script = STRINGS.IE.WHISPERS_QUIET[math.random(1, #STRINGS.IE.WHISPERS_QUIET)]
         inst.components.talker:Say(script, text_duration, true, true, true, { 1, 1, 1, 0 }) -- Will increase alpha in the update fn
@@ -239,7 +241,7 @@ local function whisper_quiet_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer or nil
-        if player and inst:GetDistanceSqToInst(player) <= IE.PARANOIA_SPOOK_PARAMS.WHISPER_QUIET.DISAPPEAR_DIST_SQ then
+        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
             inst.components.talker:ShutUp()
             return
         end
@@ -304,6 +306,8 @@ local function whisper_loud_fn()
     local text_duration = 2
     local offset_duration = 1
 
+    inst.dissapear_distance_from_player = 4
+
     inst.Appear = function(inst)
         local script = STRINGS.IE.WHISPERS_LOUD[math.random(1, #STRINGS.IE.WHISPERS_LOUD)]
         inst.components.talker:Say(script, text_duration, true, true, true, { 1, 1, 1, 0 }) -- Will increase alpha in the update fn
@@ -313,6 +317,12 @@ local function whisper_loud_fn()
 
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
+        local player = ThePlayer or nil
+        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+            inst.components.talker:ShutUp()
+            return
+        end
+
         time = time + dt
         local size_t = math.min(time / text_duration, 1)
         local offset_t = math.min(time / offset_duration, 1)
@@ -325,6 +335,74 @@ local function whisper_loud_fn()
 
         local alpha = size_curve(size_t)
         inst.components.talker.widget.text:SetColour({ 1, 1, 1, alpha })
+    end)
+
+    return inst
+end
+
+local function spooky_bubbles_fn()
+    local inst = CreateEntity()
+
+    --[[ Non-networked entity ]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
+
+    if IE.DEV then -- This is not the actual bubbles vfx, it's only a spawner with a sound emitter
+        inst.entity:AddAnimState()
+        inst.AnimState:SetBank("rocks")
+        inst.AnimState:SetBuild("rocks")
+        inst.AnimState:PlayAnimation("f1")
+    end
+
+    inst.duration = 14 -- How long this spook will stay visible
+    inst.dissapear_distance_from_player = 16
+    inst.period = 0.7
+    inst._start_time = nil
+
+    inst.Appear = function(inst)
+        if inst.task ~= nil then
+            inst.task:Cancel()
+            inst.task = nil
+        end
+
+        inst._start_time = GetTime()
+
+        if inst.SoundEmitter:PlayingSound("bubble_loop") then
+            inst.SoundEmitter:KillSound("bubble_loop")
+        end
+
+        inst.SoundEmitter:PlaySound("hookline_2/creatures/boss/crabking/bubble_LP", "bubble_loop", 1)
+        inst.SoundEmitter:SetParameter("bubble_loop", "intensity", 0.5)
+
+        inst.task = inst:DoPeriodicTask(inst.period, function()
+            if inst._start_time + inst.duration <= GetTime() then
+                inst.task:Cancel()
+                inst.task = nil
+                inst.SoundEmitter:KillSound("bubble_loop")
+                inst:DoTaskInTime(0.5, function()
+                    inst:Remove()
+                end)
+
+                return
+            end
+
+            inst.task.period = inst.period + 0.3 * (GetTime() - inst._start_time) / inst.duration
+
+            local fx = SpawnPrefab("crab_king_bubble"..tostring(math.random(1, 3)))
+            fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+        end)
+    end
+
+    inst:AddComponent("updatelooper")
+    inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
+        local player = ThePlayer or nil
+        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+            inst._start_time = inst._start_time - inst.duration -- Finish the task
+        end
     end)
 
     return inst
@@ -365,5 +443,6 @@ return Prefab("footsteps", footsteps_fn, placeholder_assets),
        Prefab("birdsink", birdsink_fn, birdsink_assets),
        Prefab("sfx_dummy", sfx_dummy_fn, placeholder_assets),
        Prefab("whisper_quiet", whisper_quiet_fn, placeholder_assets),
-       Prefab("whisper_loud", whisper_loud_fn, placeholder_assets)
+       Prefab("whisper_loud", whisper_loud_fn, placeholder_assets),
+       Prefab("spooky_bubbles", spooky_bubbles_fn, placeholder_assets)
     --    Prefab("ocean_shadow", ocean_shadow_fn, ocean_shadow_assets)
