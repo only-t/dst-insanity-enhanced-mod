@@ -143,6 +143,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     WHISPER_LOUD = 7,
     BERRYBUSH_RUSTLE = 8,
     OCEAN_BUBBLES = 9,
+    OCEAN_FOOTSTEPS = 10,
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -406,6 +407,26 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         biomes = {
             other = 1
         }
+    },
+    OCEAN_FOOTSTEPS = {
+        forest = 1,
+        cave = -1,
+
+        night = 3,
+        day = 2,
+
+        boat = 3,
+        land = -1,
+
+        isindark = 1,
+        canseeindark = 3,
+
+        isincombat = 0.5,
+        isbusyworking = 4,
+
+        biomes = {
+            other = 1
+        }
     }
 }
 
@@ -475,6 +496,27 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         MAX_DIST_FROM_PLAYER = 20,
         DURATION = 14,
         DISAPPEAR_DIST_SQ = 4 * 4
+    },
+    OCEAN_FOOTSTEPS = {
+        VARIATIONS = {
+            {
+                step_interval = 0.15,
+                duration = 0.9,
+                speed = 15
+            },
+            {
+                step_interval = 0.35,
+                duration = 1.7,
+                speed = 5
+            },
+            {
+                step_interval = 0.6,
+                duration = 3,
+                speed = 5
+            }
+        },
+        MIN_DIST_FROM_PLAYER = 14,
+        MAX_DIST_FROM_PLAYER = 18
     }
 }
 

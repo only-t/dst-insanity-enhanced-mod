@@ -30,6 +30,8 @@ local function footsteps_fn()
 	inst.Physics:SetRestitution(0.5)
 	inst.Physics:SetCollisionMask(COLLISION.WORLD)
 	inst.Physics:SetSphere(0.5)
+    
+    RemovePhysicsColliders(inst)
 
     if IE.DEV then
         inst.entity:AddAnimState()
@@ -47,6 +49,10 @@ local function footsteps_fn()
         end
 
         PlayFootstep(inst, inst.volume)
+        local x, y, z = inst.Transform:GetWorldPosition()
+        if TheWorld.Map:IsOceanAtPoint(x, y, z, false, true) then -- JESUS STEPS !
+            SpawnPrefab("weregoose_ripple"..tostring(math.random(1, 2))).Transform:SetPosition(x, y, z)
+        end
 
         inst.task = inst:DoTaskInTime(inst.step_interval, TaskFn)
     end

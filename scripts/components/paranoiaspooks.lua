@@ -286,6 +286,8 @@ function ParanoiaSpooks:Spook(type)
         Spooks.BerryBushRustleSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_BUBBLES then
         Spooks.OceanBubblesSpook(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_FOOTSTEPS then
+        Spooks.OceanFootstepsSpook(self)
     end
 end
 

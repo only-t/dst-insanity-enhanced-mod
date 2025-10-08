@@ -399,6 +399,49 @@ local function OceanBubblesSpook(self)
     return bubbles
 end
 
+local function OceanFootstepsSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.OCEAN_FOOTSTEPS
+
+    local position
+    local theta = math.random() * TWOPI
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+    local ppos = self.inst:GetPosition()
+
+    local steps = 12
+    for i = 1, steps do
+        local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+        local ox, oy, oz = (ppos + offset):Get()
+        if TheWorld.Map:IsOceanAtPoint(ox, oy, oz, false, true) then
+            position = Vector3(ox, oy, oz)
+            break
+        end
+
+        theta = theta - TWOPI / steps
+    end
+
+    if position == nil then -- No ocean in sight
+        return
+    end
+
+    local footsteps = SpawnPrefab("footsteps")
+
+    local variation = params.VARIATIONS[math.random(1, #params.VARIATIONS)]
+    footsteps.volume = variation.volume or 1
+    footsteps.step_interval = variation.step_interval or 0.35
+    footsteps.duration = variation.duration or 1.7
+    footsteps.speed = variation.speed or 5
+
+    footsteps.Transform:SetPosition(position.x, position.y, position.z)
+
+    -- Keep perpendicular to the player
+    local angle = footsteps:GetAngleToPoint(ppos.x, ppos.y, ppos.z) + 90 * (math.random() > 0.5 and -1 or 1)
+    footsteps.Transform:SetRotation(angle)
+
+    footsteps:Start()
+
+    return footsteps
+end
+
 return {
     TreeChoppingSpook = TreeChoppingSpook,
     FootstepsSpook = FootstepsSpook,
@@ -409,5 +452,6 @@ return {
     WhisperLoud = WhisperLoud,
     MiningSoundSpook = MiningSoundSpook,
     BerryBushRustleSpook = BerryBushRustleSpook,
-    OceanBubblesSpook = OceanBubblesSpook
+    OceanBubblesSpook = OceanBubblesSpook,
+    OceanFootstepsSpook = OceanFootstepsSpook
 }
