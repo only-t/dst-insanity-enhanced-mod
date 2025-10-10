@@ -144,6 +144,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     BERRYBUSH_RUSTLE = 8,
     OCEAN_BUBBLES = 9,
     OCEAN_FOOTSTEPS = 10,
+    FAKE_PLAYER = 11,
+    -- SHADY = 12, -- He's just a chill guy :)))
+    -- OCEAN_SHADOW = 13,
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -427,7 +430,50 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         biomes = {
             other = 1
         }
-    }
+    },
+    FAKE_PLAYER = {
+        forest = 1,
+        cave = 1,
+
+        night = 2,
+        day = 3,
+
+        boat = -1,
+        land = 2,
+
+        isindark = 1,
+        canseeindark = 4,
+
+        isincombat = 1,
+        isbusyworking = 2,
+
+        biomes = {
+            other = 2
+        }
+    },
+    -- SHADY = {
+    --     forest = 1,
+    --     cave = 1,
+
+    --     night = 4,
+    --     day = 2,
+
+    --     boat = 1,
+    --     land = 3,
+
+    --     isindark = 1,
+    --     canseeindark = 5,
+
+    --     isincombat = 1,
+    --     isbusyworking = 4,
+
+    --     biomes = {
+    --         other = 1
+    --     }
+    -- },
+    -- OCEAN_SHADOW = {
+
+    -- }
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
@@ -517,7 +563,70 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         },
         MIN_DIST_FROM_PLAYER = 14,
         MAX_DIST_FROM_PLAYER = 18
-    }
+    },
+    FAKE_PLAYER = {
+        ACTIONS = {
+            -- CHOPPING = {
+            --     TARGET_TAGS = { "evergreens" },
+            --     TOOL = {
+            --         "axe",
+            --         "goldenaxe",
+            --         "multitool_axe_pickaxe"
+            --     }
+            -- },
+            MINING = {
+                TARGET_TAGS = { "boulder" },
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "multitool_axe_pickaxe"
+                }
+            },
+            -- WALKING = {
+            --     TOOL = {
+            --         "pickaxe",
+            --         "goldenpickaxe",
+            --         "axe",
+            --         "goldenaxe",
+            --         "multitool_axe_pickaxe",
+            --         "spear",
+            --         "none"
+            --     }
+            -- },
+            -- RUNNING_AWAY = {
+            --     TOOL = {
+            --         "pickaxe",
+            --         "goldenpickaxe",
+            --         "axe",
+            --         "goldenaxe",
+            --         "multitool_axe_pickaxe",
+            --         "spear",
+            --         "none"
+            --     }
+            -- },
+            -- OBSERVING = {
+            --     TOOL = {
+            --         "pickaxe",
+            --         "goldenpickaxe",
+            --         "axe",
+            --         "goldenaxe",
+            --         "multitool_axe_pickaxe",
+            --         "spear",
+            --         "none"
+            --     }
+            -- }
+        },
+        MIN_DIST_FROM_PLAYER = 18,
+        MAX_DIST_FROM_PLAYER = 24,
+        RUN_AWAY_DIST_SQ = 12 * 12,
+    },
+    -- SHADY = {
+    --     MIN_DIST_FROM_PLAYER = 12,
+    --     MAX_DIST_FROM_PLAYER = 20
+    -- },
+    -- OCEAN_SHADOW = {
+
+    -- }
 }
 
 _G[MOD_CODE].PARANOIA_STAGES = {

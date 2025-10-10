@@ -60,7 +60,8 @@ local function Transition(self, into, time) -- HOLY SHIT, it turned out sooo smo
     end
 end
 
-local function OnSanityDelta(self, data)
+local function OnSanityDelta(inst, data)
+    local self = inst.components.paranoiamanager
     if self.mode ~= data.sanitymode then
         Transition(self, data.sanitymode, IE.SHADER_MODE_TRANSITION_SPEED)
         return
@@ -93,6 +94,14 @@ local function OnSanityDelta(self, data)
     local sharpness = IE.SHADER_PARAM_LIMITS.SHARPNESS * strength
     local monochromacy = IE.SHADER_PARAM_LIMITS.MONOCHROMACY * strength
     self:SetShaderColorParams(sharpness, monochromacy)
+end
+
+local function OnHealthDelta(inst, data)
+    if data.newpercent <= 0 then -- Is dead, hopefully
+        inst.components.paranoiamanager:StopHeartbeat()
+    else
+        inst.components.paranoiamanager:ResumeHeartbeat()
+    end
 end
 
 local ParanoiaManager = Class(function(self, inst)
@@ -138,8 +147,8 @@ local ParanoiaManager = Class(function(self, inst)
 
     self.shader_enabled = true
 
-    inst:ListenForEvent("sanitydelta", function(_, data) OnSanityDelta(self, data) end)
-    inst:ListenForEvent("death", function(_) inst:StopUpdatingComponent(self) end)
+    inst:ListenForEvent("sanitydelta", OnSanityDelta)
+    inst:ListenForEvent("healthdelta", OnHealthDelta) -- The "death" event doesn't get pushed on the client
 
     inst:StartUpdatingComponent(self)
 end)

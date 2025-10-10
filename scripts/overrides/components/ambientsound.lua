@@ -17,7 +17,7 @@ AmbientSound._ctor = function(self, ...)
 
         local player = _G.ThePlayer
         local sanity = player ~= nil and player.replica.sanity or nil
-        local sanity_percent = (sanity ~= nil and sanity:IsInsanityMode()) and sanity:GetPercent() or 0
+        local sanity_percent = (sanity ~= nil and sanity:IsInsanityMode()) and sanity:GetPercent() or 1
         local paranoiaparam = 1 - math.min(1, sanity_percent / _G.IE.PARANOIA_THRESHOLDS[_G.IE.PARANOIA_STAGES.STAGE1])
 
         if _paranoiaparam ~= paranoiaparam then

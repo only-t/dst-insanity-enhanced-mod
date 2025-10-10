@@ -196,8 +196,34 @@ local function OnSanityDelta(inst, data)
     inst.components.paranoiaspooks.paranoia_sources.sanity = 1 - math.min(1, data.newpercent / IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1])
 end
 
-local function OnDeath(inst)
-    inst:StopUpdatingComponent(inst.components.paranoiaspooks)
+local function OnBuildSuccess(inst)
+    inst.components.paranoiaspooks.lastbusytime = GetTime()
+end
+
+local function OnHealthDelta(inst, data)
+    if data.newpercent <= 0 then -- Is dead, hopefully
+        inst:RemoveEventCallback("performaction", CheckAction)
+        inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
+        inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
+        inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
+
+        inst.components.paranoiaspooks.next_spook = nil
+        inst.components.paranoiaspooks.last_spook = nil
+        inst.components.paranoiaspooks.paranoia = 0
+
+        inst.components.paranoiaspooks:Stop()
+
+        inst:StopUpdatingComponent(inst.components.paranoiaspooks)
+    else
+        inst:ListenForEvent("performaction", CheckAction)
+        inst:ListenForEvent("sanitydelta", OnSanityDelta)
+        inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+        inst:ListenForEvent("buildsuccess", OnBuildSuccess)
+
+        inst.components.paranoiaspooks:Start()
+
+        inst:StartUpdatingComponent(inst.components.paranoiaspooks)
+    end
 end
 
 local ParanoiaSpooks = Class(function(self, inst)
@@ -210,7 +236,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     if IE.DEV then
         self.paranoia_threshold = 6
     else
-        self.paranoia_threshold = 1200
+        self.paranoia_threshold = 480
     end
 
     self.paranoia_sources = {  }
@@ -225,11 +251,11 @@ local ParanoiaSpooks = Class(function(self, inst)
     inst:ListenForEvent("performaction", CheckAction)
     inst:ListenForEvent("sanitydelta", OnSanityDelta)
     inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
-    inst:ListenForEvent("buildsuccess", function() self.lastbusytime = GetTime() end)
+    inst:ListenForEvent("buildsuccess", OnBuildSuccess)
 
-    inst:ListenForEvent("death", OnDeath)
+    inst:ListenForEvent("healthdelta", OnHealthDelta)
 
-    self.inst:StartUpdatingComponent(self)
+    inst:StartUpdatingComponent(self)
 end)
 
 function ParanoiaSpooks:OnSave()
@@ -254,7 +280,8 @@ function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("performaction", CheckAction)
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
     self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
-    self.inst:RemoveEventCallback("death", OnDeath)
+    self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
+    self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
 end
 
 function ParanoiaSpooks:Start()
@@ -266,6 +293,7 @@ function ParanoiaSpooks:Stop()
 end
 
 function ParanoiaSpooks:Spook(type)
+    -- [TODO] Make this less ugly, stupid
     if type == IE.PARANOIA_SPOOK_TYPES.TREECHOP then
         Spooks.TreeChoppingSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.MINING_SOUND then
@@ -288,11 +316,9 @@ function ParanoiaSpooks:Spook(type)
         Spooks.OceanBubblesSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_FOOTSTEPS then
         Spooks.OceanFootstepsSpook(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_PLAYER then
+        Spooks.FakePlayerSpook(self)
     end
-end
-
-function ParanoiaSpooks:ForcePickSpook()
-    return PickASpook(self)
 end
 
 function ParanoiaSpooks:OnUpdate(dt)

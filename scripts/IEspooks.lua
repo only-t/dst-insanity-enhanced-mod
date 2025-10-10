@@ -442,6 +442,108 @@ local function OceanFootstepsSpook(self)
     return footsteps
 end
 
+local function FakePlayerSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.FAKE_PLAYER
+
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+
+    local action = "MINING"
+    -- local rnd = math.random(1, 5)
+    -- if rnd == 1 then
+    --     action = "CHOPPING"
+    -- elseif rnd == 2 then
+    --     action = "MINING"
+    -- elseif rnd == 3 then
+    --     action = "WALKING"
+    -- elseif rnd == 4 then
+    --     action = "RUNNING_AWAY"
+    -- else
+    --     action = "OBSERVING"
+    -- end
+
+    local target
+    if params.ACTIONS[action].TARGET_TAGS ~= nil then
+        local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.ACTIONS[action].TARGET_TAGS)
+
+        local far_ents = {  }
+        for i, ent in ipairs(ents) do
+            if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
+                table.insert(far_ents, ent)
+            end
+        end
+
+        if #far_ents <= 0 then return end
+
+        target = far_ents[math.random(#far_ents)]
+    else
+        local position
+        local theta = math.random() * TWOPI
+        local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+        local ppos = self.inst:GetPosition()
+
+        local steps = 12
+        for i = 1, steps do
+            local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+            local ox, oy, oz = (ppos + offset):Get()
+            if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+                position = Vector3(ox, oy, oz)
+                break
+            end
+
+            theta = theta - TWOPI / steps
+        end
+
+        if position == nil then -- No ground in sight
+            return
+        end
+
+        target = position
+    end
+
+    local fake_player = SpawnPrefab("fake_player")
+    fake_player.dissapear_distance_from_player = params.RUN_AWAY_DIST_SQ
+    if EntityScript.is_instance(target) then
+        print("Chose an entity target!")
+
+        local theta = math.random() * PI2
+        local radius = target:GetPhysicsRadius() + fake_player:GetPhysicsRadius()
+        local position = target:GetPosition() + Vector3(math.cos(theta) * radius, 0, math.sin(theta) * radius)
+        fake_player.Transform:SetPosition(position:Get())
+        fake_player.action_target = target
+        fake_player.action = action
+    elseif Vector3.is_instance(target) then
+        print("Chose a position target!")
+
+        fake_player.Transform:SetPosition(target:Get())
+    else
+        -- modprint()
+    end
+    
+    if params.ACTIONS[action].TOOL ~= nil then
+        local tool
+        if type(params.ACTIONS[action].TOOL) == "table" then
+            tool = params.ACTIONS[action].TOOL[math.random(1, #params.ACTIONS[action].TOOL)]
+        else
+            tool = params.ACTIONS[action].TOOL
+        end
+
+        print("Chosen tool - "..tool)
+
+        if tool ~= "none" then
+            fake_player.AnimState:Show("ARM_carry")
+            fake_player.AnimState:Hide("ARM_normal")
+            fake_player.AnimState:OverrideSymbol("swap_object", "swap_"..tool, "swap_"..tool)
+            fake_player.action_tool = tool
+        end
+    else
+        print("Chosen tool - none")
+    end
+
+    fake_player:DoTaskInTime(1.5, fake_player.Start)
+
+    return fake_player
+end
+
 return {
     TreeChoppingSpook = TreeChoppingSpook,
     FootstepsSpook = FootstepsSpook,
@@ -453,5 +555,8 @@ return {
     MiningSoundSpook = MiningSoundSpook,
     BerryBushRustleSpook = BerryBushRustleSpook,
     OceanBubblesSpook = OceanBubblesSpook,
-    OceanFootstepsSpook = OceanFootstepsSpook
+    OceanFootstepsSpook = OceanFootstepsSpook,
+    FakePlayerSpook = FakePlayerSpook,
+    -- ShadySpook = ShadySpook,
+    -- OceanShadowSpook = OceanShadowSpook,
 }

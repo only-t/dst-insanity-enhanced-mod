@@ -9,10 +9,6 @@ local birdsink_assets = {
     Asset("SOUND", "sound/birds.fsb")
 }
 
--- local ocean_shadow_assets = {
---     Asset("ANIM", "anim/ocean_shadow.zip")
--- }
-
 local function footsteps_fn()
     local inst = CreateEntity()
 
@@ -414,41 +410,141 @@ local function spooky_bubbles_fn()
     return inst
 end
 
--- local function ocean_shadow_fn()
---     local inst = CreateEntity()
+local function player_fn()
+    local inst = CreateEntity()
 
---     --[[ Non-networked entity ]]
---     inst.entity:SetCanSleep(false)
---     inst.persists = false
+    --[[ Non-networked entity ]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
 
---     inst.entity:AddTransform()
---     inst.entity:AddPhysics()
---     inst.entity:AddAnimState()
---     inst.entity:AddSoundEmitter()
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
 
---     --Initialize physics
--- 	inst.Physics:SetMass(1)
--- 	inst.Physics:SetFriction(0.1)
--- 	inst.Physics:SetDamping(0)
--- 	inst.Physics:SetRestitution(0.5)
--- 	inst.Physics:SetCollisionMask(COLLISION.WORLD)
--- 	inst.Physics:SetSphere(0.5)
+    inst.Transform:SetFourFaced()
 
---     inst.AnimState:SetBank("ocean_shadow")
---     inst.AnimState:SetBuild("ocean_shadow")
---     inst.AnimState:PlayAnimation("appear")
+    MakeCharacterPhysics(inst, 75, 0.5)
+    RemovePhysicsColliders(inst)
+    
+    inst.AnimState:SetBank("wilson")
+    inst.AnimState:SetBuild("wilson")
+    inst.AnimState:PlayAnimation("idle")
 
---     inst.Appear = function(inst)
+    inst.AnimState:Hide("ARM_carry")
+    inst.AnimState:Hide("HAT")
+    inst.AnimState:Hide("HAIR_HAT")
+    inst.AnimState:Show("HAIR_NOHAT")
+    inst.AnimState:Show("HAIR")
+    inst.AnimState:Show("HEAD")
+    inst.AnimState:Hide("HEAD_HAT")
+    inst.AnimState:Hide("HEAD_HAT_NOHELM")
+    inst.AnimState:Hide("HEAD_HAT_HELM")
 
---     end
+    inst.AnimState:OverrideSymbol("fx_wipe", "wilson_fx", "fx_wipe")
+    inst.AnimState:OverrideSymbol("fx_liquid", "wilson_fx", "fx_liquid")
+    inst.AnimState:OverrideSymbol("shadow_hands", "shadow_hands", "shadow_hands")
+    inst.AnimState:OverrideSymbol("snap_fx", "player_actions_fishing_ocean_new", "snap_fx")
+    inst.AnimState:OverrideSymbol("chalice_swap_comp", "chalice_swap", "chalice_swap_comp")
 
---     return inst
--- end
+    inst.action_target = nil
+    inst.action_tool = nil
+    inst.action = nil
+    inst.started = false
+    inst.runaway = false
+
+    inst.task = nil
+
+    inst:AddComponent("locomotor")
+    inst.components.locomotor.pathcaps = { allowocean = true }
+
+    inst:AddComponent("updatelooper")
+    inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
+        local player = ThePlayer
+        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+            inst.started = false
+            inst.runaway = true -- RUN AWAY, AAAAAA!
+            inst.components.locomotor.walkspeed = 14
+            inst.components.locomotor.runspeed = 14
+            inst.sg:GoToState("idle")
+            if inst.task then
+                inst.task:Cancel()
+                inst.task = nil
+            end
+            inst:RemoveComponent("updatelooper")
+            inst:DoTaskInTime(3, inst.Remove)
+        end
+    end)
+
+    inst:SetStateGraph("SGfake_player")
+
+    inst:SetBrain(require("brains/fake_player"))
+
+    local function DoActionWork(inst)
+        if inst.action_target ~= nil and inst.action ~= nil then
+            if inst.action == "CHOPPING" then
+                inst.sg:GoToState("chop_pre")
+            elseif inst.action == "MINING" then
+                inst.sg:GoToState("mine_start")
+            else
+                -- modprint()
+            end
+        end
+    end
+
+    inst.Start = function(inst)
+        inst.started = true
+
+        if inst.task then
+            inst.task:Cancel()
+            inst.task = nil
+        end
+
+        inst.task = inst:DoPeriodicTask(1.2, DoActionWork, 0.2)
+    end
+
+    inst.PushTargetWorkResponse = function(inst)
+        if inst.action_target ~= nil then
+            if inst.action == "CHOPPING" then
+                local chop_anim
+                local old_anim
+                if inst.action_target.AnimState:IsCurrentAnimation("sway2_loop_short") then
+                    chop_anim = "chop_short"
+                    old_anim = "sway2_loop_short"
+                elseif inst.action_target.AnimState:IsCurrentAnimation("sway1_loop_normal") then
+                    chop_anim = "chop_normal"
+                    old_anim = "sway1_loop_normal"
+                elseif inst.action_target.AnimState:IsCurrentAnimation("sway2_loop_normal") then
+                    chop_anim = "chop_normal"
+                    old_anim = "sway2_loop_normal"
+                elseif inst.action_target.AnimState:IsCurrentAnimation("sway1_loop_tall") then
+                    chop_anim = "chop_tall"
+                    old_anim = "sway1_loop_tall"
+                elseif inst.action_target.AnimState:IsCurrentAnimation("sway2_loop_tall") then
+                    chop_anim = "chop_tall"
+                    old_anim = "sway2_loop_tall"
+                else
+                    return
+                end
+
+                inst.action_target.AnimState:PlayAnimation(chop_anim)
+                inst.action_target.AnimState:PushAnimation(old_anim, true)
+                
+                inst.SoundEmitter:PlaySound("paranoia/sfx/chop")
+                inst.SoundEmitter:PlaySound("paranoia/sfx/leaf_rustle")
+            elseif inst.action == "MINING" then
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/use_pick_rock")
+            end
+        end
+    end
+
+    return inst
+end
 
 return Prefab("footsteps", footsteps_fn, placeholder_assets),
        Prefab("birdsink", birdsink_fn, birdsink_assets),
        Prefab("sfx_dummy", sfx_dummy_fn, placeholder_assets),
        Prefab("whisper_quiet", whisper_quiet_fn, placeholder_assets),
        Prefab("whisper_loud", whisper_loud_fn, placeholder_assets),
-       Prefab("spooky_bubbles", spooky_bubbles_fn, placeholder_assets)
+       Prefab("spooky_bubbles", spooky_bubbles_fn, placeholder_assets),
+       Prefab("fake_player", player_fn)
     --    Prefab("ocean_shadow", ocean_shadow_fn, ocean_shadow_assets)
