@@ -472,7 +472,24 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     --     }
     -- },
     -- OCEAN_SHADOW = {
+    --     forest = 1,
+    --     cave = -1,
 
+    --     night = 2,
+    --     day = 3,
+
+    --     boat = 3,
+    --     land = -1,
+
+    --     isindark = 2,
+    --     canseeindark = 5,
+
+    --     isincombat = 0.5,
+    --     isbusyworking = 3,
+
+    --     biomes = {
+    --         other = 1
+    --     }
     -- }
 }
 
@@ -566,14 +583,14 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     },
     FAKE_PLAYER = {
         ACTIONS = {
-            -- CHOPPING = {
-            --     TARGET_TAGS = { "evergreens" },
-            --     TOOL = {
-            --         "axe",
-            --         "goldenaxe",
-            --         "multitool_axe_pickaxe"
-            --     }
-            -- },
+            CHOPPING = {
+                TARGET_TAGS = { "evergreens" },
+                TOOL = {
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe"
+                }
+            },
             MINING = {
                 TARGET_TAGS = { "boulder" },
                 TOOL = {
@@ -582,42 +599,31 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
                     "multitool_axe_pickaxe"
                 }
             },
-            -- WALKING = {
-            --     TOOL = {
-            --         "pickaxe",
-            --         "goldenpickaxe",
-            --         "axe",
-            --         "goldenaxe",
-            --         "multitool_axe_pickaxe",
-            --         "spear",
-            --         "none"
-            --     }
-            -- },
-            -- RUNNING_AWAY = {
-            --     TOOL = {
-            --         "pickaxe",
-            --         "goldenpickaxe",
-            --         "axe",
-            --         "goldenaxe",
-            --         "multitool_axe_pickaxe",
-            --         "spear",
-            --         "none"
-            --     }
-            -- },
-            -- OBSERVING = {
-            --     TOOL = {
-            --         "pickaxe",
-            --         "goldenpickaxe",
-            --         "axe",
-            --         "goldenaxe",
-            --         "multitool_axe_pickaxe",
-            --         "spear",
-            --         "none"
-            --     }
-            -- }
+            WALKING = {
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe",
+                    "spear",
+                    "none"
+                }
+            },
+            OBSERVING = {
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe",
+                    "spear",
+                    "none"
+                }
+            }
         },
-        MIN_DIST_FROM_PLAYER = 18,
-        MAX_DIST_FROM_PLAYER = 24,
+        MIN_DIST_FROM_PLAYER = 24,
+        MAX_DIST_FROM_PLAYER = 30,
         RUN_AWAY_DIST_SQ = 12 * 12,
     },
     -- SHADY = {

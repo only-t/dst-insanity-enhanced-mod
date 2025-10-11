@@ -410,6 +410,8 @@ local function spooky_bubbles_fn()
     return inst
 end
 
+local brain = require("brains/fake_player")
+
 local function player_fn()
     local inst = CreateEntity()
 
@@ -446,6 +448,7 @@ local function player_fn()
     inst.AnimState:OverrideSymbol("snap_fx", "player_actions_fishing_ocean_new", "snap_fx")
     inst.AnimState:OverrideSymbol("chalice_swap_comp", "chalice_swap", "chalice_swap_comp")
 
+    inst.position_target = nil
     inst.action_target = nil
     inst.action_tool = nil
     inst.action = nil
@@ -455,6 +458,8 @@ local function player_fn()
     inst.task = nil
 
     inst:AddComponent("locomotor")
+    inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
+    inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
     inst.components.locomotor.pathcaps = { allowocean = true }
 
     inst:AddComponent("updatelooper")
@@ -470,14 +475,14 @@ local function player_fn()
                 inst.task:Cancel()
                 inst.task = nil
             end
-            inst:RemoveComponent("updatelooper")
-            inst:DoTaskInTime(3, inst.Remove)
+        elseif player and inst:GetDistanceSqToInst(player) > 36 * 36 then
+            inst:Remove()
         end
     end)
 
     inst:SetStateGraph("SGfake_player")
 
-    inst:SetBrain(require("brains/fake_player"))
+    inst:SetBrain(brain)
 
     local function DoActionWork(inst)
         if inst.action_target ~= nil and inst.action ~= nil then
@@ -494,19 +499,23 @@ local function player_fn()
     inst.Start = function(inst)
         inst.started = true
 
-        if inst.task then
-            inst.task:Cancel()
-            inst.task = nil
-        end
+        if inst.action then
+            if inst.task then
+                inst.task:Cancel()
+                inst.task = nil
+            end
 
-        inst.task = inst:DoPeriodicTask(1.2, DoActionWork, 0.2)
+            inst.task = inst:DoPeriodicTask(1.2, DoActionWork, 0.2)
+        elseif inst.position_target then
+            inst.components.locomotor:RunInDirection(inst:GetAngleToPoint(inst.position_target))
+        end
     end
 
     inst.PushTargetWorkResponse = function(inst)
         if inst.action_target ~= nil then
             if inst.action == "CHOPPING" then
-                local chop_anim
-                local old_anim
+                local chop_anim = "chop_short"
+                local old_anim = "sway1_loop_short"
                 if inst.action_target.AnimState:IsCurrentAnimation("sway2_loop_short") then
                     chop_anim = "chop_short"
                     old_anim = "sway2_loop_short"

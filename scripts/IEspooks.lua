@@ -17,8 +17,8 @@ local function TreeChoppingSpook(self)
 
     if tree == nil then return end
 
-    local chop_anim
-    local old_anim
+    local chop_anim = "chop_short"
+    local old_anim = "sway1_loop_short"
     if tree.AnimState:IsCurrentAnimation("sway2_loop_short") then
         chop_anim = "chop_short"
         old_anim = "sway2_loop_short"
@@ -447,19 +447,17 @@ local function FakePlayerSpook(self)
 
     local x, y, z = self.inst.Transform:GetWorldPosition()
 
-    local action = "MINING"
-    -- local rnd = math.random(1, 5)
-    -- if rnd == 1 then
-    --     action = "CHOPPING"
-    -- elseif rnd == 2 then
-    --     action = "MINING"
-    -- elseif rnd == 3 then
-    --     action = "WALKING"
-    -- elseif rnd == 4 then
-    --     action = "RUNNING_AWAY"
-    -- else
-    --     action = "OBSERVING"
-    -- end
+    local action
+    local rnd = math.random(1, 4)
+    if rnd == 1 then
+        action = "CHOPPING"
+    elseif rnd == 2 then
+        action = "MINING"
+    elseif rnd == 3 then
+        action = "WALKING"
+    else
+        action = "OBSERVING"
+    end
 
     local target
     if params.ACTIONS[action].TARGET_TAGS ~= nil then
@@ -515,6 +513,24 @@ local function FakePlayerSpook(self)
         print("Chose a position target!")
 
         fake_player.Transform:SetPosition(target:Get())
+
+        if action == "WALKING" then
+            local theta = math.random() * TWOPI
+            local radius = 20
+            local pos = fake_player:GetPosition()
+            
+            local steps = 12
+            for i = 1, steps do
+                local offset = Vector3(radius * math.cos(theta), 0, -radius * math.sin(theta))
+                local ox, oy, oz = (pos + offset):Get()
+                if TheWorld.Map:IsPassableAtPoint(ox, oy, oz, false, true) then
+                    fake_player.position_target = Vector3(ox, oy, oz)
+                    break
+                end
+
+                theta = theta - TWOPI / steps
+            end
+        end
     else
         -- modprint()
     end
