@@ -66,11 +66,3 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
         -- modprint()
     end
 end
-
-_G.IE.sharp_curve = function(x)
-    if x < 0.5 then
-        return math.sqrt(x / 0.5)
-    else
-        return math.sqrt((1 - x) / 0.5)
-    end
-end

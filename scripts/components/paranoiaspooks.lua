@@ -226,6 +226,13 @@ local function OnHealthDelta(inst, data)
     end
 end
 
+-- local function WhisperRespond(inst)
+--     if inst.components.talker then
+--         local script = _G.STRINGS.IE.WHISPER_RESPONSES[math.random(1, #_G.STRINGS.IE.WHISPER_RESPONSES)]
+--         inst.components.talker:Say(script)
+--     end
+-- end
+
 local ParanoiaSpooks = Class(function(self, inst)
 	self.inst = inst
 
@@ -248,12 +255,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.lastfighttime = -10
     self.lastbusytime = -10
 
-    inst:ListenForEvent("performaction", CheckAction)
-    inst:ListenForEvent("sanitydelta", OnSanityDelta)
-    inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
-    inst:ListenForEvent("buildsuccess", OnBuildSuccess)
-
-    inst:ListenForEvent("healthdelta", OnHealthDelta)
+    -- inst:ListenForEvent("whispers_response", WhisperRespond)
 
     inst:StartUpdatingComponent(self)
 end)
@@ -282,6 +284,18 @@ function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
     self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
+end
+
+function ParanoiaSpooks:Init()
+    self.inst:ListenForEvent("buildsuccess", OnBuildSuccess)
+    self.inst:ListenForEvent("performaction", CheckAction)
+    self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
+    OnSanityDelta(self.inst, { newpercent = self.inst.replica.sanity:GetPercent() })
+    
+    self.inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+
+    self.inst:ListenForEvent("healthdelta", OnHealthDelta)
+    OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
 end
 
 function ParanoiaSpooks:Start()

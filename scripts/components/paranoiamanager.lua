@@ -36,7 +36,7 @@ local function Transition(self, into, time) -- HOLY SHIT, it turned out sooo smo
     self.mode = into
 
     if self.mode == SANITY_MODE_INSANITY then
-        local sanity = self.inst.replica.sanity and self.inst.replica.sanity:GetPercent() or 0
+        local sanity = self.sanity and self.sanity:GetPercent() or 0
         local new_stage
         if sanity <= IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE6] then
             new_stage = IE.PARANOIA_STAGES.STAGE6
@@ -147,11 +147,29 @@ local ParanoiaManager = Class(function(self, inst)
 
     self.shader_enabled = true
 
-    inst:ListenForEvent("sanitydelta", OnSanityDelta)
-    inst:ListenForEvent("healthdelta", OnHealthDelta) -- The "death" event doesn't get pushed on the client
-
     inst:StartUpdatingComponent(self)
 end)
+
+function ParanoiaManager:OnRemoveEntity()
+    self:OnRemoveFromEntity()
+end
+
+function ParanoiaManager:OnRemoveFromEntity()
+    self:SetShaderDistortionParams(0, 0)
+    self:SetShaderColorParams(0, 0)
+    self:ChangeParanoiaStage(0)
+
+    self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
+    self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
+end
+
+function ParanoiaManager:Init()
+    self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
+    OnSanityDelta(self.inst, { newpercent = self.sanity:GetPercent(), sanitymode = self.sanity:GetSanityMode() })
+
+    self.inst:ListenForEvent("healthdelta", OnHealthDelta) -- The "death" event doesn't get pushed on the client
+    OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
+end
 
 function ParanoiaManager:EnableShader()
     self.shader_enabled = true

@@ -16,7 +16,13 @@ local function GetTarget(inst)
 end
 
 local function ShouldRunAway(inst)
-    return inst.runaway
+    if inst.runaway then
+        inst.components.locomotor.walkspeed = 14
+        inst.components.locomotor.runspeed = 14
+        return true
+    end
+
+    return false
 end
 
 local function ShouldWander(inst)

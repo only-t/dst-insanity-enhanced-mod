@@ -126,18 +126,21 @@ DSP._ctor = function(self, ...)
         if old_fn then
             old_fn(inst, player, ...)
         end
-        
-        player:DoTaskInTime(0, function()
+
+        player:DoTaskInTime(1, function()
             if _activatedplayer == player then
                 return
             elseif _activatedplayer and _activatedplayer.entity:IsValid() then
                 if player.components.paranoiamanager then
+                    print("removing change_paranoia_stage listener, playeractivated")
                     inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
                 end
             end
             _activatedplayer = player
 
-            if player.components.paranoiamanager then
+            print("activating DSP")
+            if player.components.paranoiamanager then -- [TODO] Fix?
+                print("player has paranoiamanager component")
                 inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged, player)
                 OnParanoiaStageChanged(inst, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = player.components.paranoiamanager.current_stage })
             end
@@ -149,12 +152,15 @@ DSP._ctor = function(self, ...)
             old_fn(inst, player, ...)
         end
 
-        if player.components.paranoiamanager then
-            inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
-        end
-        
-        if player == _activatedplayer then
-            _activatedplayer = nil
-        end
+        player:DoTaskInTime(0, function()
+            if player.components.paranoiamanager then
+                print("removing change_paranoia_stage listener, playerdeactivated")
+                inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+            end
+            
+            if player == _activatedplayer then
+                _activatedplayer = nil
+            end
+        end)
     end)
 end

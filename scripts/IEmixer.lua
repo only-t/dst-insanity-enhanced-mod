@@ -11,40 +11,40 @@ local sfx ="set_sfx/sfx"
 local slurp ="set_sfx/everything_else_muted"
 
 _G.TheMixer:AddNewMix("paranoia_stage3", 2, 4, {
-    [amb]      = 0.7,
-    [cloud]    = 0.7,
-    [music]    = 0.45,
-    [voice]    = 0.7,
-    [movement] = 0.7,
-    [creature] = 0.7,
-    [player]   = 0.7,
-    [HUD]      = 0.7,
-    [sfx]      = 0.7,
-    [slurp]    = 0.7,
+    [amb]      = 0.8,
+    [cloud]    = 0.8,
+    [music]    = 0.4,
+    [voice]    = 0.8,
+    [movement] = 0.8,
+    [creature] = 0.8,
+    [player]   = 0.8,
+    [HUD]      = 0.8,
+    [sfx]      = 0.8,
+    [slurp]    = 0.8,
 })
 
 _G.TheMixer:AddNewMix("paranoia_stage4", 2, 4, {
+    [amb]      = 0.65,
+    [cloud]    = 0.65,
+    [music]    = 0.25,
+    [voice]    = 0.65,
+    [movement] = 0.65,
+    [creature] = 0.65,
+    [player]   = 0.65,
+    [HUD]      = 0.65,
+    [sfx]      = 0.65,
+    [slurp]    = 0.65,
+})
+
+_G.TheMixer:AddNewMix("paranoia_stage5", 2, 4, {
     [amb]      = 0.5,
     [cloud]    = 0.5,
-    [music]    = 0.25,
+    [music]    = 0.11,
     [voice]    = 0.5,
     [movement] = 0.5,
     [creature] = 0.5,
     [player]   = 0.5,
     [HUD]      = 0.5,
-    [sfx]      = 0.5,
+    [sfx]      = 0.55,
     [slurp]    = 0.5,
-})
-
-_G.TheMixer:AddNewMix("paranoia_stage5", 2, 4, {
-    [amb]      = 0.3,
-    [cloud]    = 0.3,
-    [music]    = 0.09,
-    [voice]    = 0.3,
-    [movement] = 0.3,
-    [creature] = 0.3,
-    [player]   = 0.3,
-    [HUD]      = 0.3,
-    [sfx]      = 0.4,
-    [slurp]    = 0.3,
 })

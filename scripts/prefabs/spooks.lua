@@ -230,7 +230,7 @@ local function whisper_quiet_fn()
 
     local started = false
 
-    inst.dissapear_distance_from_player = 4
+    inst.disappear_distance_from_player = 4
 
     inst.Appear = function(inst)
         local script = STRINGS.IE.WHISPERS_QUIET[math.random(1, #STRINGS.IE.WHISPERS_QUIET)]
@@ -243,7 +243,7 @@ local function whisper_quiet_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer or nil
-        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+        if player and inst:GetDistanceSqToInst(player) <= inst.disappear_distance_from_player then
             inst.components.talker:ShutUp()
             return
         end
@@ -308,7 +308,7 @@ local function whisper_loud_fn()
     local text_duration = 2
     local offset_duration = 1
 
-    inst.dissapear_distance_from_player = 4
+    inst.disappear_distance_from_player = 4
 
     inst.Appear = function(inst)
         local script = STRINGS.IE.WHISPERS_LOUD[math.random(1, #STRINGS.IE.WHISPERS_LOUD)]
@@ -320,7 +320,7 @@ local function whisper_loud_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer or nil
-        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+        if player and inst:GetDistanceSqToInst(player) <= inst.disappear_distance_from_player then
             inst.components.talker:ShutUp()
             return
         end
@@ -361,7 +361,7 @@ local function spooky_bubbles_fn()
     end
 
     inst.duration = 14 -- How long this spook will stay visible
-    inst.dissapear_distance_from_player = 16
+    inst.disappear_distance_from_player = 16
     inst.period = 0.7
     inst._start_time = nil
 
@@ -402,12 +402,38 @@ local function spooky_bubbles_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer or nil
-        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+        if player and inst:GetDistanceSqToInst(player) <= inst.disappear_distance_from_player then
             inst._start_time = inst._start_time - inst.duration -- Finish the task
         end
     end)
 
     return inst
+end
+
+local function PickRandomBuild()
+    local builds = {
+        "wilson",
+        "willow",
+        "wolfgang",
+        "wendy",
+        "wx78",
+        "wickerbottom",
+        "woodie",
+        "waxwell",
+        "wathgrithr",
+        "webber",
+        "winona",
+        "warly",
+        "walter",
+
+        -- Restricted characters
+        -- "wortox",
+        -- "wormwood",
+        -- "wurt",
+        -- "wanda",
+    }
+
+    return builds[math.random(1, #builds)]
 end
 
 local brain = require("brains/fake_player")
@@ -429,7 +455,7 @@ local function player_fn()
     RemovePhysicsColliders(inst)
     
     inst.AnimState:SetBank("wilson")
-    inst.AnimState:SetBuild("wilson")
+    inst.AnimState:SetBuild(PickRandomBuild())
     inst.AnimState:PlayAnimation("idle")
 
     inst.AnimState:Hide("ARM_carry")
@@ -465,12 +491,9 @@ local function player_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer
-        if player and inst:GetDistanceSqToInst(player) <= inst.dissapear_distance_from_player then
+        if player and inst:GetDistanceSqToInst(player) <= inst.disappear_distance_from_player then
             inst.started = false
             inst.runaway = true -- RUN AWAY, AAAAAA!
-            inst.components.locomotor.walkspeed = 14
-            inst.components.locomotor.runspeed = 14
-            inst.sg:GoToState("idle")
             if inst.task then
                 inst.task:Cancel()
                 inst.task = nil
@@ -549,11 +572,36 @@ local function player_fn()
     return inst
 end
 
+local function fake_boss_fn()
+    local inst = CreateEntity()
+
+    --[[ Non-networked entity ]]
+    inst.entity:SetCanSleep(false)
+    inst.persists = false
+
+    inst.entity:AddTransform()
+    inst.entity:AddAnimState()
+    inst.entity:AddSoundEmitter()
+
+    inst.Transform:SetFourFaced()
+
+	inst:SetPhysicsRadiusOverride(1.5)
+	MakeGiantCharacterPhysics(inst, 1000, inst.physicsradiusoverride)
+    RemovePhysicsColliders(inst)
+    
+    inst.Setup = function(inst, bossdata)
+        inst.AnimState:SetBank(bossdata.bank)
+        inst.AnimState:SetBuild(bossdata.build)
+        inst.AnimState:PlayAnimation(bossdata.anim)
+    end
+end
+
 return Prefab("footsteps", footsteps_fn, placeholder_assets),
        Prefab("birdsink", birdsink_fn, birdsink_assets),
        Prefab("sfx_dummy", sfx_dummy_fn, placeholder_assets),
        Prefab("whisper_quiet", whisper_quiet_fn, placeholder_assets),
        Prefab("whisper_loud", whisper_loud_fn, placeholder_assets),
        Prefab("spooky_bubbles", spooky_bubbles_fn, placeholder_assets),
-       Prefab("fake_player", player_fn)
+       Prefab("fake_player", player_fn),
+       Prefab("fake_boss_death", fake_boss_fn)
     --    Prefab("ocean_shadow", ocean_shadow_fn, ocean_shadow_assets)

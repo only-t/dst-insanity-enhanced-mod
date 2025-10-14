@@ -145,8 +145,10 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     OCEAN_BUBBLES = 9,
     OCEAN_FOOTSTEPS = 10,
     FAKE_PLAYER = 11,
-    -- SHADY = 12, -- He's just a chill guy :)))
-    -- OCEAN_SHADOW = 13,
+    SHADOW_SOUND = 12, -- An assortment of different spooky sounds
+    -- FAKE_BOSS_DEATH = 13,
+    -- SHADY = 14, -- He's just a chill guy :)))
+    -- OCEAN_SHADOW = 15,
 }
 
 _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
@@ -451,6 +453,12 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
             other = 2
         }
     },
+    SHADOW_SOUND = {
+
+    },
+    FAKE_BOSS_DEATH = {
+
+    }
     -- SHADY = {
     --     forest = 1,
     --     cave = 1,
@@ -626,6 +634,55 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
         MAX_DIST_FROM_PLAYER = 30,
         RUN_AWAY_DIST_SQ = 12 * 12,
     },
+    -- SHADOW_SOUND = {
+    --     DIST_FROM_PLAYER = 12,
+    --     SOUNDS = {
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_1",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_2",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_3",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/dissappear",
+    --             volume = 0.4
+    --         },
+    --         -- {
+    --         --     name = "dontstarve/sanity/knight/hit_response" -- Could be good for a suspense payoff sfx
+    --         -- },
+    --         {
+    --             name = "dontstarve/sanity/creature3/movement_pst",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/creature1/dissappear",
+    --             volume = 0.4
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/bishop/dissappear",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/bishop/taunt",
+    --             volume = 1
+    --         }
+    --     }
+    -- },
+    -- FAKE_BOSS_DEATH = {
+    --     BOSSES = {
+    --         bearger = {
+    --             bank = "",
+    --             build = "",
+    --             anim = ""
+    --         }
+    --     }
+    -- }
     -- SHADY = {
     --     MIN_DIST_FROM_PLAYER = 12,
     --     MAX_DIST_FROM_PLAYER = 20
