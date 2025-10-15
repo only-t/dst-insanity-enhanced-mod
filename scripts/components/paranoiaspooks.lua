@@ -201,7 +201,7 @@ local function OnBuildSuccess(inst)
 end
 
 local function OnHealthDelta(inst, data)
-    if data.newpercent <= 0 then -- Is dead, hopefully
+    if data.newpercent <= 0 then -- The "death" event doesn't get pushed on the client, so this is a workaround
         inst:RemoveEventCallback("performaction", CheckAction)
         inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
         inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
@@ -223,10 +223,20 @@ local function OnHealthDelta(inst, data)
         inst.components.paranoiaspooks:Start()
 
         inst:StartUpdatingComponent(inst.components.paranoiaspooks)
+
+        inst.components.paranoiaspooks.paranoia_sources.low_health = IE.PARANOIA_LOW_HEALTH_MAX_GAIN * (1 - math.min(1, data.newpercent / IE.PARANOIA_LOW_HEALTH_GAIN_START))
     end
 end
 
--- local function WhisperRespond(inst)
+local function OnEnterDark(inst)
+    inst.components.paranoiaspooks.paranoia_sources.darkness = IE.PARANOIA_DARKNESS_GAIN
+end
+
+local function OnEnterLight(inst)
+    inst.components.paranoiaspooks.paranoia_sources.darkness = nil
+end
+
+-- local function WhisperRespond(inst) -- [TODO]
 --     if inst.components.talker then
 --         local script = _G.STRINGS.IE.WHISPER_RESPONSES[math.random(1, #_G.STRINGS.IE.WHISPER_RESPONSES)]
 --         inst.components.talker:Say(script)
@@ -284,6 +294,8 @@ function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
     self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
+    self.inst:RemoveEventCallback("enterdark", OnEnterDark)
+    self.inst:RemoveEventCallback("enterlight", OnEnterLight)
 end
 
 function ParanoiaSpooks:Init()
@@ -296,6 +308,13 @@ function ParanoiaSpooks:Init()
 
     self.inst:ListenForEvent("healthdelta", OnHealthDelta)
     OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
+
+    self.inst:ListenForEvent("enterdark", OnEnterDark)
+    self.inst:ListenForEvent("enterlight", OnEnterLight)
+
+    if TheWorld:HasTag("cave") then
+        self.paranoia_sources.caving = 0.5
+    end
 end
 
 function ParanoiaSpooks:Start()
@@ -307,7 +326,7 @@ function ParanoiaSpooks:Stop()
 end
 
 function ParanoiaSpooks:Spook(type)
-    -- [TODO] Make this less ugly, stupid
+    -- [TODO] Make this more simple, stupid
     if type == IE.PARANOIA_SPOOK_TYPES.TREECHOP then
         Spooks.TreeChoppingSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.MINING_SOUND then
@@ -335,6 +354,33 @@ function ParanoiaSpooks:Spook(type)
     end
 end
 
+function ParanoiaSpooks:RecalcGhostParanoia()
+    -- Shards don't exist on the client, [TODO] fix this >:c
+    -- if GetGhostSanityDrain(TheNet:GetServerGameMode()) then
+    --     local num_ghosts = TheWorld.shard.components.shard_players:GetNumGhosts()
+    --     self.paranoia_sources.player_ghosts = IE.PARANOIA_GHOST_PLAYER_GAIN * num_ghosts
+    -- else
+    --     self.paranoia_sources.player_ghosts = nil
+    -- end
+
+    self.paranoia_sources.player_ghosts = self.inst.replica.sanity:IsGhostDrain() and IE.PARANOIA_PLAYER_GHOSTS_GAIN or nil
+end
+
+function ParanoiaSpooks:RecalcLonelinessParanoia()
+    if #AllPlayers <= 1 then -- Solo players shouldn't be punished
+        self.paranoia_sources.loneliness = nil
+    end
+
+    for _, player in ipairs(AllPlayers) do
+        if self.inst:GetDistanceSqToInst(player) <= IE.PARANOIA_LONELINESS_DIST_SQ then
+            self.paranoia_sources.loneliness = nil
+            return
+        end
+    end
+
+    self.paranoia_sources.loneliness = IE.PARANOIA_LONELINESS_GAIN
+end
+
 function ParanoiaSpooks:OnUpdate(dt)
     if IE.DEV then
         return
@@ -347,6 +393,17 @@ function ParanoiaSpooks:OnUpdate(dt)
         self.paranoia = 0
 
         return
+    end
+
+    self:RecalcGhostParanoia()
+    self:RecalcLonelinessParanoia()
+
+    if IE.DEV then
+        for source, amount in pairs(self.paranoia_sources) do
+            print("paranoia sources:")
+            print("    "..tostring(source).." - "..tostring(amount))
+        end
+        print("current paranoia - "..tostring(self.paranoia))
     end
 
     if self.is_paranoid then

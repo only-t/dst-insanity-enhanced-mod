@@ -23,6 +23,9 @@ PrefabFiles = {
 modimport("scripts/IEenv")
 modimport("scripts/IEutil")
 
+_G.IE.modprint(_G.IE.PRINT, "Loading mod...",
+                            require("IEcard"))
+
 -- [[ Mod settings ]]
 modimport("scripts/IEmodsettings")
 

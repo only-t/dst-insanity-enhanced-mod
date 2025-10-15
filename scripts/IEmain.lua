@@ -9,7 +9,7 @@ local overrides = {
         "playerhud"
     },
     stategraphs = {
-        -- "SGwilson",
+        -- "SGwilson", -- [TODO]
         -- "SGwilson_client"
     },
     prefabs = {
@@ -23,6 +23,8 @@ local overrides = {
 
 for type, names in pairs(overrides) do
     for i, name in ipairs(names) do
+        _G.IE.modprint(_G.IE.PRINT, "Overriding...",
+                                    "filepath - ".."scripts/overrides/"..type.."/"..name)
         modimport("scripts/overrides/"..type.."/"..name)
     end
 end

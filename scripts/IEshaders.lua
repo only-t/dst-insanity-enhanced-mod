@@ -1,3 +1,6 @@
+_G.IE.modprint(_G.IE.PRINT, "Loading file...",
+                            "filename - IEshaders.lua")
+
 AddModShadersInit(function()
     _G.UniformVariables.PARANOIA_PARAMS1 = _G.PostProcessor:AddUniformVariable("PARANOIA_PARAMS1", 2)
     _G.UniformVariables.PARANOIA_PARAMS2 = _G.PostProcessor:AddUniformVariable("PARANOIA_PARAMS2", 2)

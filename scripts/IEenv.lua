@@ -727,6 +727,12 @@ _G[MOD_CODE].SHADER_PARAM_LIMITS = {
 
 _G[MOD_CODE].IN_COMBAT_DURATION = 6
 _G[MOD_CODE].BUSY_DURATION = 10
+_G[MOD_CODE].PARANOIA_LOW_HEALTH_GAIN_START = 0.5
+_G[MOD_CODE].PARANOIA_LOW_HEALTH_MAX_GAIN = 1
+_G[MOD_CODE].PARANOIA_DARKNESS_GAIN = 1.67
+_G[MOD_CODE].PARANOIA_PLAYER_GHOSTS_GAIN = 0.67
+_G[MOD_CODE].PARANOIA_LONELINESS_DIST_SQ = 40 * 40
+_G[MOD_CODE].PARANOIA_LONELINESS_GAIN = 0.5
 
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
                       -- These show up in Game Options and can be updated during gameplay.

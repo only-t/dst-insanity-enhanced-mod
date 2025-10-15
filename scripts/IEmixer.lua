@@ -1,3 +1,6 @@
+_G.IE.modprint(_G.IE.PRINT, "Loading file...",
+                            "filename - IEmixer.lua")
+
 -- [[ Mixes ]]
 local amb = "set_ambience/ambience"
 local cloud = "set_ambience/cloud"

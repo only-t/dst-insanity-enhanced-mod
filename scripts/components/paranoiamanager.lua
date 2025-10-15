@@ -16,15 +16,18 @@ require("mathutil")
 --     end
 -- end
 
+-- Desmos:
+-- -\frac{\cos\left(3x\pi\right)}{2}+0.5\left\{0\le x\le\frac{1}{3}\right\}
+-- 1-\left(1.5x-0.5\right)^{2}\left\{\frac{1}{3}\le x\le1\right\}
 local function DistortionCurve(x)
     if x < 0 or x > 1 then
-        return 0
+        return math.clamp(x, 0, 1)
     end
 
     if x <= 1 / 3 then
         return -math.cos(3 * x * PI) / 2 + 0.5
     else
-        return 1 - math.pow(3 * x * 0.5 - 0.5, 2)
+        return 1 - math.pow(1.5 * x - 0.5, 2)
     end
 end
 
@@ -97,7 +100,7 @@ local function OnSanityDelta(inst, data)
 end
 
 local function OnHealthDelta(inst, data)
-    if data.newpercent <= 0 then -- Is dead, hopefully
+    if data.newpercent <= 0 then -- The "death" event doesn't get pushed on the client, so this is a workaround
         inst.components.paranoiamanager:StopHeartbeat()
     else
         inst.components.paranoiamanager:ResumeHeartbeat()
@@ -108,7 +111,8 @@ local ParanoiaManager = Class(function(self, inst)
     self.inst = inst
 
     if inst.replica.sanity == nil then
-        -- modprint()
+        IE.modprint(IE.WARN, "Trying to add ParanoiaManager but that entity doesn't have the Sanity replica!",
+                             "inst - "..tostring(inst))
         inst:DoTaskInTime(0, function() -- Wait 1 tick to let the component get fully created
             inst:RemoveComponent("paranoiamanager") -- Then remove it
         end)
@@ -158,6 +162,7 @@ function ParanoiaManager:OnRemoveFromEntity()
     self:SetShaderDistortionParams(0, 0)
     self:SetShaderColorParams(0, 0)
     self:ChangeParanoiaStage(0)
+    self:DisableShader()
 
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
@@ -167,18 +172,18 @@ function ParanoiaManager:Init()
     self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
     OnSanityDelta(self.inst, { newpercent = self.sanity:GetPercent(), sanitymode = self.sanity:GetSanityMode() })
 
-    self.inst:ListenForEvent("healthdelta", OnHealthDelta) -- The "death" event doesn't get pushed on the client
+    self.inst:ListenForEvent("healthdelta", OnHealthDelta)
     OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
 end
 
 function ParanoiaManager:EnableShader()
     self.shader_enabled = true
-    PostProcessor:EnablePostProcessEffect(PostProcessorEffects.Paranoia, true)
+    PostProcessor:EnablePostProcessEffect(PostProcessorEffects.ParanoiaDistortions, true)
 end
 
 function ParanoiaManager:DisableShader()
     self.shader_enabled = false
-    PostProcessor:EnablePostProcessEffect(PostProcessorEffects.Paranoia, false)
+    PostProcessor:EnablePostProcessEffect(PostProcessorEffects.ParanoiaDistortions, false)
 end
 
 function ParanoiaManager:IsShaderEnabled()

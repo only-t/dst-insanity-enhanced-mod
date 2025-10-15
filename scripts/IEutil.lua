@@ -4,7 +4,8 @@ end
 
 _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
     if inst == nil then
-        -- modprint()
+        IE.modprint(IE.WARN, "Trying to override an event function but the entity is nil!",
+                             "event - "..event)
         return
     end
 
@@ -19,7 +20,9 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
         local event_fns = event_listeners[inst]
 
         if event_fns == nil then
-            -- modprint()
+            IE.modprint(IE.WARN, "Trying to override an event function but that entity doesn't listen for that event!",
+                                 "event - "..event,
+                                 "source - "..tostring(source))
             return
         end
 
@@ -28,7 +31,11 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
         end
 
         if fn_index < 1 then
-            -- modprint()
+            IE.modprint(IE.WARN, "Trying to override an event function but the given function index is invalid!",
+                                 "event - "..event,
+                                 "source - "..tostring(source),
+                                 "fn_index - "..tostring(fn_index),
+                                 "#event_fns - "..tostring(#event_fns))
             return
         end
 
@@ -37,7 +44,9 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
             fn(old_fn, ...)
         end
     else
-        -- modprint()
+        IE.modprint(IE.WARN, "Trying to override an event function but that entity doesn't listen for that event!",
+                             "event - "..event
+                             "source - "..tostring(source))
     end
 
     local event_listening = inst.event_listening[event]
@@ -45,7 +54,9 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
         local event_fns = event_listening[source]
 
         if event_fns == nil then
-            -- modprint()
+            IE.modprint(IE.WARN, "Trying to override an event function but that entity doesn't listen for that event!",
+                                 "event - "..event,
+                                 "source - "..tostring(source))
             return
         end
 
@@ -54,7 +65,11 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
         end
 
         if fn_index < 1 then
-            -- modprint()
+            IE.modprint(IE.WARN, "Trying to override an event function but the given function index is invalid!",
+                                 "event - "..event,
+                                 "source - "..tostring(source),
+                                 "fn_index - "..tostring(fn_index),
+                                 "#event_fns - "..tostring(#event_fns))
             return
         end
 
@@ -63,6 +78,8 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
             fn(old_fn, ...)
         end
     else
-        -- modprint()
+        IE.modprint(IE.WARN, "Trying to override an event function but that entity doesn't listen for that event!",
+                             "event - "..event
+                             "source - "..tostring(source))
     end
 end

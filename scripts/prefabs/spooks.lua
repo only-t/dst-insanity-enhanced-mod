@@ -451,8 +451,7 @@ local function player_fn()
 
     inst.Transform:SetFourFaced()
 
-    MakeCharacterPhysics(inst, 75, 0.5)
-    RemovePhysicsColliders(inst)
+    MakeGhostPhysics(inst, 75, 0.5)
     
     inst.AnimState:SetBank("wilson")
     inst.AnimState:SetBuild(PickRandomBuild())
@@ -486,7 +485,7 @@ local function player_fn()
     inst:AddComponent("locomotor")
     inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
     inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
-    inst.components.locomotor.pathcaps = { allowocean = true }
+    inst.components.locomotor.pathcaps = { allowocean = true, ignorewalls = true }
 
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
@@ -514,7 +513,9 @@ local function player_fn()
             elseif inst.action == "MINING" then
                 inst.sg:GoToState("mine_start")
             else
-                -- modprint()
+                IE.modprint(IE.WARN, "Fake player is trying to perform an unknown work action!",
+                                     "action - "..tostring(inst.action),
+                                     "action_target - "..tostring(inst.action_target))
             end
         end
     end

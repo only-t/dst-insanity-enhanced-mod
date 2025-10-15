@@ -10,7 +10,7 @@ DynamicMusic._ctor = function(self, ...)
 
         _G.IE.OverrideListenForEventFn(self.inst, "goinsane", player, function(old_fn, ...)
             if old_fn then
-                -- old_fn(...) -- I guess this will suffice for now
+                -- old_fn(...) -- I guess this will suffice for now, [TODO] fix
             end
         end, -1)
     end, -1)

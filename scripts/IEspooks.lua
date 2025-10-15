@@ -385,7 +385,9 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
     local fake_player = SpawnPrefab("fake_player")
     fake_player.disappear_distance_from_player = params.RUN_AWAY_DIST_SQ
     if EntityScript.is_instance(target) then
-        print("Chose an entity target!")
+        if IE.DEV then
+            print("Chose an entity target!")
+        end
 
         local theta = math.random() * PI2
         local radius = target:GetPhysicsRadius() + fake_player:GetPhysicsRadius()
@@ -394,7 +396,9 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
         fake_player.action_target = target
         fake_player.action = action
     elseif Vector3.is_instance(target) then
-        print("Chose a position target!")
+        if IE.DEV then
+            print("Chose a position target!")
+        end
 
         fake_player.Transform:SetPosition(target:Get())
 
@@ -411,7 +415,9 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
             tool = params.ACTIONS[action].TOOL
         end
 
-        print("Chosen tool - "..tool)
+        if IE.DEV then
+            print("Chosen tool - "..tool)
+        end
 
         if tool ~= "none" then
             fake_player.AnimState:Show("ARM_carry")
@@ -420,7 +426,9 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
             fake_player.action_tool = tool
         end
     else
-        print("Chosen tool - none")
+        if IE.DEV then
+            print("Chosen tool - none")
+        end
     end
 
     fake_player:DoTaskInTime(1.5, fake_player.Start)

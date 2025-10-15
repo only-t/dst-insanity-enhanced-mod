@@ -67,16 +67,16 @@ IE.WHISPERS_LOUD = { -- Sudden, aggressive, more of a jumpscare, supposed to for
     "MY SPEAR BROKE!"
 }
 
-IE.WHISPER_RESPONSES = {
-    "What?",
-    "H-hello?",
-    "Hello?!",
-    "Who said that?",
-    "What was that?",
-    "Huh?",
-    "...!",
-    "!",
-    "Stop that!",
-    "Stop it!",
-    -- "You're not... real..."
-}
+-- IE.WHISPER_RESPONSES = {
+--     "What?",
+--     "H-hello?",
+--     "Hello?!",
+--     "Who said that?",
+--     "What was that?",
+--     "Huh?",
+--     "...!",
+--     "!",
+--     "Stop that!",
+--     "Stop it!",
+--     -- "You're not... real..."
+-- }
