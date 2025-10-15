@@ -21,7 +21,7 @@ require("mathutil")
 -- 1-\left(1.5x-0.5\right)^{2}\left\{\frac{1}{3}\le x\le1\right\}
 local function DistortionCurve(x)
     if x < 0 or x > 1 then
-        return math.clamp(x, 0, 1)
+        return 0
     end
 
     if x <= 1 / 3 then
@@ -99,14 +99,6 @@ local function OnSanityDelta(inst, data)
     self:SetShaderColorParams(sharpness, monochromacy)
 end
 
-local function OnHealthDelta(inst, data)
-    if data.newpercent <= 0 then -- The "death" event doesn't get pushed on the client, so this is a workaround
-        inst.components.paranoiamanager:StopHeartbeat()
-    else
-        inst.components.paranoiamanager:ResumeHeartbeat()
-    end
-end
-
 local ParanoiaManager = Class(function(self, inst)
     self.inst = inst
 
@@ -149,8 +141,6 @@ local ParanoiaManager = Class(function(self, inst)
     self.distortion_time = 2
     self.distortion_curtime = nil
 
-    self.shader_enabled = true
-
     inst:StartUpdatingComponent(self)
 end)
 
@@ -159,21 +149,20 @@ function ParanoiaManager:OnRemoveEntity()
 end
 
 function ParanoiaManager:OnRemoveFromEntity()
-    self:SetShaderDistortionParams(0, 0)
-    self:SetShaderColorParams(0, 0)
     self:ChangeParanoiaStage(0)
-    self:DisableShader()
 
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-    self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
+
+    self:SetShaderDistortionParams(0, 0)
+    self:SetShaderColorParams(0, 0)
+    self:DisableShader()
 end
 
 function ParanoiaManager:Init()
     self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
     OnSanityDelta(self.inst, { newpercent = self.sanity:GetPercent(), sanitymode = self.sanity:GetSanityMode() })
 
-    self.inst:ListenForEvent("healthdelta", OnHealthDelta)
-    OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
+    self:EnableShader()
 end
 
 function ParanoiaManager:EnableShader()

@@ -1,8 +1,8 @@
 local Spooks = require("IEspooks")
 
 local function PickASpook(self)
-    local isnight = TheWorld.state.isnight
-    local isday = TheWorld.state.isday
+    local isnight = TheWorld.state.iscavenight
+    local isday = TheWorld.state.iscaveday
     local isplayeronboat = self.inst:GetCurrentPlatform() ~= nil
     local isplayerindark = self.inst:IsInLight()
     local canplayerseeindark = CanEntitySeeInDark(self.inst)
@@ -201,31 +201,7 @@ local function OnBuildSuccess(inst)
 end
 
 local function OnHealthDelta(inst, data)
-    if data.newpercent <= 0 then -- The "death" event doesn't get pushed on the client, so this is a workaround
-        inst:RemoveEventCallback("performaction", CheckAction)
-        inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-        inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
-        inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
-
-        inst.components.paranoiaspooks.next_spook = nil
-        inst.components.paranoiaspooks.last_spook = nil
-        inst.components.paranoiaspooks.paranoia = 0
-
-        inst.components.paranoiaspooks:Stop()
-
-        inst:StopUpdatingComponent(inst.components.paranoiaspooks)
-    else
-        inst:ListenForEvent("performaction", CheckAction)
-        inst:ListenForEvent("sanitydelta", OnSanityDelta)
-        inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
-        inst:ListenForEvent("buildsuccess", OnBuildSuccess)
-
-        inst.components.paranoiaspooks:Start()
-
-        inst:StartUpdatingComponent(inst.components.paranoiaspooks)
-
-        inst.components.paranoiaspooks.paranoia_sources.low_health = IE.PARANOIA_LOW_HEALTH_MAX_GAIN * (1 - math.min(1, data.newpercent / IE.PARANOIA_LOW_HEALTH_GAIN_START))
-    end
+    inst.components.paranoiaspooks.paranoia_sources.low_health = IE.PARANOIA_LOW_HEALTH_MAX_GAIN * (1 - math.min(1, data.newpercent / IE.PARANOIA_LOW_HEALTH_GAIN_START))
 end
 
 local function OnEnterDark(inst)
@@ -249,9 +225,10 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.is_paranoid = false -- false == stage 0, slowly decrease paranoia
 
     self.paranoia = 0
+    self.suspense = 0 -- For better spook timing
 
     if IE.DEV then
-        self.paranoia_threshold = 6
+        self.paranoia_threshold = 10
     else
         self.paranoia_threshold = 480
     end
@@ -315,6 +292,47 @@ function ParanoiaSpooks:Init()
     if TheWorld:HasTag("cave") then
         self.paranoia_sources.caving = 0.5
     end
+end
+
+function ParanoiaSpooks:_OnDeath() -- Should only be called from inside Health.SetIsDead
+    self.inst:RemoveEventCallback("performaction", CheckAction)
+    self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
+    self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
+
+    self.inst.components.paranoiaspooks.next_spook = nil
+    self.inst.components.paranoiaspooks.last_spook = nil
+    self.inst.components.paranoiaspooks.paranoia = 0
+
+    self.inst.components.paranoiaspooks:Stop()
+    
+    self.inst:StopUpdatingComponent(self)
+end
+
+function ParanoiaSpooks:_OnRevive() -- Should only be called from inside Health.SetIsDead
+    self.inst:ListenForEvent("performaction", CheckAction)
+    self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
+    self.inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:ListenForEvent("buildsuccess", OnBuildSuccess)
+
+    self.inst.components.paranoiaspooks:Start()
+
+    self.inst:StartUpdatingComponent(self)
+end
+
+function ParanoiaSpooks:_OnDeath() -- Should only be called from inside Health.SetIsDead
+    self.inst:RemoveEventCallback("performaction", CheckAction)
+    self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
+    self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
+
+    self.inst.components.paranoiaspooks.next_spook = nil
+    self.inst.components.paranoiaspooks.last_spook = nil
+    self.inst.components.paranoiaspooks.paranoia = 0
+
+    self.inst.components.paranoiaspooks:Stop()
+    
+    self.inst:StopUpdatingComponent(self)
 end
 
 function ParanoiaSpooks:Start()
@@ -382,9 +400,9 @@ function ParanoiaSpooks:RecalcLonelinessParanoia()
 end
 
 function ParanoiaSpooks:OnUpdate(dt)
-    if IE.DEV then
-        return
-    end
+    -- if IE.DEV then
+    --     return
+    -- end
 
     if self.next_spook ~= nil then
         -- [TODO] Add better spook timing picking
@@ -399,8 +417,8 @@ function ParanoiaSpooks:OnUpdate(dt)
     self:RecalcLonelinessParanoia()
 
     if IE.DEV then
+        print("paranoia sources:")
         for source, amount in pairs(self.paranoia_sources) do
-            print("paranoia sources:")
             print("    "..tostring(source).." - "..tostring(amount))
         end
         print("current paranoia - "..tostring(self.paranoia))

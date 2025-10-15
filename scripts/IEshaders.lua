@@ -19,5 +19,4 @@ end)
 
 AddModShadersSortAndEnable(function()
     _G.PostProcessor:SetPostProcessEffectAfter(_G.PostProcessorEffects.ParanoiaDistortions, _G.PostProcessorEffects.Bloom)
-    _G.PostProcessor:EnablePostProcessEffect(_G.PostProcessorEffects.ParanoiaDistortions, true)
 end)

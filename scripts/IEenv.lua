@@ -351,25 +351,23 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         cave = 1,
 
         night = 2,
-        day = 0.25,
+        day = 0,
 
         boat = -1,
-        land = 1,
+        land = 0.5,
 
-        isindark = 4,
+        isindark = 3,
         canseeindark = 1,
 
         isincombat = 0.5,
         isbusyworking = 2,
 
         biomes = {
-            Forest = 3,
-            ForestMole = 3,
-            DeepForest = 4,
-            Graveyard = 2,
-            MoonbaseOne = 2,
-            CrappyForest = 3,
-            CrappyDeepForest = 4,
+            Forest = 2,
+            ForestMole = 2,
+            DeepForest = 3,
+            CrappyForest = 2,
+            CrappyDeepForest = 3,
             other = 1
         }
     },
@@ -532,8 +530,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
                 speed = 5
             }
         },
-        MIN_DIST_FROM_PLAYER = 14,
-        MAX_DIST_FROM_PLAYER = 18
+        MIN_DIST_FROM_PLAYER = 12,
+        MAX_DIST_FROM_PLAYER = 15
     },
     FOOTSTEPS_RUSH = {
         step_interval = 0.15,
@@ -712,9 +710,9 @@ _G[MOD_CODE].PARANOIA_THRESHOLDS = {
 }
 
 _G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
-_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.65
+_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.55
 _G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.1
-_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 7
+_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 6
 _G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
 
 _G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
