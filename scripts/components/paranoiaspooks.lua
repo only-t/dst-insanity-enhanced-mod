@@ -369,6 +369,8 @@ function ParanoiaSpooks:Spook(type)
         Spooks.OceanFootstepsSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_PLAYER then
         Spooks.FakePlayerSpook(self)
+    elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_MOB_DEATH then
+        Spooks.FakeMobDeathSpook(self)
     end
 end
 

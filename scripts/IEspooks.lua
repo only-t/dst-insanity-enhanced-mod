@@ -383,7 +383,7 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
     end
 
     local fake_player = SpawnPrefab("fake_player")
-    fake_player.disappear_distance_from_player = params.RUN_AWAY_DIST_SQ
+    fake_player.runaway_distance_sq = params.RUN_AWAY_DIST_SQ
     if EntityScript.is_instance(target) then
         if IE.DEV then
             print("Chose an entity target!")
@@ -436,6 +436,27 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
     return fake_player
 end
 
+local function FakeMobDeathSpook(self)
+    local params = IE.PARANOIA_SPOOK_PARAMS.FAKE_MOB_DEATH
+
+    local radius = math.random(params.MIN_DIST_FROM_PLAYER, params.MAX_DIST_FROM_PLAYER)
+    local pos = GetPointAwayFromInst(self.inst, radius, true, false, false)
+
+    if pos == nil then -- Couldn't find a suitable origin point
+        return
+    end
+
+    local mobdata = params.MOBS[math.random(#params.MOBS)]
+    local mob = SpawnPrefab("fake_mob")
+    mob.start_erosion_dist = params.START_EROSION_DIST_FROM_PLAYER_SQ
+    mob:Setup(mobdata)
+    mob.Transform:SetPosition(pos.x, pos.y, pos.z)
+    -- mob:DoTaskInTime(1, mob.Die)
+    mob:Die()
+
+    return mob
+end
+
 -- local function ShadowSoundSpook(self)
 --     local params = IE.PARANOIA_SPOOK_PARAMS.SHADOW_SOUND
 --     local soundparams = params.SOUNDS[math.random(1, #params.SOUNDS)]
@@ -473,6 +494,7 @@ return {
     OceanBubblesSpook = OceanBubblesSpook,
     OceanFootstepsSpook = OceanFootstepsSpook,
     FakePlayerSpook = FakePlayerSpook,
+    FakeMobDeathSpook = FakeMobDeathSpook
     -- ShadowSoundSpook = ShadowSoundSpook,
     -- ShadySpook = ShadySpook,
     -- OceanShadowSpook = OceanShadowSpook,

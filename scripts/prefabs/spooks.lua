@@ -490,7 +490,7 @@ local function player_fn()
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer
-        if player and inst:GetDistanceSqToInst(player) <= inst.disappear_distance_from_player then
+        if player and inst:GetDistanceSqToInst(player) <= inst.runaway_distance_sq then
             inst.started = false
             inst.runaway = true -- RUN AWAY, AAAAAA!
             if inst.task then
@@ -573,7 +573,7 @@ local function player_fn()
     return inst
 end
 
-local function fake_boss_fn()
+local function fake_mob_fn()
     local inst = CreateEntity()
 
     --[[ Non-networked entity ]]
@@ -584,17 +584,42 @@ local function fake_boss_fn()
     inst.entity:AddAnimState()
     inst.entity:AddSoundEmitter()
 
-    inst.Transform:SetFourFaced()
+    inst:AddComponent("updatelooper")
+    inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
+        local player = ThePlayer
+        if player and inst:GetDistanceSqToInst(player) <= inst.start_erosion_dist then
+            ErodeAway(inst)
+            inst:RemoveComponent("updatelooper")
+        elseif player and inst:GetDistanceSqToInst(player) > 36 * 36 then
+            inst:Remove()
+        end
+    end)
 
-	inst:SetPhysicsRadiusOverride(1.5)
-	MakeGiantCharacterPhysics(inst, 1000, inst.physicsradiusoverride)
-    RemovePhysicsColliders(inst)
-    
-    inst.Setup = function(inst, bossdata)
-        inst.AnimState:SetBank(bossdata.bank)
-        inst.AnimState:SetBuild(bossdata.build)
-        inst.AnimState:PlayAnimation(bossdata.anim)
+    inst.Setup = function(inst, mobdata)
+        inst.data = mobdata
+        if mobdata.num_faces == 2 then
+            inst.Transform:SetTwoFaced()
+        elseif mobdata.num_faces == 4 then
+            inst.Transform:SetFourFaced()
+        elseif mobdata.num_faces == 6 then
+            inst.Transform:SetSixFaced()
+        elseif mobdata.num_faces == 8 then
+            inst.Transform:SetEightFaced()
+        else
+            inst.Transform:SetNoFaced()
+        end
+
+        inst.AnimState:SetBank(mobdata.bank)
+        inst.AnimState:SetBuild(mobdata.build)
+        inst.AnimState:PlayAnimation(mobdata.idleanim)
     end
+
+    inst.Die = function(inst)
+        inst.AnimState:PlayAnimation(inst.data.deathanim)
+        inst.data.death_fn(inst)
+    end
+    
+    return inst
 end
 
 return Prefab("footsteps", footsteps_fn, placeholder_assets),
@@ -604,5 +629,5 @@ return Prefab("footsteps", footsteps_fn, placeholder_assets),
        Prefab("whisper_loud", whisper_loud_fn, placeholder_assets),
        Prefab("spooky_bubbles", spooky_bubbles_fn, placeholder_assets),
        Prefab("fake_player", player_fn),
-       Prefab("fake_boss_death", fake_boss_fn)
+       Prefab("fake_mob", fake_mob_fn)
     --    Prefab("ocean_shadow", ocean_shadow_fn, ocean_shadow_assets)

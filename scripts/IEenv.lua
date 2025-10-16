@@ -146,7 +146,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     OCEAN_FOOTSTEPS = 10,
     FAKE_PLAYER = 11,
     SHADOW_SOUND = 12, -- An assortment of different spooky sounds
-    -- FAKE_BOSS_DEATH = 13,
+    FAKE_MOB_DEATH = 13,
     -- SHADY = 14, -- He's just a chill guy :)))
     -- OCEAN_SHADOW = 15,
 }
@@ -155,6 +155,377 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
 for type, id in pairs(_G[MOD_CODE].PARANOIA_SPOOK_TYPES) do
     table.insert(_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS, type)
 end
+
+_G[MOD_CODE].PARANOIA_STAGES = {
+    STAGE0 = 0, -- No paranoia
+    STAGE1 = 1,
+    STAGE2 = 2,
+    STAGE3 = 3,
+    STAGE4 = 4,
+    STAGE5 = 5,
+    STAGE6 = 6
+}
+
+_G[MOD_CODE].SHADER_PARAM_LIMITS = {
+    SHARPNESS = 0.35,
+    MONOCHROMACY = 0.55,
+    DISTORION_RADIUS = 0.95,
+    DISTORTION_STRENGTH = 14
+}
+
+-- [[ Mod Settings ]] -- Not to be confused with configuration_options.
+                      -- These show up in Game Options and can be updated during gameplay.
+local enableDisableOptions = {
+    { text = _G.STRINGS.UI.OPTIONS.DISABLED, data = false },
+    { text = _G.STRINGS.UI.OPTIONS.ENABLED,  data = true  }
+}
+
+_G[MOD_CODE].SETTING_TYPES = {
+    SPINNER = "spinner",
+    NUM_SPINNER = "num_spinner",
+    LIST = "list",
+    KEY_SELECT = "key_select"
+}
+
+_G[MOD_CODE].MOD_SETTINGS = {
+    FILENAME = "IE_settings",
+    TAB_NAME = "Paranoia",
+    TOOLTIP = "Modify the mods settings",
+    SETTINGS = {
+        
+    }
+}
+
+_G[MOD_CODE].CURRENT_SETTINGS = {  }
+
+-- [[ Misc. Variables ]]
+
+_G[MOD_CODE].PARANOIA_THRESHOLDS = {
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE1] = 0.60,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE2] = 0.50,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE3] = 0.40,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE4] = 0.30,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE5] = 0.20,
+    [_G[MOD_CODE].PARANOIA_STAGES.STAGE6] = 0.15
+}
+
+_G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
+_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.55
+_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.1
+_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 6
+_G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
+
+_G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
+
+_G[MOD_CODE].IN_COMBAT_DURATION = 6
+_G[MOD_CODE].BUSY_DURATION = 10
+_G[MOD_CODE].PARANOIA_LOW_HEALTH_GAIN_START = 0.5
+_G[MOD_CODE].PARANOIA_LOW_HEALTH_MAX_GAIN = 1
+_G[MOD_CODE].PARANOIA_DARKNESS_GAIN = 1.67
+_G[MOD_CODE].PARANOIA_PLAYER_GHOSTS_GAIN = 0.67
+_G[MOD_CODE].PARANOIA_LONELINESS_DIST_SQ = 40 * 40
+_G[MOD_CODE].PARANOIA_LONELINESS_GAIN = 0.5
+
+_G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
+    TREECHOP = {
+        MIN_DIST_FROM_PLAYER = 8,
+        MAX_DIST_FROM_PLAYER = 20,
+        TREE_MUST_TAGS = { "evergreens" },
+        CHOP_SFX_CHANCE = 0.5,
+        LEAF_SFX_CHANCE = 1
+    },
+    MINING_SOUND = {
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 18,
+        VOLUME = 0.3
+    },
+    FOOTSTEPS = {
+        VARIATIONS = {
+            {
+                step_interval = 0.15,
+                duration = 0.9,
+                speed = 15
+            },
+            {
+                step_interval = 0.35,
+                duration = 1.7,
+                speed = 5
+            },
+            {
+                step_interval = 0.6,
+                duration = 3,
+                speed = 5
+            }
+        },
+        MIN_DIST_FROM_PLAYER = 12,
+        MAX_DIST_FROM_PLAYER = 15
+    },
+    FOOTSTEPS_RUSH = {
+        step_interval = 0.15,
+        duration = 0.9,
+        speed = 15,
+        DIST_FROM_PLAYER = 20
+    },
+    BIRDSINK = {
+        MIN_DIST_FROM_PLAYER = 12,
+        MAX_DIST_FROM_PLAYER = 20
+    },
+    SCREECH = {
+        DIST_FROM_PLAYER = 20,
+        VOLUME = 0.25
+    },
+    WHISPER_QUIET = {
+        DIST_FROM_PLAYER = 14,
+        DISAPPEAR_DIST_SQ = 8 * 8
+    },
+    WHISPER_LOUD = {
+        DIST_FROM_PLAYER = 14,
+        DISAPPEAR_DIST_SQ = 8 * 8
+    },
+    BERRYBUSH_RUSTLE = {
+        MIN_DIST_FROM_PLAYER = 8,
+        MAX_DIST_FROM_PLAYER = 20,
+        BUSH_MUST_TAGS = { "bush" }
+    },
+    OCEAN_BUBBLES = {
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 20,
+        DURATION = 14,
+        DISAPPEAR_DIST_SQ = 4 * 4
+    },
+    OCEAN_FOOTSTEPS = {
+        VARIATIONS = {
+            {
+                step_interval = 0.15,
+                duration = 0.9,
+                speed = 15
+            },
+            {
+                step_interval = 0.35,
+                duration = 1.7,
+                speed = 5
+            },
+            {
+                step_interval = 0.6,
+                duration = 3,
+                speed = 5
+            }
+        },
+        MIN_DIST_FROM_PLAYER = 14,
+        MAX_DIST_FROM_PLAYER = 18
+    },
+    FAKE_PLAYER = {
+        ACTIONS = {
+            CHOPPING = {
+                TARGET_TAGS = { "evergreens" },
+                TOOL = {
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe"
+                }
+            },
+            MINING = {
+                TARGET_TAGS = { "boulder" },
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "multitool_axe_pickaxe"
+                }
+            },
+            WALKING = {
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe",
+                    "spear",
+                    "none"
+                }
+            },
+            OBSERVING = {
+                TOOL = {
+                    "pickaxe",
+                    "goldenpickaxe",
+                    "axe",
+                    "goldenaxe",
+                    "multitool_axe_pickaxe",
+                    "spear",
+                    "none"
+                }
+            }
+        },
+        MIN_DIST_FROM_PLAYER = 24,
+        MAX_DIST_FROM_PLAYER = 26,
+        RUN_AWAY_DIST_SQ = 12 * 12,
+    },
+    FAKE_MOB_DEATH = {
+        MOBS = {
+            {
+                num_faces = 4,
+                bank = "bearger",
+                build = "bearger_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst:DoTaskInTime(6 * _G.FRAMES, function()
+                        inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/bearger/death")
+                    end)
+                    inst:DoTaskInTime(46 * _G.FRAMES, function()
+                        inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/bearger/groundpound")
+                    end)
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "deerclops",
+                build = "deerclops_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst.SoundEmitter:PlaySound("dontstarve/creatures/deerclops/death")
+                    inst:DoTaskInTime(48 * _G.FRAMES, function()
+                        if _G.TheWorld.state.snowlevel > 0.02 then
+                            inst.SoundEmitter:PlaySound("dontstarve/creatures/deerclops/bodyfall_snow")
+                        else
+                            inst.SoundEmitter:PlaySound("dontstarve/creatures/deerclops/bodyfall_dirt")
+                        end
+                    end)
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "goosemoose",
+                build = "goosemoose_build",
+                idleanim = "idle",
+                deathanim = "death",
+                death_fn = function(inst)
+			        inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/moose/death")
+                end
+            },
+            {
+                num_faces = 6,
+                bank = "warg",
+                build = "warg_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+			        inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/vargr/death")
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "pigman",
+                build = "pig_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+			        inst.SoundEmitter:PlaySound("dontstarve/pig/grunt")
+                end
+            },
+            {
+                num_faces = 6,
+                bank = "koalefant",
+                build = "koalefant_summer_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+			        inst.SoundEmitter:PlaySound("dontstarve/creatures/koalefant/yell")
+                end
+            },
+            {
+                num_faces = 6,
+                bank = "koalefant",
+                build = "koalefant_winter_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+			        inst.SoundEmitter:PlaySound("dontstarve/creatures/koalefant/yell")
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "leif",
+                build = "leif_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst.SoundEmitter:PlaySound("dontstarve/forest/treeFall")
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "leif",
+                build = "leif_lumpy_build",
+                idleanim = "idle_loop",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst.SoundEmitter:PlaySound("dontstarve/forest/treeFall")
+                end
+            },
+            {
+                num_faces = 4,
+                bank = "spider_queen",
+                build = "spider_queen_build",
+                idleanim = "idle",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst.SoundEmitter:PlaySound("dontstarve/creatures/spiderqueen/die")
+                end
+            }
+        },
+        MIN_DIST_FROM_PLAYER = 24,
+        MAX_DIST_FROM_PLAYER = 26,
+        START_EROSION_DIST_FROM_PLAYER_SQ = 16 * 16
+    }
+    -- SHADOW_SOUND = {
+    --     DIST_FROM_PLAYER = 12,
+    --     SOUNDS = {
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_1",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_2",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/attack_3",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/knight/dissappear",
+    --             volume = 0.4
+    --         },
+    --         -- {
+    --         --     name = "dontstarve/sanity/knight/hit_response" -- Could be good for a suspense payoff sfx
+    --         -- },
+    --         {
+    --             name = "dontstarve/sanity/creature3/movement_pst",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/creature1/dissappear",
+    --             volume = 0.4
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/bishop/dissappear",
+    --             volume = 1
+    --         },
+    --         {
+    --             name = "dontstarve/sanity/bishop/taunt",
+    --             volume = 1
+    --         }
+    --     }
+    -- },
+    -- SHADY = {
+    --     MIN_DIST_FROM_PLAYER = 12,
+    --     MAX_DIST_FROM_PLAYER = 20
+    -- },
+    -- OCEAN_SHADOW = {
+
+    -- }
+}
 
 _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     TREECHOP = {
@@ -451,12 +822,12 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
             other = 2
         }
     },
-    SHADOW_SOUND = {
-
-    },
-    FAKE_BOSS_DEATH = {
+    FAKE_MOB_DEATH = {
 
     }
+    -- SHADOW_SOUND = {
+
+    -- },
     -- SHADY = {
     --     forest = 1,
     --     cave = 1,
@@ -498,263 +869,3 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     --     }
     -- }
 }
-
-_G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
-    TREECHOP = {
-        MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 20,
-        TREE_MUST_TAGS = { "evergreens" },
-        CHOP_SFX_CHANCE = 0.5,
-        LEAF_SFX_CHANCE = 1
-    },
-    MINING_SOUND = {
-        MIN_DIST_FROM_PLAYER = 10,
-        MAX_DIST_FROM_PLAYER = 18,
-        VOLUME = 0.3
-    },
-    FOOTSTEPS = {
-        VARIATIONS = {
-            {
-                step_interval = 0.15,
-                duration = 0.9,
-                speed = 15
-            },
-            {
-                step_interval = 0.35,
-                duration = 1.7,
-                speed = 5
-            },
-            {
-                step_interval = 0.6,
-                duration = 3,
-                speed = 5
-            }
-        },
-        MIN_DIST_FROM_PLAYER = 12,
-        MAX_DIST_FROM_PLAYER = 15
-    },
-    FOOTSTEPS_RUSH = {
-        step_interval = 0.15,
-        duration = 0.9,
-        speed = 15,
-        DIST_FROM_PLAYER = 20
-    },
-    BIRDSINK = {
-        MIN_DIST_FROM_PLAYER = 12,
-        MAX_DIST_FROM_PLAYER = 20
-    },
-    SCREECH = {
-        DIST_FROM_PLAYER = 20,
-        VOLUME = 0.25
-    },
-    WHISPER_QUIET = {
-        DIST_FROM_PLAYER = 14,
-        DISAPPEAR_DIST_SQ = 8 * 8
-    },
-    WHISPER_LOUD = {
-        DIST_FROM_PLAYER = 14,
-        DISAPPEAR_DIST_SQ = 8 * 8
-    },
-    BERRYBUSH_RUSTLE = {
-        MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 20,
-        BUSH_MUST_TAGS = { "bush" }
-    },
-    OCEAN_BUBBLES = {
-        MIN_DIST_FROM_PLAYER = 10,
-        MAX_DIST_FROM_PLAYER = 20,
-        DURATION = 14,
-        DISAPPEAR_DIST_SQ = 4 * 4
-    },
-    OCEAN_FOOTSTEPS = {
-        VARIATIONS = {
-            {
-                step_interval = 0.15,
-                duration = 0.9,
-                speed = 15
-            },
-            {
-                step_interval = 0.35,
-                duration = 1.7,
-                speed = 5
-            },
-            {
-                step_interval = 0.6,
-                duration = 3,
-                speed = 5
-            }
-        },
-        MIN_DIST_FROM_PLAYER = 14,
-        MAX_DIST_FROM_PLAYER = 18
-    },
-    FAKE_PLAYER = {
-        ACTIONS = {
-            CHOPPING = {
-                TARGET_TAGS = { "evergreens" },
-                TOOL = {
-                    "axe",
-                    "goldenaxe",
-                    "multitool_axe_pickaxe"
-                }
-            },
-            MINING = {
-                TARGET_TAGS = { "boulder" },
-                TOOL = {
-                    "pickaxe",
-                    "goldenpickaxe",
-                    "multitool_axe_pickaxe"
-                }
-            },
-            WALKING = {
-                TOOL = {
-                    "pickaxe",
-                    "goldenpickaxe",
-                    "axe",
-                    "goldenaxe",
-                    "multitool_axe_pickaxe",
-                    "spear",
-                    "none"
-                }
-            },
-            OBSERVING = {
-                TOOL = {
-                    "pickaxe",
-                    "goldenpickaxe",
-                    "axe",
-                    "goldenaxe",
-                    "multitool_axe_pickaxe",
-                    "spear",
-                    "none"
-                }
-            }
-        },
-        MIN_DIST_FROM_PLAYER = 24,
-        MAX_DIST_FROM_PLAYER = 30,
-        RUN_AWAY_DIST_SQ = 12 * 12,
-    },
-    -- SHADOW_SOUND = {
-    --     DIST_FROM_PLAYER = 12,
-    --     SOUNDS = {
-    --         {
-    --             name = "dontstarve/sanity/knight/attack_1",
-    --             volume = 1
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/knight/attack_2",
-    --             volume = 1
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/knight/attack_3",
-    --             volume = 1
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/knight/dissappear",
-    --             volume = 0.4
-    --         },
-    --         -- {
-    --         --     name = "dontstarve/sanity/knight/hit_response" -- Could be good for a suspense payoff sfx
-    --         -- },
-    --         {
-    --             name = "dontstarve/sanity/creature3/movement_pst",
-    --             volume = 1
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/creature1/dissappear",
-    --             volume = 0.4
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/bishop/dissappear",
-    --             volume = 1
-    --         },
-    --         {
-    --             name = "dontstarve/sanity/bishop/taunt",
-    --             volume = 1
-    --         }
-    --     }
-    -- },
-    -- FAKE_BOSS_DEATH = {
-    --     BOSSES = {
-    --         bearger = {
-    --             bank = "",
-    --             build = "",
-    --             anim = ""
-    --         }
-    --     }
-    -- }
-    -- SHADY = {
-    --     MIN_DIST_FROM_PLAYER = 12,
-    --     MAX_DIST_FROM_PLAYER = 20
-    -- },
-    -- OCEAN_SHADOW = {
-
-    -- }
-}
-
-_G[MOD_CODE].PARANOIA_STAGES = {
-    STAGE0 = 0, -- No paranoia
-    STAGE1 = 1,
-    STAGE2 = 2,
-    STAGE3 = 3,
-    STAGE4 = 4,
-    STAGE5 = 5,
-    STAGE6 = 6
-}
-
-_G[MOD_CODE].PARANOIA_THRESHOLDS = {
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE1] = 0.60,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE2] = 0.50,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE3] = 0.40,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE4] = 0.30,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE5] = 0.20,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE6] = 0.15
-}
-
-_G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
-_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.55
-_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.1
-_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 6
-_G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
-
-_G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
-_G[MOD_CODE].SHADER_PARAM_LIMITS = {
-    SHARPNESS = 0.35,
-    MONOCHROMACY = 0.55,
-    DISTORION_RADIUS = 0.95,
-    DISTORTION_STRENGTH = 14
-}
-
-_G[MOD_CODE].IN_COMBAT_DURATION = 6
-_G[MOD_CODE].BUSY_DURATION = 10
-_G[MOD_CODE].PARANOIA_LOW_HEALTH_GAIN_START = 0.5
-_G[MOD_CODE].PARANOIA_LOW_HEALTH_MAX_GAIN = 1
-_G[MOD_CODE].PARANOIA_DARKNESS_GAIN = 1.67
-_G[MOD_CODE].PARANOIA_PLAYER_GHOSTS_GAIN = 0.67
-_G[MOD_CODE].PARANOIA_LONELINESS_DIST_SQ = 40 * 40
-_G[MOD_CODE].PARANOIA_LONELINESS_GAIN = 0.5
-
--- [[ Mod Settings ]] -- Not to be confused with configuration_options.
-                      -- These show up in Game Options and can be updated during gameplay.
-local enableDisableOptions = {
-    { text = _G.STRINGS.UI.OPTIONS.DISABLED, data = false },
-    { text = _G.STRINGS.UI.OPTIONS.ENABLED,  data = true  }
-}
-
-_G[MOD_CODE].SETTING_TYPES = {
-    SPINNER = "spinner",
-    NUM_SPINNER = "num_spinner",
-    LIST = "list",
-    KEY_SELECT = "key_select"
-}
-
-_G[MOD_CODE].MOD_SETTINGS = {
-    FILENAME = "IE_settings",
-    TAB_NAME = "Paranoia",
-    TOOLTIP = "Modify the mods settings",
-    SETTINGS = {
-        
-    }
-}
-
-_G[MOD_CODE].CURRENT_SETTINGS = {  }
-
--- [[ Misc. Variables ]]
