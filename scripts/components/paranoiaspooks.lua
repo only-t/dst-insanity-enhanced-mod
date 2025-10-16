@@ -1,6 +1,8 @@
 local Spooks = require("IEspooks")
 
 local function PickASpook(self)
+    local isforest = TheWorld:HasTag("forest")
+    local iscave = TheWorld:HasTag("cave")
     local isnight = TheWorld.state.iscavenight
     local isday = TheWorld.state.iscaveday
     local isplayeronboat = self.inst:GetCurrentPlatform() ~= nil
@@ -19,7 +21,7 @@ local function PickASpook(self)
     for spook, weights in pairs(IE.PARANOIA_SPOOK_WEIGHTS) do
         spook_weights[spook] = 0
 
-        if weights["cave"] ~= nil and isnight then
+        if weights["cave"] ~= nil and iscave then
             if weights["cave"] == -1 then
                 spook_excludes[spook] = true
             else
@@ -28,7 +30,7 @@ local function PickASpook(self)
             end
         end
 
-        if weights["forest"] ~= nil and isnight then
+        if weights["forest"] ~= nil and isforest then
             if weights["forest"] == -1 then
                 spook_excludes[spook] = true
             else
