@@ -1,4 +1,5 @@
 local Spooks = require("IEspooks")
+local SpookSuspenseFns = require("IEspooksuspensefns")
 
 local function PickASpook(self)
     local isforest = TheWorld:HasTag("forest")
@@ -232,7 +233,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     if IE.DEV then
         self.paranoia_threshold = 10
     else
-        self.paranoia_threshold = 480
+        self.paranoia_threshold = 160
     end
 
     self.paranoia_sources = {  }
@@ -240,6 +241,8 @@ local ParanoiaSpooks = Class(function(self, inst)
 
     self.next_spook = nil
     self.last_spook = nil -- Try hard to not do the same spook twice in a row
+    self.pending_spook_timeout = 20 -- We will allow this amount of time to pass until we reset the spook IF it wasn't able to trigger
+    self.pending_spook_timeout_curtime = 0
 
     self.lastfighttime = -10
     self.lastbusytime = -10
@@ -252,14 +255,12 @@ end)
 function ParanoiaSpooks:OnSave()
     return {
         paranoia = self.paranoia,
-        paranoia_threshold = self.paranoia_threshold,
         next_spook = self.next_spook
     }
 end
 
 function ParanoiaSpooks:OnLoad(data)
     self.paranoia = data.paranoia
-    self.paranoia_threshold = data.paranoia_threshold
     self.next_spook = data.next_spook
 end
 
@@ -345,34 +346,41 @@ function ParanoiaSpooks:Stop()
     self.is_paranoid = false
 end
 
+function ParanoiaSpooks:TimeoutSpook()
+    self.next_spook = nil
+    self.paranoia = self.paranoia - self.paranoia * 0.1 -- Give the player some time before attempting another spook
+    self.suspense = 0
+    self.pending_spook_timeout_curtime = 0
+end
+
 function ParanoiaSpooks:Spook(type)
     -- [TODO] Make this more simple, stupid
     if type == IE.PARANOIA_SPOOK_TYPES.TREECHOP then
-        Spooks.TreeChoppingSpook(self)
+        return Spooks.TreeChoppingSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.MINING_SOUND then
-        Spooks.MiningSoundSpook(self)
+        return Spooks.MiningSoundSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS then
-        Spooks.FootstepsSpook(self)
+        return Spooks.FootstepsSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS_RUSH then
-        Spooks.FootstepsRushSpook(self)
+        return Spooks.FootstepsRushSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.BIRDSINK then
-        Spooks.OceanSinkBirdSpook(self)
+        return Spooks.OceanSinkBirdSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.SCREECH then
-        Spooks.ScreechSpook(self)
+        return Spooks.ScreechSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.WHISPER_QUIET then
-        Spooks.WhisperQuiet(self)
+        return Spooks.WhisperQuiet(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.WHISPER_LOUD then
-        Spooks.WhisperLoud(self)
+        return Spooks.WhisperLoud(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.BERRYBUSH_RUSTLE then
-        Spooks.BerryBushRustleSpook(self)
+        return Spooks.BerryBushRustleSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_BUBBLES then
-        Spooks.OceanBubblesSpook(self)
+        return Spooks.OceanBubblesSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_FOOTSTEPS then
-        Spooks.OceanFootstepsSpook(self)
+        return Spooks.OceanFootstepsSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_PLAYER then
-        Spooks.FakePlayerSpook(self)
+        return Spooks.FakePlayerSpook(self)
     elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_MOB_DEATH then
-        Spooks.FakeMobDeathSpook(self)
+        return Spooks.FakeMobDeathSpook(self)
     end
 end
 
@@ -409,10 +417,26 @@ function ParanoiaSpooks:OnUpdate(dt)
     -- end
 
     if self.next_spook ~= nil then
-        -- [TODO] Add better spook timing picking
-        self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])
-        self.next_spook = nil
-        self.paranoia = 0
+        -- [ TODO ]
+        -- self.pending_spook_timeout_curtime = self.pending_spook_timeout_curtime + dt
+
+        -- if self.pending_spook_timeout_curtime >= self.pending_spook_timeout then
+        --     self:TimeoutSpook()
+        --     return
+        -- end
+
+        -- self.suspense = self.suspense + SpookSuspenseFns[self.next_spook](self.inst)
+
+        -- if IE.DEV then
+        --     print("suspense - "..tostring(self.suspense))
+        -- end
+
+        -- if self.suspense >= 1 then
+            self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])
+            self.suspense = 0
+            self.paranoia = self.paranoia - self.paranoia * IE.PARANOIA_SPOOK_COSTS[self.next_spook]
+            self.next_spook = nil
+        -- end
 
         return
     end

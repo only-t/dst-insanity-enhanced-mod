@@ -145,8 +145,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     OCEAN_BUBBLES = 9,
     OCEAN_FOOTSTEPS = 10,
     FAKE_PLAYER = 11,
-    SHADOW_SOUND = 12, -- An assortment of different spooky sounds
-    FAKE_MOB_DEATH = 13,
+    FAKE_MOB_DEATH = 12,
+    -- SHADOW_SOUND = 13, -- An assortment of different spooky sounds
     -- SHADY = 14, -- He's just a chill guy :)))
     -- OCEAN_SHADOW = 15,
 }
@@ -225,6 +225,22 @@ _G[MOD_CODE].PARANOIA_DARKNESS_GAIN = 1.67
 _G[MOD_CODE].PARANOIA_PLAYER_GHOSTS_GAIN = 0.67
 _G[MOD_CODE].PARANOIA_LONELINESS_DIST_SQ = 40 * 40
 _G[MOD_CODE].PARANOIA_LONELINESS_GAIN = 0.5
+
+_G[MOD_CODE].PARANOIA_SPOOK_COSTS = { -- Percentage of built up paranoia this spook will consume upon triggering
+    TREECHOP = 0.5,
+    MINING_SOUND = 0.5,
+    FOOTSTEPS = 0.75,
+    FOOTSTEPS_RUSH = 1,
+    BIRDSINK = 0.5,
+    SCREECH = 1,
+    WHISPER_QUIET = 0.5,
+    WHISPER_LOUD = 1,
+    BERRYBUSH_RUSTLE = 0.5,
+    OCEAN_BUBBLES = 0.5,
+    OCEAN_FOOTSTEPS = 0.75,
+    FAKE_PLAYER = 1,
+    FAKE_MOB_DEATH = 1
+}
 
 _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     TREECHOP = {
@@ -823,7 +839,24 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         }
     },
     FAKE_MOB_DEATH = {
+        forest = 1,
+        cave = 1,
 
+        night = 1,
+        day = 3,
+
+        boat = -1,
+        land = 3,
+
+        isindark = 1,
+        canseeindark = 4,
+
+        isincombat = 2,
+        isbusyworking = 3,
+
+        biomes = {
+            other = 3
+        }
     }
     -- SHADOW_SOUND = {
 

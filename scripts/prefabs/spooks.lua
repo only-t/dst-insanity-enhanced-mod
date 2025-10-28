@@ -211,7 +211,6 @@ local function whisper_quiet_fn()
     inst:AddComponent("talker")
     inst.components.talker.fontsize = 35
     inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
     inst.components.talker:MakeChatter()
     inst.components.talker.donetalkingfn = function(inst)
         inst:RemoveComponent("updatelooper")
@@ -223,7 +222,7 @@ local function whisper_quiet_fn()
 
     local voice = "paranoia/sfx/whispers_quiet_voice"
     local voice_volume = 0.25
-    local offset = 5
+    local offset = 2
     local fadein_duration = 1.3
     local time = 0
     local text_duration = 4
@@ -254,7 +253,7 @@ local function whisper_quiet_fn()
             inst.components.talker.widget.text:SetColour({ 1, 1, 1, 0.16 * t })
             inst.SoundEmitter:SetVolume("whispers_LP", voice_volume * t)
 
-            inst.components.talker.widget:SetOffset(Vector3(-offset + math.random() * offset * 2, (-400 - offset) + math.random() * offset * 2, 0))
+            inst.components.talker.widget:SetScreenOffset(offset - math.random() * offset * 2, offset - math.random() * offset * 2)
         end
     end)
 
@@ -281,7 +280,6 @@ local function whisper_loud_fn()
     inst:AddComponent("talker")
     inst.components.talker.fontsize = 0
     inst.components.talker.font = TALKINGFONT
-    inst.components.talker.offset = Vector3(0, -400, 0)
     inst.components.talker:MakeChatter()
     inst.components.talker.donetalkingfn = function(inst)
         inst:RemoveComponent("updatelooper")
@@ -329,8 +327,8 @@ local function whisper_loud_fn()
         local size_t = math.min(time / text_duration, 1)
         local offset_t = math.min(time / offset_duration, 1)
 
-        local offset = offset_curve(offset_t) * 60
-        inst.components.talker.widget:SetOffset(Vector3(-offset + math.random() * offset * 2, (-400 - offset) + math.random() * offset * 2, 0))
+        local offset = offset_curve(offset_t) * 40
+        inst.components.talker.widget:SetScreenOffset(offset - math.random() * offset * 2, offset - math.random() * offset * 2)
 
         local fontsize = size_curve(size_t) * 40
         inst.components.talker.widget.text:SetSize(fontsize)
