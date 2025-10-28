@@ -586,9 +586,18 @@ local function fake_mob_fn()
     inst.components.updatelooper:AddOnUpdateFn(function(inst, dt)
         local player = ThePlayer
         if player and inst:GetDistanceSqToInst(player) <= inst.start_erosion_dist then
+            if inst.timeout_task then
+                inst.timeout_task:Cancel()
+                inst.timeout_task = nil
+            end
+            
             ErodeAway(inst)
             inst:RemoveComponent("updatelooper")
         elseif player and inst:GetDistanceSqToInst(player) > 36 * 36 then
+            if inst.timeout_task then
+                inst.timeout_task:Cancel()
+                inst.timeout_task = nil
+            end
             inst:Remove()
         end
     end)
@@ -612,9 +621,14 @@ local function fake_mob_fn()
         inst.AnimState:PlayAnimation(mobdata.idleanim)
     end
 
+    local timeout = 8
     inst.Die = function(inst)
         inst.AnimState:PlayAnimation(inst.data.deathanim)
         inst.data.death_fn(inst)
+        inst.timeout_task = inst:DoTaskInTime(timeout, function()
+            ErodeAway(inst)
+            inst:RemoveComponent("updatelooper")
+        end)
     end
     
     return inst
