@@ -225,16 +225,12 @@ end
 local ParanoiaSpooks = Class(function(self, inst)
 	self.inst = inst
 
+    self.spook_intensity = _G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
+
     self.is_paranoid = false -- false == stage 0, slowly decrease paranoia
 
     self.paranoia = 0
     self.suspense = 0 -- For better spook timing
-
-    if IE.DEV then
-        self.paranoia_threshold = 10
-    else
-        self.paranoia_threshold = 160
-    end
 
     self.paranoia_sources = {  }
     self.paranoia_dropoff = 1
@@ -321,21 +317,6 @@ function ParanoiaSpooks:_OnRevive() -- Should only be called from inside Health.
     self.inst.components.paranoiaspooks:Start()
 
     self.inst:StartUpdatingComponent(self)
-end
-
-function ParanoiaSpooks:_OnDeath() -- Should only be called from inside Health.SetIsDead
-    self.inst:RemoveEventCallback("performaction", CheckAction)
-    self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-    self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
-    self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
-
-    self.inst.components.paranoiaspooks.next_spook = nil
-    self.inst.components.paranoiaspooks.last_spook = nil
-    self.inst.components.paranoiaspooks.paranoia = 0
-
-    self.inst.components.paranoiaspooks:Stop()
-    
-    self.inst:StopUpdatingComponent(self)
 end
 
 function ParanoiaSpooks:Start()
@@ -457,7 +438,7 @@ function ParanoiaSpooks:OnUpdate(dt)
             self.paranoia = self.paranoia + amount * dt
         end
 
-        if self.paranoia_threshold <= self.paranoia then
+        if 30 + 20 * (_G.IE.MAX_SPOOK_INTENSITY - self.spook_intensity) <= self.paranoia then
             self.next_spook = PickASpook(self)
             self.last_spook = self.next_spook
         end

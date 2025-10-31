@@ -173,6 +173,18 @@ _G[MOD_CODE].SHADER_PARAM_LIMITS = {
     DISTORTION_STRENGTH = 14
 }
 
+_G[MOD_CODE].MIN_HEARTBEAT_INTENSITY = 0
+_G[MOD_CODE].MAX_HEARTBEAT_INTENSITY = 10
+
+_G[MOD_CODE].MIN_INSANITY_SHADER_INTENSITY = 0
+_G[MOD_CODE].MAX_INSANITY_SHADER_INTENSITY = 10
+
+_G[MOD_CODE].MIN_INSANITY_AMBIENCE_INTENSITY = 0
+_G[MOD_CODE].MAX_INSANITY_AMBIENCE_INTENSITY = 10
+
+_G[MOD_CODE].MIN_SPOOK_INTENSITY = 1
+_G[MOD_CODE].MAX_SPOOK_INTENSITY = 10
+
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
                       -- These show up in Game Options and can be updated during gameplay.
 local enableDisableOptions = {
@@ -192,13 +204,63 @@ _G[MOD_CODE].MOD_SETTINGS = {
     TAB_NAME = "Paranoia",
     TOOLTIP = "Modify the mods settings",
     SETTINGS = {
-        
+        HEARTBEAT_INTENSITY = {
+            ID = "IE_heartbeat_intensity",
+            SPINNER_TITLE = "Heartbeat intensity:",
+            TOOLTIP = "Modify the intensity of low sanity heartbeat.",
+            COLUMN = 1,
+            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
+            VALUES = { _G[MOD_CODE].MIN_HEARTBEAT_INTENSITY, _G[MOD_CODE].MAX_HEARTBEAT_INTENSITY, 1 },
+            DEFAULT = 8
+        },
+        INSANITY_SHADER_INTENSITY = {
+            ID = "IE_insanity_shader_intensity",
+            SPINNER_TITLE = "Shader intensity:",
+            TOOLTIP = "Modify the intensity of low sanity shader.",
+            COLUMN = 1,
+            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
+            VALUES = { _G[MOD_CODE].MIN_INSANITY_SHADER_INTENSITY, _G[MOD_CODE].MAX_INSANITY_SHADER_INTENSITY, 1 },
+            DEFAULT = 8
+        },
+        INSANITY_AMBIENCE_INTENSITY = {
+            ID = "IE_insanity_ambience_intensity",
+            SPINNER_TITLE = "Ambience intensity:",
+            TOOLTIP = "Modify the intensity of low sanity ambience.",
+            COLUMN = 1,
+            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
+            VALUES = { _G[MOD_CODE].MIN_INSANITY_AMBIENCE_INTENSITY, _G[MOD_CODE].MAX_INSANITY_AMBIENCE_INTENSITY, 1 },
+            DEFAULT = 5
+        },
+        SPOOK_INTENSITY = {
+            ID = "IE_spook_intensity",
+            SPINNER_TITLE = "Spook intensity:",
+            TOOLTIP = "Modify how often hallucinations should happen when low on sanity.",
+            COLUMN = 1,
+            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
+            VALUES = { _G[MOD_CODE].MIN_SPOOK_INTENSITY, _G[MOD_CODE].MAX_SPOOK_INTENSITY, 1 },
+            DEFAULT = 5
+        }
     }
 }
 
 _G[MOD_CODE].CURRENT_SETTINGS = {  }
 
 -- [[ Misc. Variables ]]
+
+_G[MOD_CODE].UpdateModSettings = function()
+    if _G.ThePlayer ~= nil then
+        if _G.ThePlayer.components.paranoiaspooks then
+            _G.ThePlayer.components.paranoiaspooks.spook_intensity = _G[MOD_CODE].CURRENT_SETTINGS[_G[MOD_CODE].MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
+        end
+
+        if _G.ThePlayer.components.paranoiamanager then
+            local strength = 1 - math.min(1, _G.ThePlayer.replica.sanity:GetPercent() / _G[MOD_CODE].PARANOIA_THRESHOLDS[_G[MOD_CODE].PARANOIA_STAGES.STAGE1])
+            local sharpness = _G[MOD_CODE].SHADER_PARAM_LIMITS.SHARPNESS * strength
+            local monochromacy = _G[MOD_CODE].SHADER_PARAM_LIMITS.MONOCHROMACY * strength
+            _G.ThePlayer.components.paranoiamanager:SetShaderColorParams(sharpness, monochromacy)
+        end
+    end
+end
 
 _G[MOD_CODE].PARANOIA_THRESHOLDS = {
     [_G[MOD_CODE].PARANOIA_STAGES.STAGE1] = 0.60,

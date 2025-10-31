@@ -127,7 +127,7 @@ DSP._ctor = function(self, ...)
             old_fn(inst, player, ...)
         end
 
-        player:DoTaskInTime(1, function() -- [TODO] Fix?
+        player:DoTaskInTime(0, function() -- [TODO] Fix?
             if _activatedplayer == player then
                 return
             elseif _activatedplayer and _activatedplayer.entity:IsValid() then
@@ -135,6 +135,7 @@ DSP._ctor = function(self, ...)
                     inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
                 end
             end
+            
             _activatedplayer = player
 
             if player.components.paranoiamanager then

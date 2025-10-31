@@ -212,7 +212,7 @@ function ParanoiaManager:DoHeartbeat(volume, nodistortion, ignoredeath)
         return -- Don't play the sound if the player is dead, duh...
     end
 
-    self.inst.SoundEmitter:PlaySound(self.heartbeat_sfx, nil, volume)
+    self.inst.SoundEmitter:PlaySound(self.heartbeat_sfx, nil, volume * (_G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.HEARTBEAT_INTENSITY.ID] / 10))
 
     if not nodistortion then
         self:DistortEdges()
@@ -230,8 +230,8 @@ function ParanoiaManager:SetShaderColorParams(sharpness, monochromacy)
     elseif sharpness == nil then
         return
     end
-
-    PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS1, sharpness, monochromacy)
+    local shader_strength = _G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.INSANITY_SHADER_INTENSITY.ID] / 10
+    PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS1, sharpness * shader_strength, monochromacy * shader_strength)
 end
 
 function ParanoiaManager:SetShaderDistortionParams(distortion_radius, distortion_strength)
@@ -241,7 +241,7 @@ function ParanoiaManager:SetShaderDistortionParams(distortion_radius, distortion
         return
     end
 
-    PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS2, distortion_radius, distortion_strength)
+    PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS2, distortion_radius, distortion_strength * (_G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.HEARTBEAT_INTENSITY.ID] / 10))
 end
 
 function ParanoiaManager:ChangeParanoiaStage(new_stage)
