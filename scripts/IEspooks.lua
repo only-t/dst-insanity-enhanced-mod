@@ -449,9 +449,9 @@ local function FakeMobDeathSpook(self)
     local mobdata = params.MOBS[math.random(#params.MOBS)]
     local mob = SpawnPrefab("fake_mob")
     mob.start_erosion_dist = params.START_EROSION_DIST_FROM_PLAYER_SQ
+    mob.timeout = params.EROSION_TIMEOUT
     mob:Setup(mobdata)
     mob.Transform:SetPosition(pos.x, pos.y, pos.z)
-    -- mob:DoTaskInTime(1, mob.Die)
     mob:Die()
 
     return mob

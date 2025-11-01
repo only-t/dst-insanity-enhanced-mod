@@ -552,9 +552,10 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
                 end
             }
         },
-        MIN_DIST_FROM_PLAYER = 24,
-        MAX_DIST_FROM_PLAYER = 26,
-        START_EROSION_DIST_FROM_PLAYER_SQ = 16 * 16
+        MIN_DIST_FROM_PLAYER = 30,
+        MAX_DIST_FROM_PLAYER = 38,
+        START_EROSION_DIST_FROM_PLAYER_SQ = 16 * 16,
+        EROSION_TIMEOUT = 10
     }
     -- SHADOW_SOUND = {
     --     DIST_FROM_PLAYER = 12,

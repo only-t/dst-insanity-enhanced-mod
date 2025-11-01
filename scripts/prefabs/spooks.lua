@@ -621,11 +621,11 @@ local function fake_mob_fn()
         inst.AnimState:PlayAnimation(mobdata.idleanim)
     end
 
-    local timeout = 8
+    inst.timeout = 8
     inst.Die = function(inst)
         inst.AnimState:PlayAnimation(inst.data.deathanim)
         inst.data.death_fn(inst)
-        inst.timeout_task = inst:DoTaskInTime(timeout, function()
+        inst.timeout_task = inst:DoTaskInTime(inst.timeout, function()
             ErodeAway(inst)
             inst:RemoveComponent("updatelooper")
         end)
