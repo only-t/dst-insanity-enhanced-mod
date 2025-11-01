@@ -64,13 +64,8 @@ local function TreeChoppingSpook(self)
     tree.AnimState:PlayAnimation(chop_anim)
     tree.AnimState:PushAnimation(old_anim, true)
 
-    if math.random() < params.CHOP_SFX_CHANCE then
-        tree.SoundEmitter:PlaySound("paranoia/sfx/chop")
-    end
-
-    if math.random() < params.LEAF_SFX_CHANCE then
-        tree.SoundEmitter:PlaySound("paranoia/sfx/leaf_rustle")
-    end
+    tree.SoundEmitter:PlaySound("paranoia/sfx/chop")
+    tree.SoundEmitter:PlaySound("paranoia/sfx/leaf_rustle")
 
     return tree
 end

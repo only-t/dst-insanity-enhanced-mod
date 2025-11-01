@@ -63,7 +63,7 @@ OptionsScreen.Apply = function(self, ...)
 
     _G.IE.modsetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, loaded_settings, function()
         _G.IE.CURRENT_SETTINGS = loaded_settings
-        _G.IE.UpdateModSettings()
+        _G.IE.ApplySettings()
     end)
     
     old_OptionsScreen_Apply(self, ...)

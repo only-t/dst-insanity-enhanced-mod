@@ -1,4 +1,4 @@
-name = "Paranoia [BETA]"
+name = "Paranoia [BETA] DEV"
 description = [[󰀰 You may be alone but it certainly doesn't feel that way...
 
 [󰀔 Current Version: 0.8.0]

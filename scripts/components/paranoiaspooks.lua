@@ -336,31 +336,31 @@ end
 
 function ParanoiaSpooks:Spook(type)
     -- [TODO] Make this more simple, stupid
-    if type == IE.PARANOIA_SPOOK_TYPES.TREECHOP then
+    if type == IE.PARANOIA_SPOOKS.TREECHOP then
         return Spooks.TreeChoppingSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.MINING_SOUND then
+    elseif type == IE.PARANOIA_SPOOKS.MINING_SOUND then
         return Spooks.MiningSoundSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS then
+    elseif type == IE.PARANOIA_SPOOKS.FOOTSTEPS then
         return Spooks.FootstepsSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.FOOTSTEPS_RUSH then
+    elseif type == IE.PARANOIA_SPOOKS.FOOTSTEPS_RUSH then
         return Spooks.FootstepsRushSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.BIRDSINK then
+    elseif type == IE.PARANOIA_SPOOKS.BIRDSINK then
         return Spooks.OceanSinkBirdSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.SCREECH then
+    elseif type == IE.PARANOIA_SPOOKS.SCREECH then
         return Spooks.ScreechSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.WHISPER_QUIET then
+    elseif type == IE.PARANOIA_SPOOKS.WHISPER_QUIET then
         return Spooks.WhisperQuiet(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.WHISPER_LOUD then
+    elseif type == IE.PARANOIA_SPOOKS.WHISPER_LOUD then
         return Spooks.WhisperLoud(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.BERRYBUSH_RUSTLE then
+    elseif type == IE.PARANOIA_SPOOKS.BERRYBUSH_RUSTLE then
         return Spooks.BerryBushRustleSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_BUBBLES then
+    elseif type == IE.PARANOIA_SPOOKS.OCEAN_BUBBLES then
         return Spooks.OceanBubblesSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.OCEAN_FOOTSTEPS then
+    elseif type == IE.PARANOIA_SPOOKS.OCEAN_FOOTSTEPS then
         return Spooks.OceanFootstepsSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_PLAYER then
+    elseif type == IE.PARANOIA_SPOOKS.FAKE_PLAYER then
         return Spooks.FakePlayerSpook(self)
-    elseif type == IE.PARANOIA_SPOOK_TYPES.FAKE_MOB_DEATH then
+    elseif type == IE.PARANOIA_SPOOKS.FAKE_MOB_DEATH then
         return Spooks.FakeMobDeathSpook(self)
     end
 end
@@ -413,7 +413,7 @@ function ParanoiaSpooks:OnUpdate(dt)
         -- end
 
         -- if self.suspense >= 1 then
-            self:Spook(IE.PARANOIA_SPOOK_TYPES[self.next_spook])
+            self:Spook(IE.PARANOIA_SPOOKS[self.next_spook])
             self.suspense = 0
             self.paranoia = self.paranoia - self.paranoia * IE.PARANOIA_SPOOK_COSTS[self.next_spook]
             self.next_spook = nil

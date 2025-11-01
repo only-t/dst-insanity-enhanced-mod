@@ -10,6 +10,8 @@ _G[MOD_CODE] = {
     MOD_NAME = MOD_NAME
 }
 
+local env = _G[MOD_CODE]
+
 ---
 --- Created specifically to print lines with a clear source, that being, the mod.
 --- Functionally, it's a simple print with a prefix which can be defined either as a `PRINT`, a `WARN` or an `ERROR`.
@@ -26,12 +28,12 @@ local function modprint(print_type, mainline, ...)
 
     mainline = tostring(mainline)
 
-    if print_type == _G[MOD_CODE].PRINT then
-        print(_G[MOD_CODE].PRINT_PREFIX..mainline)
-    elseif print_type == _G[MOD_CODE].WARN then
-        print(_G[MOD_CODE].WARN_PREFIX..mainline)
-    elseif print_type == _G[MOD_CODE].ERROR then
-        print(_G[MOD_CODE].ERROR_PREFIX..mainline)
+    if print_type == env.PRINT then
+        print(env.PRINT_PREFIX..mainline)
+    elseif print_type == env.WARN then
+        print(env.WARN_PREFIX..mainline)
+    elseif print_type == env.ERROR then
+        print(env.ERROR_PREFIX..mainline)
     end
 
     for _, line in ipairs({...}) do
@@ -52,7 +54,7 @@ end
 ---@return void
 local function modassert(cond, mainline, ...)
     if not cond then
-        modprint(_G[MOD_CODE].ERROR_PREFIX, mainline, ...)
+        modprint(env.ERROR_PREFIX, mainline, ...)
 
         _G.error("Assertion failed!")
     end
@@ -102,29 +104,29 @@ end
 ---@param setting_id string
 ---@return table
 local function GetModSetting(setting_id)
-    if _G[MOD_CODE].CURRENT_SETTINGS[setting_id] ~= nil then
-        return _G[MOD_CODE].CURRENT_SETTINGS[setting_id]
+    if env.CURRENT_SETTINGS[setting_id] ~= nil then
+        return env.CURRENT_SETTINGS[setting_id]
     end
 
-    modprint(_G[MOD_CODE].WARN, "Trying to get mod setting "..tostring(setting_id).." but it does not seem to exist.")
+    modprint(env.WARN, "Trying to get mod setting "..tostring(setting_id).." but it does not seem to exist.")
 end
 
 -- [[ Disable for live builds ]]
-_G[MOD_CODE].DEV = true
+env.DEV = true
 
 -- [[ Universal Variables ]]
-_G[MOD_CODE].PRINT = 0
-_G[MOD_CODE].WARN = 1
-_G[MOD_CODE].ERROR = 2
-_G[MOD_CODE].PRINT_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - "
-_G[MOD_CODE].WARN_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - WARNING! "
-_G[MOD_CODE].ERROR_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - ERROR! "
+env.PRINT = 0
+env.WARN = 1
+env.ERROR = 2
+env.PRINT_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - "
+env.WARN_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - WARNING! "
+env.ERROR_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - ERROR! "
 
-_G[MOD_CODE].modprint = modprint
-_G[MOD_CODE].modassert = modassert
-_G[MOD_CODE].modsetpersistentdata = ModSetPersistentData
-_G[MOD_CODE].modgetpersistentdata = ModGetPersistentData
-_G[MOD_CODE].GetModSetting = GetModSetting
+env.modprint = modprint
+env.modassert = modassert
+env.modsetpersistentdata = ModSetPersistentData
+env.modgetpersistentdata = ModGetPersistentData
+env.GetModSetting = GetModSetting
 
 
 -- [[                                             ]] --
@@ -132,7 +134,7 @@ _G[MOD_CODE].GetModSetting = GetModSetting
 -- [[                                             ]] --
 
 -- [[ Constants ]]
-_G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
+env.PARANOIA_SPOOKS = {
     TREECHOP = 0,
     MINING_SOUND = 1,
     FOOTSTEPS = 2,
@@ -151,12 +153,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_TYPES = {
     -- OCEAN_SHADOW = 15,
 }
 
-_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS = {  }
-for type, id in pairs(_G[MOD_CODE].PARANOIA_SPOOK_TYPES) do
-    table.insert(_G[MOD_CODE].PARANOIA_SPOOK_TYPES_KEYS, type)
-end
-
-_G[MOD_CODE].PARANOIA_STAGES = {
+env.PARANOIA_STAGES = {
     STAGE0 = 0, -- No paranoia
     STAGE1 = 1,
     STAGE2 = 2,
@@ -166,24 +163,12 @@ _G[MOD_CODE].PARANOIA_STAGES = {
     STAGE6 = 6
 }
 
-_G[MOD_CODE].SHADER_PARAM_LIMITS = {
-    SHARPNESS = 0.35,
-    MONOCHROMACY = 0.55,
+env.SHADER_PARAM_LIMITS = {
+    SHARPNESS = 0.45,
+    MONOCHROMACY = 0.65,
     DISTORION_RADIUS = 0.95,
-    DISTORTION_STRENGTH = 14
+    DISTORTION_STRENGTH = 18
 }
-
-_G[MOD_CODE].MIN_HEARTBEAT_INTENSITY = 0
-_G[MOD_CODE].MAX_HEARTBEAT_INTENSITY = 10
-
-_G[MOD_CODE].MIN_INSANITY_SHADER_INTENSITY = 0
-_G[MOD_CODE].MAX_INSANITY_SHADER_INTENSITY = 10
-
-_G[MOD_CODE].MIN_INSANITY_AMBIENCE_INTENSITY = 0
-_G[MOD_CODE].MAX_INSANITY_AMBIENCE_INTENSITY = 10
-
-_G[MOD_CODE].MIN_SPOOK_INTENSITY = 1
-_G[MOD_CODE].MAX_SPOOK_INTENSITY = 10
 
 -- [[ Mod Settings ]] -- Not to be confused with configuration_options.
                       -- These show up in Game Options and can be updated during gameplay.
@@ -192,14 +177,30 @@ local enableDisableOptions = {
     { text = _G.STRINGS.UI.OPTIONS.ENABLED,  data = true  }
 }
 
-_G[MOD_CODE].SETTING_TYPES = {
+env.SETTING_TYPES = {
     SPINNER = "spinner",
     NUM_SPINNER = "num_spinner",
     LIST = "list",
     KEY_SELECT = "key_select"
 }
 
-_G[MOD_CODE].MOD_SETTINGS = {
+env.MIN_HEARTBEAT_INTENSITY = 0
+env.MAX_HEARTBEAT_INTENSITY = 10
+env.DEFAULT_HEARTBEAT_INTENSITY = 8
+
+env.MIN_INSANITY_SHADER_INTENSITY = 0
+env.MAX_INSANITY_SHADER_INTENSITY = 10
+env.DEFAULT_INSANITY_SHADER_INTENSITY = 8
+
+env.MIN_INSANITY_AMBIENCE_INTENSITY = 0
+env.MAX_INSANITY_AMBIENCE_INTENSITY = 10
+env.DEFAULT_INSANITY_AMBIENCE_INTENSITY = 5
+
+env.MIN_SPOOK_INTENSITY = 1
+env.MAX_SPOOK_INTENSITY = 10
+env.DEFAULT_SPOOK_INTENSITY = 6
+
+env.MOD_SETTINGS = {
     FILENAME = "IE_settings",
     TAB_NAME = "Paranoia",
     TOOLTIP = "Modify the mods settings",
@@ -209,86 +210,101 @@ _G[MOD_CODE].MOD_SETTINGS = {
             SPINNER_TITLE = "Heartbeat intensity:",
             TOOLTIP = "Modify the intensity of low sanity heartbeat.",
             COLUMN = 1,
-            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
-            VALUES = { _G[MOD_CODE].MIN_HEARTBEAT_INTENSITY, _G[MOD_CODE].MAX_HEARTBEAT_INTENSITY, 1 },
-            DEFAULT = 8
+            TYPE = env.SETTING_TYPES.NUM_SPINNER,
+            VALUES = { env.MIN_HEARTBEAT_INTENSITY, env.MAX_HEARTBEAT_INTENSITY, 1 },
+            DEFAULT = env.DEFAULT_HEARTBEAT_INTENSITY
         },
         INSANITY_SHADER_INTENSITY = {
             ID = "IE_insanity_shader_intensity",
             SPINNER_TITLE = "Shader intensity:",
             TOOLTIP = "Modify the intensity of low sanity shader.",
             COLUMN = 1,
-            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
-            VALUES = { _G[MOD_CODE].MIN_INSANITY_SHADER_INTENSITY, _G[MOD_CODE].MAX_INSANITY_SHADER_INTENSITY, 1 },
-            DEFAULT = 8
+            TYPE = env.SETTING_TYPES.NUM_SPINNER,
+            VALUES = { env.MIN_INSANITY_SHADER_INTENSITY, env.MAX_INSANITY_SHADER_INTENSITY, 1 },
+            DEFAULT = env.DEFAULT_INSANITY_SHADER_INTENSITY
         },
         INSANITY_AMBIENCE_INTENSITY = {
             ID = "IE_insanity_ambience_intensity",
             SPINNER_TITLE = "Ambience intensity:",
             TOOLTIP = "Modify the intensity of low sanity ambience.",
             COLUMN = 1,
-            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
-            VALUES = { _G[MOD_CODE].MIN_INSANITY_AMBIENCE_INTENSITY, _G[MOD_CODE].MAX_INSANITY_AMBIENCE_INTENSITY, 1 },
-            DEFAULT = 5
+            TYPE = env.SETTING_TYPES.NUM_SPINNER,
+            VALUES = { env.MIN_INSANITY_AMBIENCE_INTENSITY, env.MAX_INSANITY_AMBIENCE_INTENSITY, 1 },
+            DEFAULT = env.DEFAULT_INSANITY_AMBIENCE_INTENSITY
         },
         SPOOK_INTENSITY = {
             ID = "IE_spook_intensity",
             SPINNER_TITLE = "Spook intensity:",
             TOOLTIP = "Modify how often hallucinations should happen when low on sanity.",
             COLUMN = 1,
-            TYPE = _G[MOD_CODE].SETTING_TYPES.NUM_SPINNER,
-            VALUES = { _G[MOD_CODE].MIN_SPOOK_INTENSITY, _G[MOD_CODE].MAX_SPOOK_INTENSITY, 1 },
-            DEFAULT = 5
+            TYPE = env.SETTING_TYPES.NUM_SPINNER,
+            VALUES = { env.MIN_SPOOK_INTENSITY, env.MAX_SPOOK_INTENSITY, 1 },
+            DEFAULT = env.DEFAULT_SPOOK_INTENSITY
         }
     }
 }
 
-_G[MOD_CODE].CURRENT_SETTINGS = {  }
+env.CURRENT_SETTINGS = {  }
 
--- [[ Misc. Variables ]]
-
-_G[MOD_CODE].UpdateModSettings = function()
+env.ApplySettings = function()
     if _G.ThePlayer ~= nil then
         if _G.ThePlayer.components.paranoiaspooks then
-            _G.ThePlayer.components.paranoiaspooks.spook_intensity = _G[MOD_CODE].CURRENT_SETTINGS[_G[MOD_CODE].MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
+            _G.ThePlayer.components.paranoiaspooks.spook_intensity = env.CURRENT_SETTINGS[env.MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
         end
 
         if _G.ThePlayer.components.paranoiamanager then
-            local strength = 1 - math.min(1, _G.ThePlayer.replica.sanity:GetPercent() / _G[MOD_CODE].PARANOIA_THRESHOLDS[_G[MOD_CODE].PARANOIA_STAGES.STAGE1])
-            local sharpness = _G[MOD_CODE].SHADER_PARAM_LIMITS.SHARPNESS * strength
-            local monochromacy = _G[MOD_CODE].SHADER_PARAM_LIMITS.MONOCHROMACY * strength
+            local strength = 1 - math.min(1, _G.ThePlayer.replica.sanity:GetPercent() / env.PARANOIA_THRESHOLDS[env.PARANOIA_STAGES.STAGE1])
+            local sharpness = env.SHADER_PARAM_LIMITS.SHARPNESS * strength
+            local monochromacy = env.SHADER_PARAM_LIMITS.MONOCHROMACY * strength
             _G.ThePlayer.components.paranoiamanager:SetShaderColorParams(sharpness, monochromacy)
         end
     end
 end
 
-_G[MOD_CODE].PARANOIA_THRESHOLDS = {
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE1] = 0.60,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE2] = 0.50,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE3] = 0.40,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE4] = 0.30,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE5] = 0.20,
-    [_G[MOD_CODE].PARANOIA_STAGES.STAGE6] = 0.15
+-- [[ Misc. Variables ]]
+
+env.PARANOIA_THRESHOLDS = {
+    [env.PARANOIA_STAGES.STAGE1] = 0.60,
+    [env.PARANOIA_STAGES.STAGE2] = 0.50,
+    [env.PARANOIA_STAGES.STAGE3] = 0.40,
+    [env.PARANOIA_STAGES.STAGE4] = 0.30,
+    [env.PARANOIA_STAGES.STAGE5] = 0.20,
+    [env.PARANOIA_STAGES.STAGE6] = 0.15
 }
 
-_G[MOD_CODE].HEARTBEAT_START_STAGE = _G[MOD_CODE].PARANOIA_STAGES.STAGE3
-_G[MOD_CODE].HEARTBEAT_MAX_VOLUME = 0.55
-_G[MOD_CODE].HEARTBEAT_MIN_VOLUME = 0.1
-_G[MOD_CODE].HEARTBEAT_MAX_COOLDOWN = 6
-_G[MOD_CODE].HEARTBEAT_MIN_COOLDOWN = 2.5
+env.HEARTBEAT_START_STAGE = env.PARANOIA_STAGES.STAGE3
+env.HEARTBEAT_MAX_VOLUME = 0.55
+env.HEARTBEAT_MIN_VOLUME = 0.1
+env.HEARTBEAT_MAX_COOLDOWN = 6
+env.HEARTBEAT_MIN_COOLDOWN = 2.5
 
-_G[MOD_CODE].SHADER_MODE_TRANSITION_SPEED = 1
+env.SHADER_MODE_TRANSITION_SPEED = 1
 
-_G[MOD_CODE].IN_COMBAT_DURATION = 6
-_G[MOD_CODE].BUSY_DURATION = 10
-_G[MOD_CODE].PARANOIA_LOW_HEALTH_GAIN_START = 0.5
-_G[MOD_CODE].PARANOIA_LOW_HEALTH_MAX_GAIN = 1
-_G[MOD_CODE].PARANOIA_DARKNESS_GAIN = 1.67
-_G[MOD_CODE].PARANOIA_PLAYER_GHOSTS_GAIN = 0.67
-_G[MOD_CODE].PARANOIA_LONELINESS_DIST_SQ = 40 * 40
-_G[MOD_CODE].PARANOIA_LONELINESS_GAIN = 0.5
+env.IN_COMBAT_DURATION = 6
+env.BUSY_DURATION = 10
+env.PARANOIA_SOURCES = {
+    LOW_HEALTH = {
+        START_THRESHOLD = 0.5,
+        GAIN_MULTIPLICATIVE = 2,
+        GAIN_ADDITIVE = 0.5
+    },
+    DARKNESS = {
+        GAIN_MULTIPLICATIVE = 2,
+        GAIN_ADDITIVE = 1.67
+    },
+    PLAYER_GHOSTS = {
+        GAIN_ADDITIVE = 0.67
+    },
+    LONELINESS = {
+        START_DIST_FROM_OTHERS_SQ = 40 * 40,
+        GAIN_ADDITIVE = 0.5
+    },
+    CAVING = {
+        GAIN_ADDITIVE = 0.5
+    }
+}
 
-_G[MOD_CODE].PARANOIA_SPOOK_COSTS = { -- Percentage of built up paranoia this spook will consume upon triggering
+env.PARANOIA_SPOOK_COSTS = { -- Percentage of built up paranoia this spook will consume upon triggering
     TREECHOP = 0.5,
     MINING_SOUND = 0.5,
     FOOTSTEPS = 0.75,
@@ -304,18 +320,16 @@ _G[MOD_CODE].PARANOIA_SPOOK_COSTS = { -- Percentage of built up paranoia this sp
     FAKE_MOB_DEATH = 1
 }
 
-_G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
+env.PARANOIA_SPOOK_PARAMS = {
     TREECHOP = {
-        MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 20,
-        TREE_MUST_TAGS = { "evergreens" },
-        CHOP_SFX_CHANCE = 0.5,
-        LEAF_SFX_CHANCE = 1
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 24,
+        TREE_MUST_TAGS = { "evergreens" }
     },
     MINING_SOUND = {
-        MIN_DIST_FROM_PLAYER = 10,
+        MIN_DIST_FROM_PLAYER = 8,
         MAX_DIST_FROM_PLAYER = 18,
-        VOLUME = 0.3
+        VOLUME = 0.4
     },
     FOOTSTEPS = {
         VARIATIONS = {
@@ -354,15 +368,15 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     },
     WHISPER_QUIET = {
         DIST_FROM_PLAYER = 14,
-        DISAPPEAR_DIST_SQ = 8 * 8
+        DISAPPEAR_DIST_SQ = 10 * 10
     },
     WHISPER_LOUD = {
         DIST_FROM_PLAYER = 14,
-        DISAPPEAR_DIST_SQ = 8 * 8
+        DISAPPEAR_DIST_SQ = 10 * 10
     },
     BERRYBUSH_RUSTLE = {
-        MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 20,
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 24,
         BUSH_MUST_TAGS = { "bush" }
     },
     OCEAN_BUBBLES = {
@@ -550,10 +564,20 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
                 death_fn = function(inst)
                     inst.SoundEmitter:PlaySound("dontstarve/creatures/spiderqueen/die")
                 end
+            },
+            {
+                num_faces = 4,
+                bank = "mole",
+                build = "mole_build",
+                idleanim = "idle_under",
+                deathanim = "death",
+                death_fn = function(inst)
+                    inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mole/death")
+                end
             }
         },
-        MIN_DIST_FROM_PLAYER = 30,
-        MAX_DIST_FROM_PLAYER = 38,
+        MIN_DIST_FROM_PLAYER = 38,
+        MAX_DIST_FROM_PLAYER = 48,
         START_EROSION_DIST_FROM_PLAYER_SQ = 16 * 16,
         EROSION_TIMEOUT = 10
     }
@@ -606,7 +630,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_PARAMS = {
     -- }
 }
 
-_G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
+env.PARANOIA_SPOOK_WEIGHTS = {
     TREECHOP = {
         forest = 1,
         cave = 1,
@@ -620,18 +644,18 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 0.5,
         canseeindark = 3,
 
-        isincombat = 0.67,
-        isbusyworking = 4,
+        isincombat = 0.33,
+        isbusyworking = 6,
 
         biomes = {
-            BGCrappyForest = 3,
-            BGForest = 3,
-            Forest = 3,
-            ForestMole = 3,
-            CrappyForest = 3,
-            BGDeepForest = 4,
-            CrappyDeepForest = 4,
-            DeepForest = 4,
+            BGCrappyForest = 5,
+            BGForest = 5,
+            Forest = 5,
+            ForestMole = 5,
+            CrappyForest = 5,
+            BGDeepForest = 6,
+            CrappyDeepForest = 6,
+            DeepForest = 6,
             BurntForest = 2,
             CritterDen = 2,
             SpiderForest = 2,
@@ -644,7 +668,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
     },
     MINING_SOUND = {
         forest = 1,
-        cave = 3,
+        cave = 5,
         
         night = 1,
         day = 1,
@@ -655,30 +679,30 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 1,
         canseeindark = 1,
 
-        isincombat = 0.67,
+        isincombat = 0.33,
         isbusyworking = 4,
 
         biomes = {
-            RockyPlains = 3,
-            RockyHatchingGrounds = 3,
-            BatsAndRocky = 3,
-            BGRockyCave = 3,
-            BGRockyCaveRoom = 3,
-            WalrusHut_Rocky = 3,
-            BGChessRocky = 3,
-            BGRocky = 4,
-            Rocky = 4,
-            RockyBuzzards = 4,
-            GenericRockyNoThreat = 3,
-            MolesvilleRocky = 3,
-            BGBadlands = 3,
-            Badlands = 3,
-            HoundyBadlands = 3,
-            BuzzardyBadlands = 3,
+            RockyPlains = 5,
+            RockyHatchingGrounds = 5,
+            BatsAndRocky = 5,
+            BGRockyCave = 5,
+            BGRockyCaveRoom = 5,
+            WalrusHut_Rocky = 5,
+            BGChessRocky = 5,
+            BGRocky = 6,
+            Rocky = 6,
+            RockyBuzzards = 6,
+            GenericRockyNoThreat = 5,
+            MolesvilleRocky = 5,
+            BGBadlands = 5,
+            Badlands = 5,
+            HoundyBadlands = 5,
+            BuzzardyBadlands = 5,
             BGNoise = 2,
-            CritterDen = 2,
-            MoonbaseOne = 2,
-            MoonIsland_Mine = 2,
+            CritterDen = 3,
+            MoonbaseOne = 3,
+            MoonIsland_Mine = 3,
             other = 1
         }
     },
@@ -686,68 +710,95 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         forest = 1,
         cave = 1,
 
-        night = 4,
+        night = 6,
         day = 1,
 
         boat = -1,
         land = 1,
 
-        isindark = 4,
+        isindark = 9,
         canseeindark = 1,
 
         isincombat = 0.5,
-        isbusyworking = 2,
+        isbusyworking = 4,
 
         biomes = {
-            other = 1
+            other = 2
         }
     },
     FOOTSTEPS_RUSH = {
         forest = 1,
         cave = 1,
 
-        night = 5,
+        night = 6,
         day = 0.33,
 
         boat = -1,
         land = 1,
 
-        isindark = 2,
-        canseeindark = 0.5,
+        isindark = 10,
+        canseeindark = 2,
 
-        isincombat = 1,
-        isbusyworking = 3,
+        isincombat = 0.67,
+        isbusyworking = 2,
 
         biomes = {
-            other = 1
+            other = 2
         }
     },
     BIRDSINK = {
         forest = 1,
         cave = -1,
 
-        night = 0.33,
+        night = 1,
         day = 1.5,
 
-        boat = 1,
-        land = 0.5,
+        boat = 4,
+        land = 0.25,
 
         isindark = -1,
-        canseeindark = 1,
+        canseeindark = 3,
 
         isincombat = 0.2,
-        isbusyworking = 1,
+        isbusyworking = 4,
 
         biomes = {
-            other = 1
+            other = 2
         }
     },
     SCREECH = {
         forest = 1,
         cave = -1,
 
-        night = 3,
+        night = 6,
         day = -1,
+
+        boat = -1,
+        land = 1,
+
+        isindark = 6,
+        canseeindark = 2,
+
+        isincombat = 0.2,
+        isbusyworking = 6,
+
+        biomes = {
+            Forest = 5,
+            ForestMole = 5,
+            DeepForest = 6,
+            Graveyard = 3,
+            MoonbaseOne = 3,
+            CrappyForest = 5,
+            CrappyDeepForest = 6,
+            other = 0
+        }
+    },
+    WHISPER_QUIET = {
+        forest = 1,
+        cave = 1,
+
+        night = 3,
+        day = 1,
 
         boat = -1,
         land = 1,
@@ -755,35 +806,8 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isindark = 5,
         canseeindark = 2,
 
-        isincombat = 0.5,
-        isbusyworking = 1,
-
-        biomes = {
-            Forest = 3,
-            ForestMole = 3,
-            DeepForest = 4,
-            Graveyard = 2,
-            MoonbaseOne = 2,
-            CrappyForest = 3,
-            CrappyDeepForest = 4,
-            other = 0.5
-        }
-    },
-    WHISPER_QUIET = {
-        forest = 1,
-        cave = 0.67,
-
-        night = 2,
-        day = 1,
-
-        boat = -1,
-        land = 1,
-
-        isindark = 4,
-        canseeindark = 2,
-
         isincombat = 0.2,
-        isbusyworking = 3,
+        isbusyworking = 4,
 
         biomes = {
             Forest = 3,
@@ -800,24 +824,24 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         forest = 1,
         cave = 1,
 
-        night = 2,
+        night = 3,
         day = 0,
 
         boat = -1,
         land = 0.5,
 
-        isindark = 3,
-        canseeindark = 1,
+        isindark = 5,
+        canseeindark = 0.5,
 
         isincombat = 0.5,
-        isbusyworking = 2,
+        isbusyworking = 3,
 
         biomes = {
             Forest = 2,
             ForestMole = 2,
-            DeepForest = 3,
+            DeepForest = 4,
             CrappyForest = 2,
-            CrappyDeepForest = 3,
+            CrappyDeepForest = 4,
             other = 1
         }
     },
@@ -831,14 +855,14 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         boat = -1,
         land = 1,
 
-        isindark = 0.5,
-        canseeindark = 3,
+        isindark = 0,
+        canseeindark = 4,
 
         isincombat = 0.67,
         isbusyworking = 4,
 
         biomes = {
-            other = 3
+            other = 4
         }
     },
     OCEAN_BUBBLES = {
@@ -846,19 +870,19 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         cave = -1,
 
         night = 2,
-        day = 2,
+        day = 1,
 
-        boat = 3,
+        boat = 5,
         land = -1,
 
         isindark = 1,
-        canseeindark = 3,
+        canseeindark = 5,
 
         isincombat = 1,
         isbusyworking = 4,
 
         biomes = {
-            other = 1
+            other = 2
         }
     },
     OCEAN_FOOTSTEPS = {
@@ -878,7 +902,7 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         isbusyworking = 4,
 
         biomes = {
-            other = 1
+            other = 2
         }
     },
     FAKE_PLAYER = {
@@ -886,9 +910,9 @@ _G[MOD_CODE].PARANOIA_SPOOK_WEIGHTS = {
         cave = 1,
 
         night = 2,
-        day = 3,
+        day = 4,
 
-        boat = -1,
+        boat = 1,
         land = 2,
 
         isindark = 1,
