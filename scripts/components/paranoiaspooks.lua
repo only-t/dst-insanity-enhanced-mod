@@ -464,7 +464,7 @@ function ParanoiaSpooks:OnUpdate(dt)
     self:RecalcGhostParanoia()
     self:RecalcLonelinessParanoia()
 
-    if IE.DEV and false then
+    if IE.DEV then
         print("paranoia sources:")
         for source, amounts in pairs(self.paranoia_sources) do
             print("    "..tostring(source)..":")
