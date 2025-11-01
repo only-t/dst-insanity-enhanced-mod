@@ -3,8 +3,7 @@ local overrides = {
     components = {
         "ambientsound",
         "dynamicmusic",
-        "dsp",
-        "health_replica"
+        "dsp"
     },
     screens = {
         "playerhud"
