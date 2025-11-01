@@ -233,32 +233,6 @@ local function OnEnterLight(inst)
     inst.components.paranoiaspooks.paranoia_sources.darkness = nil
 end
 
-local function OnGhostModeDirty(inst)
-    if inst.isghostmode:value() then
-        inst._parent:RemoveEventCallback("performaction", CheckAction)
-        inst._parent:RemoveEventCallback("sanitydelta", OnSanityDelta)
-        inst._parent:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
-        inst._parent:RemoveEventCallback("buildsuccess", OnBuildSuccess)
-
-        inst._parent.components.paranoiaspooks.next_spook = nil
-        inst._parent.components.paranoiaspooks.last_spook = nil
-        inst._parent.components.paranoiaspooks.paranoia = 0
-
-        inst._parent.components.paranoiaspooks:Stop()
-        
-        inst._parent:StopUpdatingComponent(inst._parent.components.paranoiaspooks)
-    else
-        inst._parent:ListenForEvent("performaction", CheckAction)
-        inst._parent:ListenForEvent("sanitydelta", OnSanityDelta)
-        inst._parent:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
-        inst._parent:ListenForEvent("buildsuccess", OnBuildSuccess)
-
-        inst._parent.components.paranoiaspooks:Start()
-
-        inst._parent:StartUpdatingComponent(inst._parent.components.paranoiaspooks)
-    end
-end
-
 -- local function WhisperRespond(inst) -- [TODO]
 --     if inst.components.talker then
 --         local script = STRINGS.IE.WHISPER_RESPONSES[math.random(1, #STRINGS.IE.WHISPER_RESPONSES)]
@@ -283,6 +257,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.last_spook = nil -- Try hard to not do the same spook twice in a row
     self.pending_spook_timeout = 20 -- We will allow this amount of time to pass until we reset the spook IF it wasn't able to trigger
     self.pending_spook_timeout_curtime = 0
+    self.isdead = false
 
     self.lastfighttime = -IE.IN_COMBAT_DURATION
     self.lastbusytime = -IE.BUSY_DURATION
@@ -316,8 +291,6 @@ function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
     self.inst:RemoveEventCallback("enterdark", OnEnterDark)
     self.inst:RemoveEventCallback("enterlight", OnEnterLight)
-
-    self.inst.player_classified:RemoveEventCallback("isghostmodedirty", OnGhostModeDirty)
 end
 
 function ParanoiaSpooks:Init()
@@ -334,11 +307,42 @@ function ParanoiaSpooks:Init()
     self.inst:ListenForEvent("enterdark", OnEnterDark)
     self.inst:ListenForEvent("enterlight", OnEnterLight)
 
-    self.inst.player_classified:ListenForEvent("isghostmodedirty", OnGhostModeDirty)
-    OnGhostModeDirty(self.inst.player_classified)
-
     if TheWorld:HasTag("cave") then
         self.paranoia_sources.caving = { additive = IE.PARANOIA_SOURCES.CAVING.GAIN_ADDITIVE }
+    end
+end
+
+function ParanoiaSpooks:_OnDeath()
+    if not self.isdead then
+        self.inst:RemoveEventCallback("performaction", CheckAction)
+        self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
+        self.inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
+        self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
+
+        self.next_spook = nil
+        self.last_spook = nil
+        self.paranoia = 0
+
+        self:Stop()
+        
+        self.inst:StopUpdatingComponent(self)
+
+        self.isdead = true
+    end
+end
+
+function ParanoiaSpooks:_OnRevive()
+    if self.isdead then
+        self.inst:ListenForEvent("performaction", CheckAction)
+        self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
+        self.inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
+        self.inst:ListenForEvent("buildsuccess", OnBuildSuccess)
+
+        self:Start()
+
+        self.inst:StartUpdatingComponent(self)
+
+        self.isdead = false
     end
 end
 

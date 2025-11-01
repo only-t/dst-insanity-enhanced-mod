@@ -1,4 +1,8 @@
 AddPlayerPostInit(function(inst)
+    if inst:HasTag("wonkey") then -- Munkey no schizo
+        return
+    end
+
     if not _G.TheNet:IsDedicated() then
         inst:DoTaskInTime(0, function() -- Waiting 1 tick to let replicas get created
             inst:AddComponent("paranoiamanager") -- Purely for tying new visuals to players sanity

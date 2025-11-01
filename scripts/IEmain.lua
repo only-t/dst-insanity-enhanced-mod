@@ -13,7 +13,7 @@ local overrides = {
         -- "SGwilson_client"
     },
     prefabs = {
-
+        "player_classified"
     },
     other = {
         "postprocessor",
