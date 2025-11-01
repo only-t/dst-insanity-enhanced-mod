@@ -14,7 +14,10 @@ local function PickASpook(self)
 
     -- print(TheWorld.topology.ids[TheWorld.Map:GetNodeIdAtPoint(ThePlayer:GetPosition():Get())])
     local _node_id = TheWorld.topology.ids[TheWorld.Map:GetNodeIdAtPoint(self.inst:GetPosition():Get())]
-    local current_room_name = string.split(_node_id, ":")[3]
+    local current_room_name = "other"
+    if _node_id ~= nil then
+        current_room_name = string.split(_node_id, ":")[3]
+    end
 
     local spook_weights = {  }
     local spook_excludes = {  }
