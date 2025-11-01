@@ -3,7 +3,8 @@ local Grid = require("widgets/grid")
 local Text = require("widgets/text")
 local Image = require("widgets/image")
 local ImageButton = require("widgets/imagebutton")
-local PopupDialogScreen = require "screens/redux/popupdialog"
+local PopupDialogScreen = require ("screens/redux/popupdialog")
+local IEEditListScreen = require("screens/IEeditlistscreen")
 
 local TEMPLATES = require("widgets/redux/templates")
 
@@ -12,6 +13,11 @@ local spinner_width = 220
 local spinner_height = 36
 local narrow_field_nudge = -50
 local space_between = 5
+
+local function OpenList(optionsscreen, list_title, data, onapply)
+	local editlist = IEEditListScreen(optionsscreen, list_title, data, onapply)
+	TheFrontEnd:PushScreen(editlist)
+end
 
 local function AddListItemBackground(w)
 	local total_width = label_width + spinner_width + space_between
@@ -205,7 +211,20 @@ local IESettingsTab = Class(Widget, function(self, owner)
 		
 		if setting.TYPE == IE.SETTING_TYPES.LIST then -- List mod setting gets a button created to open itself
 			widget_name = string.lower(setting.ID).."_btn"
-			self[widget_name] = CreateSettingButton(setting.SPINNER_TITLE, function() end, setting.TOOLTIP)
+			self[widget_name] = CreateSettingButton(setting.SPINNER_TITLE,
+				function()
+					OpenList(self.owner, setting.SPINNER_TITLE, deepcopy(self.owner.working[setting.ID]), function(data)
+						self.owner.working[setting.ID] = data
+						if #self.owner.working[setting.ID] ~= #self.owner.options[setting.ID] then
+							self.owner:MakeDirty()
+							return
+						end
+
+						self.owner:UpdateMenu()
+					end)
+				end,
+				setting.TOOLTIP
+			)
 			self[widget_name].tooltip_text = setting.TOOLTIP
 		end
 
@@ -226,13 +245,13 @@ local IESettingsTab = Class(Widget, function(self, owner)
 	local spinner_tooltip_divider = self:AddChild(Image("images/global_redux.xml", "item_divider.tex"))
 	spinner_tooltip_divider:SetPosition(90, -225)
 
-	for k, v in ipairs(self.left_column) do
-		self.grid:AddItem(v.parent, 1, k)
+	for i, v in ipairs(self.left_column) do
+		self.grid:AddItem(v.parent, 1, i)
 		AddSettingTooltip(v.parent, v.type, spinner_tooltip, spinner_tooltip_divider)
 	end
 
-	for k, v in ipairs(self.right_column) do
-		self.grid:AddItem(v.parent, 2, k)
+	for i, v in ipairs(self.right_column) do
+		self.grid:AddItem(v.parent, 2, i)
 		AddSettingTooltip(v.parent, v.type, spinner_tooltip, spinner_tooltip_divider)
 	end
 

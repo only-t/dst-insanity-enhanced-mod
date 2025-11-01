@@ -1,21 +1,5 @@
 require("mathutil")
 
--- local function OnEnterDark(self)
---     self.in_darkness = true
--- end
-
--- local function OnEnterLight(self)
---     self.in_darkness = false
--- end
-
--- local function OnNightVision(self, nightvision)
---     if nightvision then
---         self.darkness_immune = true
---     else
---         self.darkness_immune = false
---     end
--- end
-
 -- Desmos:
 -- -\frac{\cos\left(3x\pi\right)}{2}+0.5\left\{0\le x\le\frac{1}{3}\right\}
 -- 1-\left(1.5x-0.5\right)^{2}\left\{\frac{1}{3}\le x\le1\right\}
@@ -163,6 +147,8 @@ function ParanoiaManager:Init()
     OnSanityDelta(self.inst, { newpercent = self.sanity:GetPercent(), sanitymode = self.sanity:GetSanityMode() })
 
     self:EnableShader()
+
+    self.inst:PushEvent("paranoiamanager_initialized")
 end
 
 function ParanoiaManager:EnableShader()
@@ -226,7 +212,7 @@ end
 
 function ParanoiaManager:SetShaderColorParams(sharpness, monochromacy)
     if monochromacy == nil then
-        PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS1, sharpness)
+        PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS1, sharpness * (_G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.INSANITY_SHADER_INTENSITY.ID] / 10))
     elseif sharpness == nil then
         return
     end
@@ -236,7 +222,7 @@ end
 
 function ParanoiaManager:SetShaderDistortionParams(distortion_radius, distortion_strength)
     if distortion_strength == nil then
-        PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS2, distortion_radius)
+        PostProcessor:SetUniformVariable(UniformVariables.PARANOIA_PARAMS2, distortion_radius * (_G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.HEARTBEAT_INTENSITY.ID] / 10))
     elseif distortion_radius == nil then
         return
     end
@@ -246,8 +232,7 @@ end
 
 function ParanoiaManager:ChangeParanoiaStage(new_stage)
     if self.current_stage ~= new_stage then
-        self.inst:PushEvent("change_paranoia_stage", { newstage = new_stage, oldstage = self.current_stage })
-
+        self.inst:PushEvent("paranoia_stage_changed", { newstage = new_stage, oldstage = self.current_stage })
         self.current_stage = new_stage
     end
 end

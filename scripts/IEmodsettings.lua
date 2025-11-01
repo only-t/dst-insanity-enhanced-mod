@@ -1,6 +1,6 @@
 -- [[ Define default values ]]
 local loaded_settings = {  }
-_G.IE.modgetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, function(_, data)
+_G.IE.ModGetPersistentData(_G.IE.MOD_SETTINGS.FILENAME, function(_, data)
     if data == "" then -- Run only when the settings file is missing
         for _, setting in pairs(_G.IE.MOD_SETTINGS.SETTINGS) do
             if loaded_settings[setting.ID] == nil then
@@ -8,7 +8,7 @@ _G.IE.modgetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, function(_, data)
             end
         end
 
-        _G.IE.modsetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, _G.json.encode(loaded_settings))
+        _G.IE.ModSetPersistentData(_G.IE.MOD_SETTINGS.FILENAME, _G.json.encode(loaded_settings))
     else -- Otherwise just check for missing data
         loaded_settings = _G.json.decode(data)
 
@@ -21,7 +21,7 @@ _G.IE.modgetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, function(_, data)
         end
 
         if was_updated then
-            _G.IE.modsetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, _G.json.encode(loaded_settings))
+            _G.IE.ModSetPersistentData(_G.IE.MOD_SETTINGS.FILENAME, _G.json.encode(loaded_settings))
         end
     end
 end)
@@ -61,7 +61,7 @@ OptionsScreen.Apply = function(self, ...)
         loaded_settings[setting.ID] = self.working[setting.ID]
     end
 
-    _G.IE.modsetpersistentdata(_G.IE.MOD_SETTINGS.FILENAME, loaded_settings, function()
+    _G.IE.ModSetPersistentData(_G.IE.MOD_SETTINGS.FILENAME, loaded_settings, function()
         _G.IE.CURRENT_SETTINGS = loaded_settings
         _G.IE.ApplySettings()
     end)

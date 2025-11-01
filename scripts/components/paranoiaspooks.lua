@@ -196,7 +196,11 @@ local function OnParanoiaStageChanged(inst, data)
 end
 
 local function OnSanityDelta(inst, data)
-    inst.components.paranoiaspooks.paranoia_sources.sanity = 1 - math.min(1, data.newpercent / IE.PARANOIA_THRESHOLDS[IE.PARANOIA_STAGES.STAGE1])
+    if inst.components.paranoiaspooks.paranoia_sources.sanity == nil then
+        inst.components.paranoiaspooks.paranoia_sources.sanity = {  }
+    end
+
+    inst.components.paranoiaspooks.paranoia_sources.sanity.additive = IE.PARANOIA_SOURCES.SANITY.GAIN_ADDITIVE * (1 - math.min(1, data.newpercent / IE.PARANOIA_SOURCES.SANITY.START_THRESHOLD))
 end
 
 local function OnBuildSuccess(inst)
@@ -204,11 +208,22 @@ local function OnBuildSuccess(inst)
 end
 
 local function OnHealthDelta(inst, data)
-    inst.components.paranoiaspooks.paranoia_sources.low_health = IE.PARANOIA_LOW_HEALTH_MAX_GAIN * (1 - math.min(1, data.newpercent / IE.PARANOIA_LOW_HEALTH_GAIN_START))
+    local strength = (1 - math.min(1, data.newpercent / IE.PARANOIA_SOURCES.LOW_HEALTH.START_THRESHOLD))
+    if inst.components.paranoiaspooks.paranoia_sources.low_health == nil then
+        inst.components.paranoiaspooks.paranoia_sources.low_health = {  }
+    end
+
+    inst.components.paranoiaspooks.paranoia_sources.low_health.additive = IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_ADDITIVE * strength
+    inst.components.paranoiaspooks.paranoia_sources.low_health.multiplicative = IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_MULTIPLICATIVE * strength
 end
 
 local function OnEnterDark(inst)
-    inst.components.paranoiaspooks.paranoia_sources.darkness = IE.PARANOIA_DARKNESS_GAIN
+    if inst.components.paranoiaspooks.paranoia_sources.darkness == nil then
+        inst.components.paranoiaspooks.paranoia_sources.darkness = {  }
+    end
+
+    inst.components.paranoiaspooks.paranoia_sources.darkness.additive = IE.PARANOIA_SOURCES.DARKNESS.GAIN_ADDITIVE
+    inst.components.paranoiaspooks.paranoia_sources.darkness.multiplicative = IE.PARANOIA_SOURCES.DARKNESS.GAIN_MULTIPLICATIVE
 end
 
 local function OnEnterLight(inst)
@@ -217,7 +232,7 @@ end
 
 -- local function WhisperRespond(inst) -- [TODO]
 --     if inst.components.talker then
---         local script = _G.STRINGS.IE.WHISPER_RESPONSES[math.random(1, #_G.STRINGS.IE.WHISPER_RESPONSES)]
+--         local script = STRINGS.IE.WHISPER_RESPONSES[math.random(1, #STRINGS.IE.WHISPER_RESPONSES)]
 --         inst.components.talker:Say(script)
 --     end
 -- end
@@ -225,7 +240,7 @@ end
 local ParanoiaSpooks = Class(function(self, inst)
 	self.inst = inst
 
-    self.spook_intensity = _G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
+    self.spook_intensity = IE.CURRENT_SETTINGS[IE.MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
 
     self.is_paranoid = false -- false == stage 0, slowly decrease paranoia
 
@@ -233,7 +248,7 @@ local ParanoiaSpooks = Class(function(self, inst)
     self.suspense = 0 -- For better spook timing
 
     self.paranoia_sources = {  }
-    self.paranoia_dropoff = 1
+    self.paranoia_dropoff = IE.PARANOIA_DROPOFF
 
     self.next_spook = nil
     self.last_spook = nil -- Try hard to not do the same spook twice in a row
@@ -267,7 +282,7 @@ end
 function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("performaction", CheckAction)
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-    self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
     self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
     self.inst:RemoveEventCallback("enterdark", OnEnterDark)
@@ -280,7 +295,7 @@ function ParanoiaSpooks:Init()
     self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
     OnSanityDelta(self.inst, { newpercent = self.inst.replica.sanity:GetPercent() })
     
-    self.inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
 
     self.inst:ListenForEvent("healthdelta", OnHealthDelta)
     OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
@@ -289,14 +304,15 @@ function ParanoiaSpooks:Init()
     self.inst:ListenForEvent("enterlight", OnEnterLight)
 
     if TheWorld:HasTag("cave") then
-        self.paranoia_sources.caving = 0.5
+        self.paranoia_sources.caving = { additive = IE.PARANOIA_SOURCES.CAVING.GAIN_ADDITIVE }
     end
 end
 
 function ParanoiaSpooks:_OnDeath() -- Should only be called from inside Health.SetIsDead
+    print("doing the dead")
     self.inst:RemoveEventCallback("performaction", CheckAction)
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-    self.inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
     self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
 
     self.inst.components.paranoiaspooks.next_spook = nil
@@ -309,9 +325,10 @@ function ParanoiaSpooks:_OnDeath() -- Should only be called from inside Health.S
 end
 
 function ParanoiaSpooks:_OnRevive() -- Should only be called from inside Health.SetIsDead
+    print("doing the reviver")
     self.inst:ListenForEvent("performaction", CheckAction)
     self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
-    self.inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged)
+    self.inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
     self.inst:ListenForEvent("buildsuccess", OnBuildSuccess)
 
     self.inst.components.paranoiaspooks:Start()
@@ -374,22 +391,34 @@ function ParanoiaSpooks:RecalcGhostParanoia()
     --     self.paranoia_sources.player_ghosts = nil
     -- end
 
-    self.paranoia_sources.player_ghosts = self.inst.replica.sanity:IsGhostDrain() and IE.PARANOIA_PLAYER_GHOSTS_GAIN or nil
+    if self.paranoia_sources.player_ghosts == nil then
+        self.paranoia_sources.player_ghosts = {  }
+    end
+    if self.inst.replica.sanity:IsGhostDrain() then
+        self.paranoia_sources.player_ghosts.additive = IE.PARANOIA_SOURCES.PLAYER_GHOSTS.GAIN_ADDITIVE
+    else
+        self.paranoia_sources.player_ghosts = nil
+    end
 end
 
 function ParanoiaSpooks:RecalcLonelinessParanoia()
     if #AllPlayers <= 1 then -- Solo players shouldn't be punished
         self.paranoia_sources.loneliness = nil
+        return
     end
 
     for _, player in ipairs(AllPlayers) do
-        if self.inst:GetDistanceSqToInst(player) <= IE.PARANOIA_LONELINESS_DIST_SQ then
+        if self.inst:GetDistanceSqToInst(player) <= IE.PARANOIA_SOURCES.LONELINESS.START_DIST_FROM_OTHERS_SQ then
             self.paranoia_sources.loneliness = nil
             return
         end
     end
 
-    self.paranoia_sources.loneliness = IE.PARANOIA_LONELINESS_GAIN
+    if self.paranoia_sources.loneliness == nil then
+        self.paranoia_sources.loneliness = {  }
+    end
+
+    self.paranoia_sources.loneliness.additive = IE.PARANOIA_SOURCES.LONELINESS.GAIN_ADDITIVE
 end
 
 function ParanoiaSpooks:OnUpdate(dt)
@@ -425,20 +454,32 @@ function ParanoiaSpooks:OnUpdate(dt)
     self:RecalcGhostParanoia()
     self:RecalcLonelinessParanoia()
 
-    if IE.DEV then
+    if IE.DEV and false then
         print("paranoia sources:")
-        for source, amount in pairs(self.paranoia_sources) do
-            print("    "..tostring(source).." - "..tostring(amount))
+        for source, amounts in pairs(self.paranoia_sources) do
+            print("    "..tostring(source)..":")
+            print("        add - "..tostring(amounts.additive))
+            print("        mult - "..tostring(amounts.multiplicative))
         end
         print("current paranoia - "..tostring(self.paranoia))
     end
 
     if self.is_paranoid then
-        for source, amount in pairs(self.paranoia_sources) do
-            self.paranoia = self.paranoia + amount * dt
+        local add = 0
+        local multiply = 1
+        for _, amounts in pairs(self.paranoia_sources) do
+            if amounts.additive ~= nil then
+                add = add + amounts.additive * dt
+            end
+
+            if amounts.multiplicative then
+                multiply = multiply * amounts.multiplicative
+            end
         end
 
-        if 30 + 20 * (_G.IE.MAX_SPOOK_INTENSITY - self.spook_intensity) <= self.paranoia then
+        self.paranoia = self.paranoia + add * multiply * dt
+
+        if 30 + 20 * (IE.MAX_SPOOK_INTENSITY - self.spook_intensity) <= self.paranoia then
             self.next_spook = PickASpook(self)
             self.last_spook = self.next_spook
         end

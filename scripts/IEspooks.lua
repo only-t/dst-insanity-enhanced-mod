@@ -28,7 +28,7 @@ local function TreeChoppingSpook(self)
     local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.TREE_MUST_TAGS)
 
     local far_ents = {  }
-    for i, ent in ipairs(ents) do
+    for _, ent in ipairs(ents) do
         if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
             table.insert(far_ents, ent)
         end
@@ -244,7 +244,7 @@ local function BerryBushRustleSpook(self)
     local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.BUSH_MUST_TAGS)
 
     local far_ents = {  }
-    for i, ent in ipairs(ents) do
+    for _, ent in ipairs(ents) do
         if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
             table.insert(far_ents, ent)
         end
@@ -359,7 +359,7 @@ local function FakePlayerSpook(self) -- [TODO] Make this less ugly
         local ents = TheSim:FindEntities(x, y, z, params.MAX_DIST_FROM_PLAYER, params.ACTIONS[action].TARGET_TAGS)
 
         local far_ents = {  }
-        for i, ent in ipairs(ents) do
+        for _, ent in ipairs(ents) do
             if self.inst:GetDistanceSqToInst(ent) >= params.MIN_DIST_FROM_PLAYER * params.MIN_DIST_FROM_PLAYER then
                 table.insert(far_ents, ent)
             end

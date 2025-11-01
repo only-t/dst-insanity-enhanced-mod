@@ -120,6 +120,12 @@ DSP._ctor = function(self, ...)
         end
     end
 
+    local function OnParanoiaManagerInitialized(inst)
+        inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
+        OnParanoiaStageChanged(inst, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = inst.components.paranoiamanager.current_stage })
+        inst:RemoveEventCallback("paranoiamanager_initialized", OnParanoiaManagerInitialized)
+    end
+
     old_DSP_ctor(self, ...)
 
     _G.IE.OverrideListenForEventFn(self.inst, "playeractivated", nil, function(old_fn, inst, player, ...)
@@ -127,22 +133,17 @@ DSP._ctor = function(self, ...)
             old_fn(inst, player, ...)
         end
 
-        player:DoTaskInTime(0, function() -- [TODO] Fix?
-            if _activatedplayer == player then
-                return
-            elseif _activatedplayer and _activatedplayer.entity:IsValid() then
-                if player.components.paranoiamanager then
-                    inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
-                end
-            end
-            
-            _activatedplayer = player
-
+        if _activatedplayer == player then
+            return
+        elseif _activatedplayer and _activatedplayer.entity:IsValid() then
             if player.components.paranoiamanager then
-                inst:ListenForEvent("change_paranoia_stage", OnParanoiaStageChanged, player)
-                OnParanoiaStageChanged(inst, { oldstage = _G.IE.PARANOIA_STAGES.STAGE0, newstage = player.components.paranoiamanager.current_stage })
+                inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged, player)
             end
-        end)
+        end
+        
+        _activatedplayer = player
+
+        player:ListenForEvent("paranoiamanager_initialized", OnParanoiaManagerInitialized)
     end)
 
     _G.IE.OverrideListenForEventFn(self.inst, "playerdeactivated", nil, function(old_fn, inst, player, ...)
@@ -151,7 +152,7 @@ DSP._ctor = function(self, ...)
         end
 
         if player.components.paranoiamanager then
-            inst:RemoveEventCallback("change_paranoia_stage", OnParanoiaStageChanged, player)
+            inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged, player)
         end
         
         if player == _activatedplayer then

@@ -124,8 +124,8 @@ env.ERROR_PREFIX = "["..MOD_CODE.."] "..MOD_NAME.." - ERROR! "
 
 env.modprint = modprint
 env.modassert = modassert
-env.modsetpersistentdata = ModSetPersistentData
-env.modgetpersistentdata = ModGetPersistentData
+env.ModSetPersistentData = ModSetPersistentData
+env.ModGetPersistentData = ModGetPersistentData
 env.GetModSetting = GetModSetting
 
 
@@ -282,7 +282,14 @@ env.SHADER_MODE_TRANSITION_SPEED = 1
 
 env.IN_COMBAT_DURATION = 6
 env.BUSY_DURATION = 10
+
+env.PARANOIA_DROPOFF = 1
+
 env.PARANOIA_SOURCES = {
+    SANITY = {
+        START_THRESHOLD = env.PARANOIA_THRESHOLDS[env.PARANOIA_STAGES.STAGE1],
+        GAIN_ADDITIVE = 1
+    },
     LOW_HEALTH = {
         START_THRESHOLD = 0.5,
         GAIN_MULTIPLICATIVE = 2,
