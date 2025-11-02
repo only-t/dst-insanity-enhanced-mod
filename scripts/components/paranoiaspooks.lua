@@ -471,7 +471,6 @@ function ParanoiaSpooks:OnUpdate(dt)
             print("        add - "..tostring(amounts.additive))
             print("        mult - "..tostring(amounts.multiplicative))
         end
-        print("current paranoia - "..tostring(self.paranoia))
     end
 
     if self.is_paranoid then
@@ -479,7 +478,7 @@ function ParanoiaSpooks:OnUpdate(dt)
         local multiply = 1
         for _, amounts in pairs(self.paranoia_sources) do
             if amounts.additive ~= nil then
-                add = add + amounts.additive * dt
+                add = add + amounts.additive
             end
 
             if amounts.multiplicative then
@@ -487,7 +486,16 @@ function ParanoiaSpooks:OnUpdate(dt)
             end
         end
 
+        if IE.DEV then
+            print("current additive - "..tostring(add))
+            print("current multiplicative - "..tostring(multiply))
+        end
+
         self.paranoia = self.paranoia + add * multiply * dt
+
+        if IE.DEV then
+            print("current paranoia - "..tostring(self.paranoia))
+        end
 
         if 30 + 20 * (IE.MAX_SPOOK_INTENSITY - self.spook_intensity) <= self.paranoia then
             self.next_spook = PickASpook(self)
