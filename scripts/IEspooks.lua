@@ -83,7 +83,7 @@ local function MiningSoundSpook(self)
     local sfx_dummy = SpawnPrefab("sfx_dummy")
     sfx_dummy.Transform:SetPosition(pos.x, pos.y, pos.z)
 
-    sfx_dummy.sound = "dontstarve/wilson/use_pick_rock"
+    sfx_dummy.sound = "paranoia/sfx/mine"
     sfx_dummy.volume = params.VOLUME
 
     sfx_dummy:Play()
@@ -184,16 +184,6 @@ local function ScreechSpook(self)
 
     sfx_dummy:Play()
 
-    if IE.DEV then -- Needs more testing
-        if self.inst.components.paranoiamanager then
-            self.inst.components.paranoiamanager:PushHeartbeatVolume(0, 0.5)
-
-            self.inst:DoTaskInTime(2.5, function()
-                self.inst.components.paranoiamanager:PushHeartbeatVolume(nil, 4) 
-            end)
-        end
-    end
-
     return sfx_dummy
 end
 
@@ -273,16 +263,16 @@ local function BerryBushRustleSpook(self)
 
     if bush.prefab == "berrybush" then
         local vfx = SpawnPrefab("green_leaves")
+        vfx.sound = nil
         vfx.Transform:SetPosition(bush.Transform:GetWorldPosition())
-    else
-        local sfx_dummy = SpawnPrefab("sfx_dummy") -- Since berry bushes don't have SoundEmitter, for SOME reason?
-        sfx_dummy.Transform:SetPosition(bush.Transform:GetWorldPosition())
-
-        sfx_dummy.sound = "dontstarve/wilson/harvest_berries"
-        sfx_dummy.volume = 0.3
-
-        sfx_dummy:Play()
     end
+
+    local sfx_dummy = SpawnPrefab("sfx_dummy") -- Since berry bushes don't have SoundEmitter, for SOME reason?
+    sfx_dummy.Transform:SetPosition(bush.Transform:GetWorldPosition())
+
+    sfx_dummy.sound = "paranoia/sfx/harvest_berries"
+
+    sfx_dummy:Play()
 
     return bush
 end

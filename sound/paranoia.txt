@@ -12,7 +12,7 @@ Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_CHOP
 Id              : EVENTID_PARANOIA_SFX_CHOP = 0
 GUID            : EVENTGUID_PARANOIA_SFX_CHOP = {d5627263-6c7f-4d9c-b1db-52b4f0555064}
 Notes           : 
-Max. playbacks  : 1
+Max. playbacks  : 3
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
@@ -21,7 +21,7 @@ Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_HEARTBEAT
 Id              : EVENTID_PARANOIA_SFX_HEARTBEAT = 1
 GUID            : EVENTGUID_PARANOIA_SFX_HEARTBEAT = {8a7e17bc-59e2-4056-b59b-36871d00e75b}
 Notes           : 
-Max. playbacks  : 1
+Max. playbacks  : 3
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
@@ -30,7 +30,7 @@ Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_LEAF_RUSTLE
 Id              : EVENTID_PARANOIA_SFX_LEAF_RUSTLE = 2
 GUID            : EVENTGUID_PARANOIA_SFX_LEAF_RUSTLE = {c9d82f34-aa5f-43d5-a207-d15c73461673}
 Notes           : 
-Max. playbacks  : 1
+Max. playbacks  : 3
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
@@ -39,7 +39,7 @@ Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_WHISPERS_QUIET_VOI
 Id              : EVENTID_PARANOIA_SFX_WHISPERS_QUIET_VOICE = 3
 GUID            : EVENTGUID_PARANOIA_SFX_WHISPERS_QUIET_VOICE = {f8f26175-ecca-40b1-a895-754fe0eba26a}
 Notes           : 
-Max. playbacks  : 6
+Max. playbacks  : 3
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
@@ -48,13 +48,40 @@ Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_WHISPERS_LOUD_VOIC
 Id              : EVENTID_PARANOIA_SFX_WHISPERS_LOUD_VOICE = 4
 GUID            : EVENTGUID_PARANOIA_SFX_WHISPERS_LOUD_VOICE = {dca2f8a9-78ce-488b-aace-0230b993eccb}
 Notes           : 
-Max. playbacks  : 6
+Max. playbacks  : 3
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_sfx
+
+Name            : /sfx/mine
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_MINE
+Id              : EVENTID_PARANOIA_SFX_MINE = 5
+GUID            : EVENTGUID_PARANOIA_SFX_MINE = {8662139e-c6c3-40fc-8360-87890bdfa433}
+Notes           : 
+Max. playbacks  : 3
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_sfx
+
+Name            : /sfx/deep_sea_groan
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_DEEP_SEA_GROAN
+Id              : EVENTID_PARANOIA_SFX_DEEP_SEA_GROAN = 6
+GUID            : EVENTGUID_PARANOIA_SFX_DEEP_SEA_GROAN = {3b0e085b-ac76-493d-bead-b8ee6e9c96f4}
+Notes           : 
+Max. playbacks  : 1
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_sfx
+
+Name            : /sfx/harvest_berries
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_HARVEST_BERRIES
+Id              : EVENTID_PARANOIA_SFX_HARVEST_BERRIES = 7
+GUID            : EVENTGUID_PARANOIA_SFX_HARVEST_BERRIES = {8ed368b9-bdb1-41f1-b714-a0cd45169a4c}
+Notes           : 
+Max. playbacks  : 1
 DSP Effects     : none
 Category        : master/set_sfx/paranoia_sfx
 
 Name            : /ambience/void
 Index           : /EVENTGROUP_PARANOIA_AMBIENCE/EVENT_PARANOIA_AMBIENCE_VOID
-Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 5
+Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 8
 GUID            : EVENTGUID_PARANOIA_AMBIENCE_VOID = {42340c5c-e117-4399-bd43-d2aae2506a58}
 Notes           : 
 Max. playbacks  : 1
@@ -63,7 +90,7 @@ Parameter name  : PARANOIA
 Parameter index : EVENTPARAMETER_PARANOIA_AMBIENCE_VOID_PARANOIA = 0
 Range           : 0.000000 -> 1.000000
 Velocity        : 0
-Category        : master/set_ambience/ambience
+Category        : master/set_ambience/paranoia_ambience
 
 
 #
@@ -105,8 +132,8 @@ Index           : /EVENTCATEGORY_PARANOIA_MASTER/EVENTCATEGORY_PARANOIA_MASTER_S
 Numerical Index : /1
 Notes           : 
 
-Name            : /set_ambience/ambience
-Index           : /EVENTCATEGORY_PARANOIA_MASTER/EVENTCATEGORY_PARANOIA_MASTER_SET_AMBIENCE/EVENTCATEGORY_PARANOIA_MASTER_SET_AMBIENCE_AMBIENCE
+Name            : /set_ambience/paranoia_ambience
+Index           : /EVENTCATEGORY_PARANOIA_MASTER/EVENTCATEGORY_PARANOIA_MASTER_SET_AMBIENCE/EVENTCATEGORY_PARANOIA_MASTER_SET_AMBIENCE_PARANOIA_AMBIENCE
 Numerical Index : /1/0
 Notes           : 
 
