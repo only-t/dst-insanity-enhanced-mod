@@ -443,6 +443,7 @@ local function FakeMobDeathSpook(self)
 
     local mobdata = params.MOBS[math.random(#params.MOBS)]
     local mob = SpawnPrefab("fake_mob")
+    mob.despawn_dist = params.MAX_DIST_FROM_PLAYER + TILE_SCALE
     mob.start_erosion_dist = params.START_EROSION_DIST_FROM_PLAYER_SQ
     mob.timeout = params.EROSION_TIMEOUT
     mob:Setup(mobdata)

@@ -593,7 +593,7 @@ local function fake_mob_fn()
             
             ErodeAway(inst)
             inst:RemoveComponent("updatelooper")
-        elseif player and inst:GetDistanceSqToInst(player) > 36 * 36 then
+        elseif player and inst:GetDistanceSqToInst(player) > inst.despawn_dist * inst.despawn_dist then
             if inst.timeout_task then
                 inst.timeout_task:Cancel()
                 inst.timeout_task = nil
@@ -621,6 +621,8 @@ local function fake_mob_fn()
         inst.AnimState:PlayAnimation(mobdata.idleanim)
     end
 
+    inst.despawn_dist = 52
+    
     inst.timeout = 8
     inst.Die = function(inst)
         inst.AnimState:PlayAnimation(inst.data.deathanim)

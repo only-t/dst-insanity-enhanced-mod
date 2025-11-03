@@ -1,7 +1,7 @@
 name = "Paranoia [BETA] DEV"
 description = [[󰀰 You may be alone but it certainly doesn't feel that way...
 
-[󰀔 Current Version: 0.8.1]
+[󰀔 Current Version: 0.8.3]
 
 Paranoia is a mod designed to enhance the insanity of Don't Starve
 Together by adding a variety of spooky occurrences, creeping
@@ -17,7 +17,7 @@ keep their sanity in check.
 
 More spooks and mod configurations coming soon...]]
 author = "LukaS"
-version = "0.8.1"
+version = "0.8.3"
 forumthread = "/profile/365042-lukas/"
 icon_atlas = "icon.xml"
 icon = "icon.tex"

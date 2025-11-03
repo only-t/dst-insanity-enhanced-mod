@@ -134,6 +134,8 @@ env.GetModSetting = GetModSetting
 -- [[                                             ]] --
 
 -- [[ Constants ]]
+env.E_NUM = 2.71828
+
 env.PARANOIA_SPOOKS = {
     TREECHOP = 0,
     MINING_SOUND = 1,
@@ -284,6 +286,7 @@ env.IN_COMBAT_DURATION = 6
 env.BUSY_DURATION = 10
 
 env.PARANOIA_DROPOFF = 1
+env.PARANOIA_SPOOK_TIMEOUT = 20
 
 env.PARANOIA_SOURCES = {
     SANITY = {
@@ -312,17 +315,17 @@ env.PARANOIA_SOURCES = {
 }
 
 env.PARANOIA_SPOOK_COSTS = { -- Percentage of built up paranoia this spook will consume upon triggering
-    TREECHOP = 0.5,
-    MINING_SOUND = 0.5,
-    FOOTSTEPS = 0.75,
-    FOOTSTEPS_RUSH = 1,
+    TREECHOP = 0.25,
+    MINING_SOUND = 0.25,
+    FOOTSTEPS = 0.25,
+    FOOTSTEPS_RUSH = 0.5,
     BIRDSINK = 0.5,
     SCREECH = 1,
     WHISPER_QUIET = 0.5,
     WHISPER_LOUD = 1,
-    BERRYBUSH_RUSTLE = 0.5,
+    BERRYBUSH_RUSTLE = 0.25,
     OCEAN_BUBBLES = 0.5,
-    OCEAN_FOOTSTEPS = 0.75,
+    OCEAN_FOOTSTEPS = 0.25,
     FAKE_PLAYER = 1,
     FAKE_MOB_DEATH = 1
 }
@@ -356,22 +359,22 @@ env.PARANOIA_SPOOK_PARAMS = {
                 speed = 5
             }
         },
-        MIN_DIST_FROM_PLAYER = 12,
-        MAX_DIST_FROM_PLAYER = 15
+        MIN_DIST_FROM_PLAYER = 6,
+        MAX_DIST_FROM_PLAYER = 10
     },
     FOOTSTEPS_RUSH = {
         step_interval = 0.15,
         duration = 0.9,
         speed = 15,
-        DIST_FROM_PLAYER = 20
+        DIST_FROM_PLAYER = 18
     },
     BIRDSINK = {
         MIN_DIST_FROM_PLAYER = 12,
-        MAX_DIST_FROM_PLAYER = 20
+        MAX_DIST_FROM_PLAYER = 16
     },
     SCREECH = {
-        DIST_FROM_PLAYER = 20,
-        VOLUME = 0.25
+        DIST_FROM_PLAYER = 18,
+        VOLUME = 0.35
     },
     WHISPER_QUIET = {
         DIST_FROM_PLAYER = 14,
@@ -382,8 +385,8 @@ env.PARANOIA_SPOOK_PARAMS = {
         DISAPPEAR_DIST_SQ = 10 * 10
     },
     BERRYBUSH_RUSTLE = {
-        MIN_DIST_FROM_PLAYER = 10,
-        MAX_DIST_FROM_PLAYER = 24,
+        MIN_DIST_FROM_PLAYER = 6,
+        MAX_DIST_FROM_PLAYER = 18,
         BUSH_MUST_TAGS = { "bush" }
     },
     OCEAN_BUBBLES = {
@@ -410,8 +413,8 @@ env.PARANOIA_SPOOK_PARAMS = {
                 speed = 5
             }
         },
-        MIN_DIST_FROM_PLAYER = 14,
-        MAX_DIST_FROM_PLAYER = 18
+        MIN_DIST_FROM_PLAYER = 8,
+        MAX_DIST_FROM_PLAYER = 14
     },
     FAKE_PLAYER = {
         ACTIONS = {
@@ -454,9 +457,9 @@ env.PARANOIA_SPOOK_PARAMS = {
                 }
             }
         },
-        MIN_DIST_FROM_PLAYER = 24,
-        MAX_DIST_FROM_PLAYER = 26,
-        RUN_AWAY_DIST_SQ = 12 * 12,
+        MIN_DIST_FROM_PLAYER = 34,
+        MAX_DIST_FROM_PLAYER = 38,
+        RUN_AWAY_DIST_SQ = 10 * 10,
     },
     FAKE_MOB_DEATH = {
         MOBS = {
@@ -583,8 +586,8 @@ env.PARANOIA_SPOOK_PARAMS = {
                 end
             }
         },
-        MIN_DIST_FROM_PLAYER = 38,
-        MAX_DIST_FROM_PLAYER = 48,
+        MIN_DIST_FROM_PLAYER = 34,
+        MAX_DIST_FROM_PLAYER = 38,
         START_EROSION_DIST_FROM_PLAYER_SQ = 16 * 16,
         EROSION_TIMEOUT = 10
     }
