@@ -2,7 +2,6 @@
 local overrides = {
     components = {
         "ambientsound",
-        "dynamicmusic",
         "dsp"
     },
     screens = {
