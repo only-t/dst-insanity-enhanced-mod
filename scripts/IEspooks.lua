@@ -84,7 +84,6 @@ local function MiningSoundSpook(self)
     sfx_dummy.Transform:SetPosition(pos.x, pos.y, pos.z)
 
     sfx_dummy.sound = "paranoia/sfx/mine"
-    sfx_dummy.volume = params.VOLUME
 
     sfx_dummy:Play()
 

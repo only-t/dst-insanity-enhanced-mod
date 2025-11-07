@@ -7,6 +7,177 @@
 # Events
 #
 
+Name            : /sfx/footsteps/run_wood
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_WOOD
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_WOOD = 8
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_WOOD = {235a6b85-67f7-4760-9b20-a83eed343a11}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_carpet
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_CARPET
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_CARPET = 9
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_CARPET = {0b18e247-bb6a-44cc-a09e-7a2b853a31fb}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_dirt
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_DIRT
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_DIRT = 10
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_DIRT = {af956223-a1aa-4f1b-832f-01abdb5b6596}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_grass
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_GRASS
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_GRASS = 11
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_GRASS = {299de203-9431-4bd1-8357-1f5917b952a8}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_ice
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_ICE
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_ICE = 12
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_ICE = {7de637fa-43b6-4518-a644-fcf9ae51d3b3}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_marble
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_MARBLE
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_MARBLE = 13
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_MARBLE = {b7a216dd-5aab-4dc5-a009-c42be12f556b}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_moss
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_MOSS
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_MOSS = 14
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_MOSS = {2b440295-226e-4332-8540-3daca521cb46}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_mud
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_MUD
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_MUD = 15
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_MUD = {42f61576-e18d-4d08-9cd2-1b64269990f6}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_snow
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_SNOW
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_SNOW = 16
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_SNOW = {e009474f-d5ee-49ba-a496-3dde0a7ce4fd}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_tallgrass
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_TALLGRASS
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_TALLGRASS = 17
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_TALLGRASS = {d7881c08-8709-44e2-acf0-69a047cdfcbd}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_web
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_WEB
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_WEB = 18
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_WEB = {d149f21c-eb8e-489e-b5fc-f1cf26d740af}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_woods
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_WOODS
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_WOODS = 19
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_WOODS = {a4894519-8746-495f-825e-c6204a763976}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_marsh
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_MARSH
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_MARSH = 20
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_MARSH = {ee206114-b22f-42fb-8058-552a91ae9b2a}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master/set_sfx/paranoia_footsteps
+
+Name            : /sfx/footsteps/run_glassbeach
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_GLASSBEACH
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_GLASSBEACH = 21
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_GLASSBEACH = {cd10de37-8c76-4c57-8c10-0d64d5667ca6}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
+Name            : /sfx/footsteps/run_meteor
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_METEOR
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_METEOR = 22
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_METEOR = {c1b115a9-4507-4199-b49b-ec00d815758e}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
+Name            : /sfx/footsteps/run_dock
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_DOCK
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_DOCK = 23
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_DOCK = {b40ecf70-f6b4-4511-b9c5-6c3f8d6453d6}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
+Name            : /sfx/footsteps/run_iceslab
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_ICESLAB
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_ICESLAB = 24
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_ICESLAB = {c554adce-775b-488a-b77c-3b0b35493375}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
+Name            : /sfx/footsteps/run_cavesbridge
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_CAVESBRIDGE
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_CAVESBRIDGE = 25
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_CAVESBRIDGE = {872cb1e0-ca67-4edd-9507-6c4ea20a5354}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
+Name            : /sfx/footsteps/run_wagdock
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS/EVENT_PARANOIA_SFX_FOOTSTEPS_RUN_WAGDOCK
+Id              : EVENTID_PARANOIA_SFX_FOOTSTEPS_RUN_WAGDOCK = 26
+GUID            : EVENTGUID_PARANOIA_SFX_FOOTSTEPS_RUN_WAGDOCK = {73a7fb0a-389e-472d-8f56-27ffa179df62}
+Notes           : 
+Max. playbacks  : 10
+DSP Effects     : none
+Category        : master
+
 Name            : /sfx/chop
 Index           : /EVENTGROUP_PARANOIA_SFX/EVENT_PARANOIA_SFX_CHOP
 Id              : EVENTID_PARANOIA_SFX_CHOP = 0
@@ -81,7 +252,7 @@ Category        : master/set_sfx/paranoia_sfx
 
 Name            : /ambience/void
 Index           : /EVENTGROUP_PARANOIA_AMBIENCE/EVENT_PARANOIA_AMBIENCE_VOID
-Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 8
+Id              : EVENTID_PARANOIA_AMBIENCE_VOID = 27
 GUID            : EVENTGUID_PARANOIA_AMBIENCE_VOID = {42340c5c-e117-4399-bd43-d2aae2506a58}
 Notes           : 
 Max. playbacks  : 1
@@ -100,6 +271,11 @@ Category        : master/set_ambience/paranoia_ambience
 Name            : /sfx
 Index           : /EVENTGROUP_PARANOIA_SFX
 Numerical Index : /0
+Notes           : 
+
+Name            : /sfx/footsteps
+Index           : /EVENTGROUP_PARANOIA_SFX/EVENTGROUP_SFX_FOOTSTEPS
+Numerical Index : /0/0
 Notes           : 
 
 Name            : /music
@@ -150,6 +326,11 @@ Notes           :
 Name            : /set_sfx/paranoia_sfx
 Index           : /EVENTCATEGORY_PARANOIA_MASTER/EVENTCATEGORY_PARANOIA_MASTER_SET_SFX/EVENTCATEGORY_PARANOIA_MASTER_SET_SFX_PARANOIA_SFX
 Numerical Index : /3/0
+Notes           : 
+
+Name            : /set_sfx/paranoia_footsteps
+Index           : /EVENTCATEGORY_PARANOIA_MASTER/EVENTCATEGORY_PARANOIA_MASTER_SET_SFX/EVENTCATEGORY_PARANOIA_MASTER_SET_SFX_PARANOIA_FOOTSTEPS
+Numerical Index : /3/1
 Notes           : 
 
 

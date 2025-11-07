@@ -288,6 +288,9 @@ env.BUSY_DURATION = 10
 env.PARANOIA_DROPOFF = 1
 env.PARANOIA_SPOOK_TIMEOUT = 20
 
+env.MIN_SPOOK_THRESHOLD = 20
+env.MAX_SPOOK_THRESHOLD = 160
+
 env.PARANOIA_SOURCES = {
     SANITY = {
         START_THRESHOLD = env.PARANOIA_THRESHOLDS[env.PARANOIA_STAGES.STAGE1],
@@ -338,25 +341,27 @@ env.PARANOIA_SPOOK_PARAMS = {
     },
     MINING_SOUND = {
         MIN_DIST_FROM_PLAYER = 8,
-        MAX_DIST_FROM_PLAYER = 18,
-        VOLUME = 0.4
+        MAX_DIST_FROM_PLAYER = 14
     },
     FOOTSTEPS = {
         VARIATIONS = {
             {
                 step_interval = 0.15,
                 duration = 0.9,
-                speed = 15
+                speed = 15,
+                volume = 1
             },
             {
                 step_interval = 0.35,
                 duration = 1.7,
-                speed = 5
+                speed = 5,
+                volume = 0.7
             },
             {
                 step_interval = 0.6,
                 duration = 3,
-                speed = 5
+                speed = 5,
+                volume = 0.7
             }
         },
         MIN_DIST_FROM_PLAYER = 6,

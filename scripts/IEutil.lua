@@ -83,3 +83,50 @@ _G.IE.OverrideListenForEventFn = function(inst, event, source, fn, fn_index)
                              "source - "..tostring(source))
     end
 end
+
+_G.IE.PlayParanoidFootstep = function(inst, volume, ispredicted)
+    local soundemitter = inst.SoundEmitter
+    if soundemitter then
+        local platform = inst:GetCurrentPlatform()
+
+        local tile = inst.components.locomotor and inst.components.locomotor:TempGroundTile() or nil
+        local tileinfo = tile and _G.GetTileInfo(tile) or nil
+
+        if platform then
+            soundemitter:PlaySound("paranoia/sfx/footsteps/run_"..platform.walksound, nil, volume or 1, ispredicted)
+
+            if platform.second_walk_sound then
+                soundemitter:PlaySound("paranoia/sfx/footsteps/run_"..platform.second_walk_sound, nil, volume or 1, ispredicted)
+            end
+		else
+			local soundpath
+
+			if tileinfo == nil then
+				tile, tileinfo = inst:GetCurrentTileType()
+				if tile and tileinfo then
+					local x, y, z = inst.Transform:GetWorldPosition()
+					local oncreep = _G.TheWorld.GroundCreep:OnCreep(x, y, z)
+					local onsnow = not tileinfo.nogroundoverlays and _G.TheWorld.state.snowlevel > 0.15
+					local onmud = not tileinfo.nogroundoverlays and _G.TheWorld.state.wetness > 15
+
+					if not oncreep and _G.RoadManager and _G.RoadManager:IsOnRoad(x, 0, z) then
+						tile = _G.WORLD_TILES.ROAD
+						tileinfo = _G.GetTileInfo(_G.WORLD_TILES.ROAD) or tileinfo
+					end
+
+					soundpath = (oncreep and "paranoia/sfx/footsteps/run_web") or
+						        (onsnow and "paranoia/sfx/footsteps/"..string.split(tileinfo.snowsound, "/")[3]) or
+						        (onmud and "paranoia/sfx/footsteps/"..string.split(tileinfo.mudsound, "/")[3]) or
+						        nil
+				end
+			end
+
+			if soundpath then
+				soundemitter:PlaySound(soundpath, nil, volume or 1, ispredicted)
+			elseif tileinfo then
+				soundpath = "paranoia/sfx/footsteps/"..string.split(tileinfo.runsound, "/")[3]
+                soundemitter:PlaySound(soundpath, nil, volume or 1, ispredicted)
+			end
+		end
+    end
+end

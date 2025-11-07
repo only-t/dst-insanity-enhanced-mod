@@ -44,7 +44,7 @@ local function footsteps_fn()
             return
         end
 
-        PlayFootstep(inst, inst.volume)
+        IE.PlayParanoidFootstep(inst, inst.volume)
         local x, y, z = inst.Transform:GetWorldPosition()
         if TheWorld.Map:IsOceanAtPoint(x, y, z, false, true) then -- JESUS STEPS !
             SpawnPrefab("weregoose_ripple"..tostring(math.random(1, 2))).Transform:SetPosition(x, y, z)

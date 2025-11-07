@@ -1,9 +1,9 @@
 local function DoRunSounds(inst)
     if inst.sg.mem.footsteps > 3 then
-        PlayFootstep(inst, 0.6, true)
+        IE.PlayParanoidFootstep(inst, 0.6, true)
     else
         inst.sg.mem.footsteps = inst.sg.mem.footsteps + 1
-        PlayFootstep(inst, 1, true)
+        IE.PlayParanoidFootstep(inst, 1, true)
     end
 end
 
@@ -52,7 +52,7 @@ local states = {
 
         timeline = {
             TimeEvent(4 * FRAMES, function(inst)
-                PlayFootstep(inst, nil, true)
+                IE.PlayParanoidFootstep(inst, nil, true)
             end)
         },
 
