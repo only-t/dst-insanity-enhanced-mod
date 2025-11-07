@@ -89,6 +89,7 @@ local DSP = require("components/dsp")
 local old_DSP_ctor = DSP._ctor
 DSP._ctor = function(self, ...)
     local _activatedplayer = nil
+    local _paranoiastage = 0
 
     local function OnParanoiaStageChanged(inst, data)
         if data.oldstage ~= 0 then
@@ -118,6 +119,8 @@ DSP._ctor = function(self, ...)
                 _G.TheMixer:PushMix("paranoia_stage5")
             end
         end
+
+        _paranoiastage = data.newstage
     end
 
     local function OnParanoiaManagerInitialized(inst)
@@ -153,6 +156,7 @@ DSP._ctor = function(self, ...)
 
         if player.components.paranoiamanager then
             inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged, player)
+            OnParanoiaStageChanged(player, { oldstage = _paranoiastage, newstage = _G.IE.PARANOIA_STAGES.STAGE0 })
         end
         
         if player == _activatedplayer then

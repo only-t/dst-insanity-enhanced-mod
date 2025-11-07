@@ -22,8 +22,19 @@ AmbientSound._ctor = function(self, ...)
     self.OnUpdate = function(self, dt, ...)
         old_AmbientSound_OnUpdate(self, dt, ...)
 
-	    self.inst.SoundEmitter:SetParameter("SANITY", "sanity", 0) -- Never play insanity ambience
-        
+        local player = _G.ThePlayer
+        if player == nil then
+            return
+        end
+
+        if player.components.paranoiamanager == nil then
+            self.inst.SoundEmitter:SetParameter("paranoia_amb", "PARANOIA", 0)
+
+            return
+        else
+	        self.inst.SoundEmitter:SetParameter("SANITY", "sanity", 0) -- Don't play the insanity ambience for players with paranoiamanager
+        end
+
         if volume_target ~= nil then
             if not volume_target_reached then
                 volume_change_curtime = volume_change_curtime + dt
@@ -40,7 +51,6 @@ AmbientSound._ctor = function(self, ...)
             end
         else
             if old_volume_target ~= nil then
-                local player = _G.ThePlayer
                 local sanity = player ~= nil and player.replica.sanity or nil
                 local sanity_percent = (sanity ~= nil and sanity:IsInsanityMode()) and sanity:GetPercent() or 1
                 local paranoiaparam = (1 - math.min(1, sanity_percent / _G.IE.PARANOIA_THRESHOLDS[_G.IE.PARANOIA_STAGES.STAGE1])) * _G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.INSANITY_AMBIENCE_INTENSITY.ID] / 10
@@ -56,7 +66,6 @@ AmbientSound._ctor = function(self, ...)
                     volume_target_reached = nil
                 end
             else
-                local player = _G.ThePlayer
                 local sanity = player ~= nil and player.replica.sanity or nil
                 local sanity_percent = (sanity ~= nil and sanity:IsInsanityMode()) and sanity:GetPercent() or 1
                 _paranoiaparam = (1 - math.min(1, sanity_percent / _G.IE.PARANOIA_THRESHOLDS[_G.IE.PARANOIA_STAGES.STAGE1])) * _G.IE.CURRENT_SETTINGS[_G.IE.MOD_SETTINGS.SETTINGS.INSANITY_AMBIENCE_INTENSITY.ID] / 10
