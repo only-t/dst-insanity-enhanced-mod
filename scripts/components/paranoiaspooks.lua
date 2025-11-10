@@ -1,5 +1,7 @@
+require("mathutil")
+
 local Spooks = require("IEspooks")
-local SpookSuspenseFns = require("IEspooksuspensefns")
+local SpookOppurtunityFns = require("IEspookopportunityfns")
 
 local function PickASpook(self)
     local isforest = TheWorld:HasTag("forest")
@@ -190,20 +192,20 @@ local function CheckAction(inst)
     end
 end
 
-local function OnParanoiaStageChanged(inst, data)
-    if data.newstage >= IE.PARANOIA_STAGES.STAGE1 then
-        inst.components.paranoiaspooks:Start()
-    else
-        inst.components.paranoiaspooks:Stop()
-    end
-end
-
 local function OnSanityDelta(inst, data)
-    if inst.components.paranoiaspooks.paranoia_sources.sanity == nil then
-        inst.components.paranoiaspooks.paranoia_sources.sanity = {  }
-    end
+    local strength = 1 - math.min(1, data.newpercent / IE.PARANOIA_SOURCES.SANITY.START_THRESHOLD)
+    if strength > 0 then
+        inst.components.paranoiaspooks.is_paranoid = true
 
-    inst.components.paranoiaspooks.paranoia_sources.sanity.additive = IE.PARANOIA_SOURCES.SANITY.GAIN_ADDITIVE * (1 - math.min(1, data.newpercent / IE.PARANOIA_SOURCES.SANITY.START_THRESHOLD))
+        if inst.components.paranoiaspooks.paranoia_sources.sanity == nil then
+            inst.components.paranoiaspooks.paranoia_sources.sanity = {  }
+        end
+
+        inst.components.paranoiaspooks.paranoia_sources.sanity.additive = IE.PARANOIA_SOURCES.SANITY.GAIN_ADDITIVE * strength
+    else
+        inst.components.paranoiaspooks.paranoia_sources.sanity = nil
+        inst.components.paranoiaspooks.is_paranoid = false
+    end
 end
 
 local function OnBuildSuccess(inst)
@@ -212,12 +214,16 @@ end
 
 local function OnHealthDelta(inst, data)
     local strength = (1 - math.min(1, data.newpercent / IE.PARANOIA_SOURCES.LOW_HEALTH.START_THRESHOLD))
-    if inst.components.paranoiaspooks.paranoia_sources.low_health == nil then
-        inst.components.paranoiaspooks.paranoia_sources.low_health = {  }
-    end
+    if strength > 0 then
+        if inst.components.paranoiaspooks.paranoia_sources.low_health == nil then
+            inst.components.paranoiaspooks.paranoia_sources.low_health = {  }
+        end
 
-    inst.components.paranoiaspooks.paranoia_sources.low_health.additive = IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_ADDITIVE * strength
-    inst.components.paranoiaspooks.paranoia_sources.low_health.multiplicative = IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_MULTIPLICATIVE * strength
+        inst.components.paranoiaspooks.paranoia_sources.low_health.additive = IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_ADDITIVE * strength
+        inst.components.paranoiaspooks.paranoia_sources.low_health.multiplicative = 1 + (IE.PARANOIA_SOURCES.LOW_HEALTH.GAIN_MULTIPLICATIVE - 1) * strength
+    else
+        inst.components.paranoiaspooks.paranoia_sources.low_health = nil
+    end
 end
 
 local function OnEnterDark(inst)
@@ -233,19 +239,63 @@ local function OnEnterLight(inst)
     inst.components.paranoiaspooks.paranoia_sources.darkness = nil
 end
 
--- local function WhisperRespond(inst) -- [TODO]
---     if inst.components.talker then
---         local script = STRINGS.IE.WHISPER_RESPONSES[math.random(1, #STRINGS.IE.WHISPER_RESPONSES)]
---         inst.components.talker:Say(script)
---     end
--- end
+local function OnCaveDayState(inst, iscaveday)
+    if iscaveday then
+        if inst.components.paranoiaspooks.paranoia_sources.notday == nil then
+            inst.components.paranoiaspooks.paranoia_sources.notday = {  }
+        end
+
+        inst.components.paranoiaspooks.paranoia_sources.notday.multiplicative = IE.PARANOIA_SOURCES.NOTDAY.GAIN_MULTIPLICATIVE
+    else
+        inst.components.paranoiaspooks.paranoia_sources.notday = nil
+    end
+end
+
+local function TryToSpook(self)
+    if SpookOppurtunityFns[self.next_spook] == nil then
+        IE.modprint(IE.WARN, "Trying to trigger a non-existant spook!",
+        "next_spook - "..tostring(self.next_spook))
+        return
+    end
+
+    local rnd = math.random()
+    local spook_chance = SpookOppurtunityFns[self.next_spook](self.inst)
+
+    if IE.DEV then
+        print("trying to spook:")
+        print("    rnd - "..tostring(rnd))
+        print("    spook chance - "..tostring(math.pow(spook_chance, IE.E_NUM)))
+    end
+
+    if rnd <= math.pow(spook_chance, IE.E_NUM) then
+        local spook = self:Spook(IE.PARANOIA_SPOOKS[self.next_spook])
+        self.paranoia = self.paranoia - self.paranoia * IE.PARANOIA_SPOOK_COSTS[self.next_spook]
+        self.next_spook = nil
+        self.pending_spook_timeout_curtime = 0
+
+        self.try_spook_task:Cancel()
+        self.try_spook_task = nil
+    end
+end
 
 local ParanoiaSpooks = Class(function(self, inst)
 	self.inst = inst
 
+    if inst.replica.sanity == nil then
+        IE.modprint(IE.WARN, "Trying to add ParanoiaSpooks but that entity doesn't have the Sanity replica!",
+                             "inst - "..tostring(inst))
+        inst:DoTaskInTime(0, function() -- Wait 1 tick to let the component get fully created
+            inst:RemoveComponent("paranoiaspooks") -- Then remove it
+        end)
+
+        return
+    end
+
+    self.debug_update_print = false
+
     self.spook_intensity = IE.CURRENT_SETTINGS[IE.MOD_SETTINGS.SETTINGS.SPOOK_INTENSITY.ID]
 
-    self.is_paranoid = false -- false == stage 0, slowly decrease paranoia
+    self.is_paranoid = false -- false == slowly decrease paranoia
 
     self.paranoia = 0
     self.suspense = 0 -- For better spook timing
@@ -255,14 +305,12 @@ local ParanoiaSpooks = Class(function(self, inst)
 
     self.next_spook = nil
     self.last_spook = nil -- Try hard to not do the same spook twice in a row
-    self.pending_spook_timeout = 20 -- We will allow this amount of time to pass until we reset the spook IF it wasn't able to trigger
+    self.pending_spook_timeout = IE.PARANOIA_SPOOK_TIMEOUT -- We will allow this amount of time to pass until we reset the spook IF it wasn't able to trigger
     self.pending_spook_timeout_curtime = 0
     self.isdead = false
 
     self.lastfighttime = -IE.IN_COMBAT_DURATION
     self.lastbusytime = -IE.BUSY_DURATION
-
-    -- inst:ListenForEvent("whispers_response", WhisperRespond)
 
     inst:StartUpdatingComponent(self)
 end)
@@ -286,11 +334,16 @@ end
 function ParanoiaSpooks:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("performaction", CheckAction)
     self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-    self.inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
     self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
     self.inst:RemoveEventCallback("healthdelta", OnHealthDelta)
     self.inst:RemoveEventCallback("enterdark", OnEnterDark)
     self.inst:RemoveEventCallback("enterlight", OnEnterLight)
+
+    if self.next_spook then
+        self:TimeoutSpook()
+    end
+
+    self.paranoia = 0
 end
 
 function ParanoiaSpooks:Init()
@@ -298,8 +351,6 @@ function ParanoiaSpooks:Init()
     self.inst:ListenForEvent("performaction", CheckAction)
     self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
     OnSanityDelta(self.inst, { newpercent = self.inst.replica.sanity:GetPercent() })
-    
-    self.inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
 
     self.inst:ListenForEvent("healthdelta", OnHealthDelta)
     OnHealthDelta(self.inst, { newpercent = self.inst.replica.health:GetPercent() })
@@ -309,6 +360,9 @@ function ParanoiaSpooks:Init()
 
     if TheWorld:HasTag("cave") then
         self.paranoia_sources.caving = { additive = IE.PARANOIA_SOURCES.CAVING.GAIN_ADDITIVE }
+    else
+        self:WatchWorldState("iscaveday", OnCaveDayState)
+        OnCaveDayState(self.inst, TheWorld.state.iscaveday)
     end
 end
 
@@ -316,15 +370,14 @@ function ParanoiaSpooks:_OnDeath()
     if not self.isdead then
         self.inst:RemoveEventCallback("performaction", CheckAction)
         self.inst:RemoveEventCallback("sanitydelta", OnSanityDelta)
-        self.inst:RemoveEventCallback("paranoia_stage_changed", OnParanoiaStageChanged)
         self.inst:RemoveEventCallback("buildsuccess", OnBuildSuccess)
 
-        self.next_spook = nil
-        self.last_spook = nil
+        if self.next_spook then
+            self:TimeoutSpook()
+        end
+        
         self.paranoia = 0
 
-        self:Stop()
-        
         self.inst:StopUpdatingComponent(self)
 
         self.isdead = true
@@ -335,10 +388,7 @@ function ParanoiaSpooks:_OnRevive()
     if self.isdead then
         self.inst:ListenForEvent("performaction", CheckAction)
         self.inst:ListenForEvent("sanitydelta", OnSanityDelta)
-        self.inst:ListenForEvent("paranoia_stage_changed", OnParanoiaStageChanged)
         self.inst:ListenForEvent("buildsuccess", OnBuildSuccess)
-
-        self:Start()
 
         self.inst:StartUpdatingComponent(self)
 
@@ -356,9 +406,14 @@ end
 
 function ParanoiaSpooks:TimeoutSpook()
     self.next_spook = nil
+    self.last_spook = nil
     self.paranoia = self.paranoia - self.paranoia * 0.1 -- Give the player some time before attempting another spook
-    self.suspense = 0
     self.pending_spook_timeout_curtime = 0
+    
+    if self.try_spook_task ~= nil then
+        self.try_spook_task:Cancel()
+        self.try_spook_task = nil
+    end
 end
 
 function ParanoiaSpooks:Spook(type)
@@ -390,6 +445,58 @@ function ParanoiaSpooks:Spook(type)
     elseif type == IE.PARANOIA_SPOOKS.FAKE_MOB_DEATH then
         return Spooks.FakeMobDeathSpook(self)
     end
+end
+
+function ParanoiaSpooks:ForcePickSpook(type)
+    if type == IE.PARANOIA_SPOOKS.TREECHOP then
+        self.next_spook = "TREECHOP"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.MINING_SOUND then
+        self.next_spook = "MINING_SOUND"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.FOOTSTEPS then
+        self.next_spook = "FOOTSTEPS"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.FOOTSTEPS_RUSH then
+        self.next_spook = "FOOTSTEPS_RUSH"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.BIRDSINK then
+        self.next_spook = "BIRDSINK"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.SCREECH then
+        self.next_spook = "SCREECH"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.WHISPER_QUIET then
+        self.next_spook = "WHISPER_QUIET"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.WHISPER_LOUD then
+        self.next_spook = "WHISPER_LOUD"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.BERRYBUSH_RUSTLE then
+        self.next_spook = "BERRYBUSH_RUSTLE"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.OCEAN_BUBBLES then
+        self.next_spook = "OCEAN_BUBBLES"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.OCEAN_FOOTSTEPS then
+        self.next_spook = "OCEAN_FOOTSTEPS"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.FAKE_PLAYER then
+        self.next_spook = "FAKE_PLAYER"
+        self.last_spook = self.next_spook
+    elseif type == IE.PARANOIA_SPOOKS.FAKE_MOB_DEATH then
+        self.next_spook = "FAKE_MOB_DEATH"
+        self.last_spook = self.next_spook
+    end
+
+    self.pending_spook_timeout_curtime = 0
+
+    if self.try_spook_task ~= nil then
+        self.try_spook_task:Cancel()
+        self.try_spook_task = nil
+    end
+
+    self.try_spook_task = self.inst:DoPeriodicTask(0.25, function() TryToSpook(self) end)
 end
 
 function ParanoiaSpooks:RecalcGhostParanoia()
@@ -432,31 +539,17 @@ function ParanoiaSpooks:RecalcLonelinessParanoia()
 end
 
 function ParanoiaSpooks:OnUpdate(dt)
-    -- if IE.DEV then
-    --     return
-    -- end
-
     if self.next_spook ~= nil then
-        -- [ TODO ]
-        -- self.pending_spook_timeout_curtime = self.pending_spook_timeout_curtime + dt
+        self.pending_spook_timeout_curtime = self.pending_spook_timeout_curtime + dt
 
-        -- if self.pending_spook_timeout_curtime >= self.pending_spook_timeout then
-        --     self:TimeoutSpook()
-        --     return
-        -- end
+        if self.pending_spook_timeout_curtime >= self.pending_spook_timeout then
+            self:TimeoutSpook()
+            return
+        end
 
-        -- self.suspense = self.suspense + SpookSuspenseFns[self.next_spook](self.inst)
-
-        -- if IE.DEV then
-        --     print("suspense - "..tostring(self.suspense))
-        -- end
-
-        -- if self.suspense >= 1 then
-            self:Spook(IE.PARANOIA_SPOOKS[self.next_spook])
-            self.suspense = 0
-            self.paranoia = self.paranoia - self.paranoia * IE.PARANOIA_SPOOK_COSTS[self.next_spook]
-            self.next_spook = nil
-        -- end
+        if self.debug_update_print then
+            print("next spook - "..tostring(self.next_spook))
+        end
 
         return
     end
@@ -464,7 +557,7 @@ function ParanoiaSpooks:OnUpdate(dt)
     self:RecalcGhostParanoia()
     self:RecalcLonelinessParanoia()
 
-    if IE.DEV then
+    if self.debug_update_print then
         print("paranoia sources:")
         for source, amounts in pairs(self.paranoia_sources) do
             print("    "..tostring(source)..":")
@@ -473,7 +566,7 @@ function ParanoiaSpooks:OnUpdate(dt)
         end
     end
 
-    if self.is_paranoid then
+    if self.is_paranoid and not self.isdead then
         local add = 0
         local multiply = 1
         for _, amounts in pairs(self.paranoia_sources) do
@@ -486,25 +579,36 @@ function ParanoiaSpooks:OnUpdate(dt)
             end
         end
 
-        if IE.DEV then
+        if self.debug_update_print then
             print("current additive - "..tostring(add))
             print("current multiplicative - "..tostring(multiply))
         end
 
         self.paranoia = self.paranoia + add * multiply * dt
 
-        if IE.DEV then
+        if self.debug_update_print then
             print("current paranoia - "..tostring(self.paranoia))
         end
 
-        if 30 + 20 * (IE.MAX_SPOOK_INTENSITY - self.spook_intensity) <= self.paranoia then
+        if Lerp(IE.MAX_SPOOK_THRESHOLD, IE.MIN_SPOOK_THRESHOLD, (self.spook_intensity - 1) / IE.MAX_SPOOK_INTENSITY) <= self.paranoia then
             self.next_spook = PickASpook(self)
             self.last_spook = self.next_spook
+
+            if self.try_spook_task ~= nil then
+                self.try_spook_task:Cancel()
+                self.try_spook_task = nil
+            end
+
+            self.try_spook_task = self.inst:DoPeriodicTask(0.4, function() TryToSpook(self) end)
         end
     elseif self.paranoia > 0 then
         self.paranoia = self.paranoia - self.paranoia_dropoff * dt
         if self.paranoia < 0 then
             self.paranoia = 0
+        end
+
+        if self.debug_update_print then
+            print("current paranoia - "..tostring(self.paranoia))
         end
     end
 end

@@ -298,12 +298,12 @@ env.PARANOIA_SOURCES = {
     },
     LOW_HEALTH = {
         START_THRESHOLD = 0.5,
-        GAIN_MULTIPLICATIVE = 2,
+        GAIN_MULTIPLICATIVE = 1.75,
         GAIN_ADDITIVE = 0.5
     },
     DARKNESS = {
         GAIN_MULTIPLICATIVE = 2,
-        GAIN_ADDITIVE = 1.67
+        GAIN_ADDITIVE = 1.5
     },
     PLAYER_GHOSTS = {
         GAIN_ADDITIVE = 0.67
@@ -314,6 +314,9 @@ env.PARANOIA_SOURCES = {
     },
     CAVING = {
         GAIN_ADDITIVE = 0.5
+    },
+    NOTDAY = {
+        GAIN_MULTIPLICATIVE = 1.25
     }
 }
 
@@ -364,8 +367,8 @@ env.PARANOIA_SPOOK_PARAMS = {
                 volume = 0.7
             }
         },
-        MIN_DIST_FROM_PLAYER = 6,
-        MAX_DIST_FROM_PLAYER = 10
+        MIN_DIST_FROM_PLAYER = 10,
+        MAX_DIST_FROM_PLAYER = 14
     },
     FOOTSTEPS_RUSH = {
         step_interval = 0.15,
@@ -418,7 +421,7 @@ env.PARANOIA_SPOOK_PARAMS = {
                 speed = 5
             }
         },
-        MIN_DIST_FROM_PLAYER = 8,
+        MIN_DIST_FROM_PLAYER = 10,
         MAX_DIST_FROM_PLAYER = 14
     },
     FAKE_PLAYER = {
@@ -840,7 +843,7 @@ env.PARANOIA_SPOOK_WEIGHTS = {
         cave = 1,
 
         night = 3,
-        day = 0,
+        day = -1,
 
         boat = -1,
         land = 0.5,
@@ -927,7 +930,7 @@ env.PARANOIA_SPOOK_WEIGHTS = {
         night = 2,
         day = 4,
 
-        boat = 1,
+        boat = -1,
         land = 2,
 
         isindark = 1,
