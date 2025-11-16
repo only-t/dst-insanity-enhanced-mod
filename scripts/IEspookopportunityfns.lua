@@ -59,7 +59,7 @@ local function FootstepsConditions(player)
 
     local chance = 0
 
-    if not player.components.locomotor:WantsToMoveForward() then
+    if not player:HasTag("moving") then
         chance = chance + 0.15
     end
 
@@ -108,7 +108,7 @@ local function BirdSinkConditions(player)
 
     for x1 = -half_radius, half_radius do
         for y1 = -half_radius, half_radius do
-            if TileGroupManager:IsImpassableTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
+            if TileGroupManager:IsOceanTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
                 chance = chance + 0.75 * (1 / math.pow(half_radius + half_radius, 2))
             end
         end
@@ -197,9 +197,9 @@ local function BerryBushRustleConditions(player)
 
     if #ents > 0 then
         if #ents > 12 then
-            chance = 0.6
+            chance = 0.72
         else
-            chance = 0.03 * #ents
+            chance = 0.06 * #ents
         end
     else
         return 0 -- Don't allow the spook to happen if the player is not near a berry bush
@@ -214,12 +214,12 @@ local function OceanBubblesConditions(player)
     local chance = 0
 
     local x, y = TheWorld.Map:GetTileCoordsAtPoint(player.Transform:GetWorldPosition())
-    local half_radius = params.MAX_DIST_FROM_PLAYER / TILE_SCALE
+    local half_radius = math.ceil(params.MAX_DIST_FROM_PLAYER / TILE_SCALE)
 
     for x1 = -half_radius, half_radius do
         for y1 = -half_radius, half_radius do
-            if TileGroupManager:IsImpassableTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
-                chance = chance + 1 / math.pow(half_radius + half_radius, 2)
+            if TileGroupManager:IsOceanTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
+                chance = chance + 1 / math.pow(2 * half_radius + 1, 2)
             end
         end
     end
@@ -237,12 +237,12 @@ local function OceanFootstepsConditions(player)
     local chance = 0
 
     local x, y = TheWorld.Map:GetTileCoordsAtPoint(player.Transform:GetWorldPosition())
-    local half_radius = params.MAX_DIST_FROM_PLAYER / TILE_SCALE
+    local half_radius = math.ceil(params.MAX_DIST_FROM_PLAYER / TILE_SCALE)
 
     for x1 = -half_radius, half_radius do
         for y1 = -half_radius, half_radius do
-            if TileGroupManager:IsImpassableTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
-                chance = chance + 0.8 * (1 / math.pow(half_radius + half_radius, 2))
+            if TileGroupManager:IsOceanTile(TheWorld.Map:GetTile(x + x1, y + y1)) then
+                chance = chance + 1 / math.pow(2 * half_radius + 1, 2)
             end
         end
     end

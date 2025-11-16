@@ -6,7 +6,7 @@ local SpookOppurtunityFns = require("IEspookopportunityfns")
 local function PickASpook(self)
     local isforest = TheWorld:HasTag("forest")
     local iscave = TheWorld:HasTag("cave")
-    local isnight = TheWorld.state.iscavenight
+    local isnight = TheWorld.state.isnight
     local isday = TheWorld.state.iscaveday
     local isplayeronboat = self.inst:GetCurrentPlatform() ~= nil
     local isplayerindark = self.inst:IsInLight()
@@ -239,15 +239,15 @@ local function OnEnterLight(inst)
     inst.components.paranoiaspooks.paranoia_sources.darkness = nil
 end
 
-local function OnCaveDayState(inst, iscaveday)
+local function OnCaveDayState(self, iscaveday)
     if iscaveday then
-        if inst.components.paranoiaspooks.paranoia_sources.notday == nil then
-            inst.components.paranoiaspooks.paranoia_sources.notday = {  }
+        if self.paranoia_sources.notday == nil then
+            self.paranoia_sources.notday = {  }
         end
 
-        inst.components.paranoiaspooks.paranoia_sources.notday.multiplicative = IE.PARANOIA_SOURCES.NOTDAY.GAIN_MULTIPLICATIVE
+        self.paranoia_sources.notday.multiplicative = IE.PARANOIA_SOURCES.NOTDAY.GAIN_MULTIPLICATIVE
     else
-        inst.components.paranoiaspooks.paranoia_sources.notday = nil
+        self.paranoia_sources.notday = nil
     end
 end
 
@@ -255,6 +255,8 @@ local function TryToSpook(self)
     if SpookOppurtunityFns[self.next_spook] == nil then
         IE.modprint(IE.WARN, "Trying to trigger a non-existant spook!",
         "next_spook - "..tostring(self.next_spook))
+        
+        self:TimeoutSpook()
         return
     end
 
@@ -362,7 +364,7 @@ function ParanoiaSpooks:Init()
         self.paranoia_sources.caving = { additive = IE.PARANOIA_SOURCES.CAVING.GAIN_ADDITIVE }
     else
         self:WatchWorldState("iscaveday", OnCaveDayState)
-        OnCaveDayState(self.inst, TheWorld.state.iscaveday)
+        OnCaveDayState(self, TheWorld.state.iscaveday)
     end
 end
 
@@ -545,10 +547,6 @@ function ParanoiaSpooks:OnUpdate(dt)
         if self.pending_spook_timeout_curtime >= self.pending_spook_timeout then
             self:TimeoutSpook()
             return
-        end
-
-        if self.debug_update_print then
-            print("next spook - "..tostring(self.next_spook))
         end
 
         return
